@@ -18,7 +18,7 @@ class Relationship(enum.Enum):
 class Graph:
     """
     Handles all things graph traversal.
-    Mainly used to detect deepest child node and generate node processing sequence.
+    Mainly used to detect deepest child (leaf) node and generate node processing sequence.
     """
     def __init__(self, G, name: str, ref: str = None, **attr):
         self.G = G
