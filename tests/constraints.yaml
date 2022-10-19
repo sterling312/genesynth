@@ -1,0 +1,49 @@
+version: 1
+$ref: ""
+type: constraints
+description: "contains various custom contraints"
+properties:
+  autoincrement:
+    - type: integer
+      description: "Ensure that data is always increasing by one"
+      metadata:
+        - step: 1
+      constraints:
+        - incremental
+
+  isodatetime:
+    - type: string
+      description: "Ensure string conforms to iso datetime format"
+      metadata:
+        - format: "%Y%m%dT%H%M%S"
+      constraints:
+        - format
+
+  isodate:
+    - type: string
+      description: "Ensure string conforms to iso date format"
+      metadata:
+        - format: "%Y%m%d"
+      constraints:
+        - format
+
+  us_zipcode:
+    - type: string
+      description: "US based zipcode"
+      metadata:
+        - regexp: "[0-9]{5}"
+        - country: USA
+      constraints:
+        - regexp
+
+  us_state:
+    - type: array
+      description: "List of short name for US States"
+      items:
+        type: string
+      metadata:
+        default: ["CA", "NY", "TX"]
+      constraints:
+        - oneOf
+
+  

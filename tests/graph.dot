@@ -1,0 +1,37 @@
+strict digraph entity {
+  root [color=blue]
+  2 [color=green]
+  8 [color=green]
+  12 [color=green]
+
+  3 [color=orange]
+  4 [color=orange]
+  5 [color=orange]
+  9 [color=orange]
+  10 [color=orange]
+  11 [color=orange]
+  13 [color=orange]
+  14 [color=orange]
+  15 [color=orange]
+
+  root -> 2
+  2 -> 3
+  2 -> 4
+  2 -> 5
+  3 -> 6
+  3 -> 7
+
+  root -> 8
+  8 -> 9
+  8 -> 10
+  8 -> 11
+
+  root -> 12
+  12 -> 13
+  12 -> 14
+  12 -> 15
+
+  7 -> 9 [label=idenity, color=red]
+  11 -> 13 [label=subset, color=red]
+  14 -> 13 [label=index, color=red]
+}
