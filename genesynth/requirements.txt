@@ -1,0 +1,14 @@
+async-generator==1.10
+click==8.0.4
+Cython==0.29.24
+future==0.18.2
+matplotlib==3.5.1
+networkx==2.6.3
+numpy==1.22.4
+pydot==1.4.2
+pytz==2022.1
+PyYAML==6.0
+scipy==1.8.0
+typing-inspect==0.7.1
+typing_extensions==4.2.0
+uvloop==0.16.0
