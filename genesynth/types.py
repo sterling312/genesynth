@@ -152,8 +152,8 @@ class DecimalFixture(FloatFixture):
 @dataclass(unsafe_hash=True)
 class StringFixture(BaseTextFixture):
     null = ''
-    subtype: str = 'word'
-    field: str = None
+    subtype: str = 'text'
+    field: str = 'sentence'
     locale = Locale.EN
 
     def __post_init__(self):
