@@ -1,12 +1,15 @@
 import typing
 import enum
 import asyncio
+import uvloop
 from dataclasses import dataclass
 from concurrent import futures
 from genesynth.graph import Graph
 from genesynth.model import WorkloadType, DataModel
 from genesynth.io import load_config, config_to_graph, CacheFile
 from genesynth.utils import spawn, co_spawn, wait
+
+uvloop.install()
 
 class Constraint(enum.Enum):
     unique = 1 

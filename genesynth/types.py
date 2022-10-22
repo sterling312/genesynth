@@ -1,12 +1,19 @@
 import enum
+import random
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 import numpy as np
 from scipy import stats
+from mimesis import Generic
+from mimesis.random import Random
+from mimesis.locales import Locale
+from mimesis.builtins import USASpecProvider
 from genesynth import mat
 
 def reseed(seed=None):
+    BaseMask.seed = seed
     np.random.seed(seed)
+    random.seed(seed)
 
 class datatypes(dict):
     def register(self, fn):
@@ -24,6 +31,7 @@ class WorkloadType(enum.Enum):
 
 @dataclass(unsafe_hash=True)
 class BaseMask:
+    seed = None
     name: str
     size: int
     workload = WorkloadType.IO
@@ -44,7 +52,7 @@ class BaseMask:
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
 
     async def write(self, arr):
-        print(arr)
+        np.savetxt(self._file, arr, fmd="%s", delimiter='\n')
 
 @dataclass(unsafe_hash=True)
 class BaseNumberFixture(BaseMask):
@@ -53,7 +61,13 @@ class BaseNumberFixture(BaseMask):
 
 @dataclass(unsafe_hash=True)
 class BaseTextFixture(BaseMask):
-    pass
+    length: int = None
+
+    def __post_init__(self):
+        self.random = Random(self.seed)
+
+    async def generate(self):
+        return np.array([self.random.randstr()[:self.length] for _ in range(self.size)])
 
 @dataclass(unsafe_hash=True)
 class BaseTimestamp(BaseMask):
@@ -138,4 +152,15 @@ class DecimalFixture(FloatFixture):
 @dataclass(unsafe_hash=True)
 class StringFixture(BaseTextFixture):
     null = ''
-    pass
+    subtype: str = 'word'
+    field: str = None
+    locale = Locale.EN
+
+    def __post_init__(self):
+        self.generic = Generic(locale=self.locale, seed=self.seed)
+
+    async def generate(self):
+        func = getattr(self.generic, self.subtype)
+        if self.field is not None:
+            func = getattr(func, self.field)
+        return np.array([func()[:self.length] for _ in range(self.size)])

@@ -36,6 +36,16 @@ def test_decimal(params):
     arr = np.array([4.17022, 7.20324, 0.00114, 3.02333, 1.46756, 0.92339, 1.8626, 3.45561, 3.96767, 5.38817])
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
+def test_text(params):
+    n = BaseTextFixture(length=5, **params)
+    arr = np.array(['JXdhV', '5z45g', 'OLTx1', 'DbxAl', 'ecikH', 'AhkoU', 'msHd1', 'spUal', 'kFqgK', '7MvZh'])
+    np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
+
+def test_string(params):
+    n = StringFixture(subtype='person', field='first_name', **params)
+    arr = np.array(['Walter', 'Hershel', 'Rudolf', 'Shirl', 'Jackeline', 'Ron', 'Martin', 'Afton', 'Keren', 'Zackary'])
+    np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
+
 def test_map(params):
     children = {
         'id': SerialFixture(name='id', size=params['size'], min=0, step=1),
