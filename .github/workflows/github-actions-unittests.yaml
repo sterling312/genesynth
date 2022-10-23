@@ -1,4 +1,4 @@
-name: genesynth unittests
+name: Python tests
 
 on: 
   push:
