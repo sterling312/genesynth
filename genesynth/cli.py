@@ -3,7 +3,9 @@ import click
 from genesynth.orchestration import *
 
 @click.command()
-def main():
+@click.option('--name', default='root', help='name of the model')
+@click.option('--size', default=10, help='default size')
+def main(name, size):
     pass
 
 if __name__ == '__main__':
