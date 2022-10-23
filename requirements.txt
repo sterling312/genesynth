@@ -13,3 +13,4 @@ typing-inspect==0.7.1
 typing_extensions==4.2.0
 uvloop==0.16.0
 mimesis==6.1.1
+click==8.0.4
