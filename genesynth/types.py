@@ -36,6 +36,8 @@ class BaseMask:
     size: int
     workload = WorkloadType.IO
     null = None
+    _index = None
+    _mask = None
     _file = None
 
     def mask(self):
