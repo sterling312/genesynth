@@ -1,0 +1,30 @@
+strict digraph genesynth {
+    node [shape=box]
+    edge [fontsize=8]
+
+    ML [style=filled, fillcolor=lightgray]
+    "User Config" [style=filled, fillcolor=lightgray]
+    "Data Plugin" [style=filled, fillcolor=lightgray]
+    "External Worker Scheduler" [style=filled, fillcolor=lightgray]
+    DBT [style=filled, fillcolor=lightgray]
+
+    ML -> "types.py" [style=dashed, xlabel="ML generated"]
+    "User Config" -> "constraints.py" [style=dashed, xlabel="YAML"]
+    "Data Plugin" -> "io.py" [style=dashed]
+    "External Worker Scheduler" -> "orchestration.py" [style=dashed, xlabel="k8s/celery"]
+
+    subgraph cluster_module {
+        label="genesynth"
+        "mat.py" -> "types.py" [xlabel="statistical models"]
+        "constraints.py" -> "model.py" [xlabel="encode human readable constraints"]
+        "types.py" -> "model.py" [xlabel="basic types"]
+        "model.py" -> "orchestration.py" [xlabel="AST"]
+        "graph.py" -> "orchestration.py" [xlabel="required order of operation"]
+        "io.py" -> "orchestration.py" [xlabel="io adapters"]
+        "orchestration.py" -> "cli.py" [style=dashed]
+        "orchestration.py" -> "server.py" [style=dashed, xlabel="aiohttp/gRPC"]
+    }
+
+    "model.py" -> DBT [style=dashed, xlabel="source data synth based on dbt model"]
+    "orchestration.py" -> ML [style=dashed, xlabel="sklearn/keras/pytorch"]
+}
