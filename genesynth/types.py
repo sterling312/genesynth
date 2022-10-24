@@ -8,6 +8,7 @@ from mimesis import Generic
 from mimesis.random import Random
 from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
+from genesynth.io import CacheCollection
 from genesynth import mat
 
 def reseed(seed=None):
@@ -54,7 +55,7 @@ class BaseMask:
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
 
     async def write(self, arr):
-        np.savetxt(self._file, arr, fmd="%s", delimiter='\n')
+        np.savetxt(self._file, arr, fmt="%s", delimiter='\n')
 
 @dataclass(unsafe_hash=True)
 class BaseNumberFixture(BaseMask):
@@ -120,6 +121,7 @@ class IntegerFixture(BaseNumberFixture):
     min: int
     max: int
     null = None
+
     async def generate(self):
         return np.random.randint(self.min, self.max, self.size)
 
@@ -128,6 +130,7 @@ class SerialFixture(BaseNumberFixture):
     min: int = 0
     step: int = 1
     null = 0
+
     async def generate(self):
         return np.arange(self.min, self.min + self.size * self.step, self.step)
 
@@ -140,6 +143,7 @@ class BooleanFixture(BaseNumberFixture):
 class FloatFixture(BaseNumberFixture):
     min: int
     max: int
+
     async def generate(self):
         return stats.uniform.rvs(self.min, self.max, self.size)
 
@@ -147,6 +151,7 @@ class FloatFixture(BaseNumberFixture):
 class DecimalFixture(FloatFixture):
     precision: int
     scale: int
+
     async def generate(self):
         arr = await super().generate()
         return np.round(arr, self.scale)
