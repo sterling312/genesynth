@@ -14,5 +14,4 @@ typing_extensions==4.2.0
 uvloop==0.16.0
 mimesis==6.1.1
 click==8.0.4
-joblib==1.1.0
 ray==2.0.1
