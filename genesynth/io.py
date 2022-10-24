@@ -2,6 +2,7 @@ import os
 import yaml
 import tempfile
 import networkx as nx
+import numpy as np
 
 """
 1. construct graph based on input configuration
@@ -30,22 +31,18 @@ def config_to_graph(G, name, params):
            G.add_edge(name, field) # add relationship type here
            config_to_graph(G, field, attributes)
 
-class CacheFile:
-    def __init__(self, dir, name, children=0):
-        self.dir = dir
+class CacheCollection:
+    def __init__(self, name):
         self.name = name
-        self.fh = tempfile.NamedTemporaryFile(dir=self.dir, prefix=f'{name}_')
-        self.path = os.path.join(dir, name)
+        self.dir = tempfile.TemporaryDirectory(prefix=f'{name}_')
 
-    @property
-    def delete(self):
-        return self.fh.delete
-
-    @delete.setter
-    def delete(self, value):
-        self.fh.delete = value
-
-    def clean(self):
-        if self.delete:
-            self.fh = None
-    
+    def cache(self, fn):
+        async def wrapped(obj, *args, **kwargs):
+            if obj._file is None:
+                arr = await fn(obj, *args, **kwargs)
+                obj._file = os.path.join(self.dir.name, f'{obj.name}.gz')
+                await obj.write(arr)
+                return arr
+            else:
+                return np.loadtxt(obj._file)
+        return wrapped

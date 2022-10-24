@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 import numpy as np
 from scipy import stats
-from genesynth.io import load_config, config_to_graph, CacheFile
+from genesynth.io import load_config, config_to_graph
 from genesynth.types import *
 
 @dataclass
