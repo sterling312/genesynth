@@ -49,5 +49,5 @@ strict digraph example {
     key1 -> key2 [color=green]
     key2 -> col4 [color=red, xlabel=fk]
     col6 -> col7 [color=orange, xlabel=fk]
-    col7 -> col6 [color=green]
+    col8 -> col7 [color=green]
 }
