@@ -3,7 +3,7 @@ strict digraph example {
     tbl1 [shape=box]
     tbl2 [shape=box]
     tbl3 [shape=box]
-    col1 [shape=box, xlabel=json]
+    col1 [shape=box]
     col2 [shape=oval]
     col3 [shape=oval, xlabel=pk, color=red]
     col4 [shape=oval, color=lightgreen]
@@ -19,19 +19,32 @@ strict digraph example {
     db -> tbl2
     db -> tbl3
 
-    tbl1 -> col1
-    tbl1 -> col2
-    tbl1 -> col3
-    col1 -> key1
-    col1 -> key2
+    subgraph cluster_table_1 {
+        label = "table 1"
+        tbl1 -> col1
+        tbl1 -> col2
+        tbl1 -> col3
+        subgraph cluster_json {
+            label = "JSON"
+            col1 -> key1
+            col1 -> key2
+        }
+    }
 
-    tbl2 -> col4
-    tbl2 -> col5
-    tbl2 -> col6
 
-    tbl3 -> col7
-    tbl3 -> col8
-    tbl3 -> col9
+    subgraph cluster_table_2 {
+        label = "table 2"
+        tbl2 -> col4
+        tbl2 -> col5
+        tbl2 -> col6
+    }
+
+    subgraph cluster_table_3 {
+        label = "table 3"
+        tbl3 -> col7
+        tbl3 -> col8
+        tbl3 -> col9
+    }
 
     key1 -> key2 [color=green]
     key2 -> col4 [color=red, xlabel=fk]
