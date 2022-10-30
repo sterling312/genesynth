@@ -129,7 +129,7 @@ class JsonDataModel(BaseDataModel):
         filenames = {node.name: node._file for node in nodes}
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames.values()):
-                # TODO add support for array and ad support for structure other than json
+                # TODO add support for array
                 record = {key: json.loads(value) if isinstance(node, BaseMapFixture) else value 
                             for node, key, value in zip(nodes, filenames.keys(), lines)}
                 fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
