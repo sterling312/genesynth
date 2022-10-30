@@ -83,4 +83,4 @@ def test_write(params):
     n = DataModel(children=children, **params)
     asyncio.run(n.write())
     asyncio.run(n.save('foo'))
-    #os.remove('foo')
+    os.remove('foo')
