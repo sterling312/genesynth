@@ -139,6 +139,7 @@ class JsonDataModel(BaseDataModel):
             path = os.path.join(self._path, self.name)
         if not os.path.isdir(path):
             os.mkdir(path)
+        # TODO assume files are flag and use graph traversal to combine them
         for n in self.children.values():
             gens.append(n)
             await n.write()
