@@ -78,6 +78,7 @@ class BaseDataModel(BaseMapFixture):
             await self.write()
         shutil.copy(self._file, filename)
 
+
 @dataclass
 class TableDataModel(BaseDataModel):
     @property
