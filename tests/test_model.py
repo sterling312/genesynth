@@ -71,3 +71,16 @@ def test_nest(params):
     np.testing.assert_array_equal(records['id'], np.arange(10))
     assert set(records['json']) == {'value'}
     np.testing.assert_array_equal(records['json']['value'], np.array([5, 8, 9, 5, 0, 0, 1, 7, 6, 9]))
+
+def test_write(params):
+    fields = {
+        'value': IntegerFixture(name='value', size=params['size'], min=0, max=10),
+    }
+    children = {
+        'id': SerialFixture(name='id', size=params['size'], min=0, step=1),
+        'json': JsonDataModel(name='json', size=params['size'], children=fields),
+    }
+    n = DataModel(children=children, **params)
+    asyncio.run(n.write())
+    asyncio.run(n.save('foo'))
+    #os.remove('foo')

@@ -1,5 +1,6 @@
 from itertools import groupby
 from functools import wraps
+from contextlib import contextmanager
 import asyncio
 from concurrent import futures
 
@@ -20,3 +21,10 @@ async def wait(future, check_interval=0.1):
     while not future.done():
         await asyncio.sleep(check_interval)
     return future.result()
+
+def iterate_lines(*filenames):
+    filehandlers = []
+    for filename in  filenames:
+        filehandlers.append(open(filename, 'rb'))
+    for lines in zip(*filehandlers):
+        yield [line.rstrip(b'\n') for line in lines]

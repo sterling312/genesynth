@@ -1,3 +1,4 @@
+import os
 import enum
 import random
 from typing import List, Dict, Tuple, Any
@@ -40,6 +41,7 @@ class BaseMask:
     _index = None
     _mask = None
     _file = None
+    _path = None
 
     def mask(self):
         pass
@@ -54,8 +56,14 @@ class BaseMask:
     async def generate(self):
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
 
-    async def write(self, arr):
-        np.savetxt(self._file, arr, fmt="%s", delimiter='\n')
+    async def write(self):
+        arr = await self.generate()
+        if self._path is not None:
+            filename = os.path.join(self._path, self.name)
+        else:
+            filename = self.name
+        np.savetxt(filename, arr, fmt="%s", delimiter='\n')
+        self._file = filename
 
 @dataclass(unsafe_hash=True)
 class BaseNumberFixture(BaseMask):
