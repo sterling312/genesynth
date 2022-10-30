@@ -51,6 +51,15 @@ class BaseDataModel(BaseMapFixture):
     def sep(self):
         return self.metadata.get('sep', '').encode('utf-8')
 
+    @asynccontextmanager
+    async def _filename(self, path=None):
+        if path is None:
+            filename = os.path.join(self._dir.name, self.name)
+        else:
+            filename = os.path.join(path, self.name)
+        with open(filename, 'wb+') as fh:
+            yield fh
+
     async def merge(self, nodes, path=None):
         filenames = [node._file for node in nodes]
         async with self._filename(path) as fh:
@@ -116,15 +125,6 @@ class TableDataModel(BaseDataModel):
 
 @dataclass
 class JsonDataModel(BaseDataModel):
-    @asynccontextmanager
-    async def _filename(self, path=None):
-        if path is None:
-            filename = os.path.join(self._dir.name, self.name)
-        else:
-            filename = os.path.join(path, self.name)
-        with open(filename, 'wb+') as fh:
-            yield fh
-
     async def merge(self, nodes, path=None):
         filenames = {node.name: node._file for node in nodes}
         async with self._filename(path) as fh:
