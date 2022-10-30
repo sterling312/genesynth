@@ -51,6 +51,24 @@ class BaseDataModel(BaseMapFixture):
     def sep(self):
         return self.metadata.get('sep', '').encode('utf-8')
 
+    @property
+    def has_header(self):
+        return self.metadata.get('header')
+
+    @property
+    def has_footer(self):
+        return self.metadata.get('footer')
+
+    @property
+    def header(self):
+        if isinstance(self.metadata['header'], bool):
+            return self.sep.join(n.name.encode('utf-8') for n in self.children.values())
+        return self.metadata['header'].encode('utf-8')
+
+    @property
+    def footer(self):
+        return self.metadata.get('footer', '').encode('utf-8')
+
     @asynccontextmanager
     async def _filename(self, path=None):
         if path is None:
@@ -58,7 +76,12 @@ class BaseDataModel(BaseMapFixture):
         else:
             filename = os.path.join(path, self.name)
         with open(filename, 'wb+') as fh:
+            if self.has_header:
+                fh.write(self.header)
+                fh.write(b'\n')
             yield fh
+            if self.has_footer:
+                fh.write(self.footer)
         
     async def merge(self, nodes, path=None):
         filenames = [node._file for node in nodes]
@@ -69,7 +92,9 @@ class BaseDataModel(BaseMapFixture):
                 await asyncio.sleep(0)
             fh.seek(0)
             length = len(list(fh))
-        assert length == self.size, f'expected {self.size} got {length}'
+            if self.has_header:
+                length -= 1
+        assert length == self.size, f'expected {self.size} data row, got {length}'
 
     async def write(self):
         gens = []
@@ -102,7 +127,9 @@ class JsonDataModel(BaseDataModel):
                 await asyncio.sleep(0)
             fh.seek(0)
             length = len(list(fh))
-        assert length == self.size, f'expected {self.size} got {length}'
+            if self.has_header:
+                length -= 1
+        assert length == self.size, f'expected {self.size} data row, got {length}'
 
     async def write(self):
         gens = []
