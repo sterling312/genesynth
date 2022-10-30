@@ -88,3 +88,23 @@ def test_write(params):
         assert fh.readline().rstrip('\n') == 'id,json,text'
         assert fh.readline().rstrip('\n') == '0,{"value": "5"},carol'
     os.remove('foo')
+
+def test_nested_write(params):
+    child_fields = {
+        'value': IntegerFixture(name='value', size=params['size'], min=0, max=10),
+    }
+    fields = {
+        'map': JsonDataModel(name='map', size=params['size'], children=child_fields),
+    }
+    children = {
+        'id': SerialFixture(name='id', size=params['size'], min=0, step=1),
+        'json': JsonDataModel(name='json', size=params['size'], children=fields),
+        'word': StringFixture(name='text', field='word', size=params['size'])
+    }
+    n = TableDataModel(children=children, metadata={'sep': ',', 'header': True}, **params)
+    asyncio.run(n.write())
+    asyncio.run(n.save('foo'))
+    with open('foo') as fh:
+        assert fh.readline().rstrip('\n') == 'id,json,text'
+        assert fh.readline().rstrip('\n') == '0,{"map": {"value": "5"}},carol'
+    os.remove('foo')

@@ -121,7 +121,7 @@ class JsonDataModel(BaseDataModel):
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames.values()):
                 # TODO add support for array
-                record = dict(zip(filenames.keys(), lines))
+                record = {key: json.loads(value) if isinstance(node, BaseMapFixture) else value for node, key, value in zip(nodes, filenames.keys(), lines)}
                 fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
                 fh.write(b'\n')
                 await asyncio.sleep(0)
@@ -139,7 +139,6 @@ class JsonDataModel(BaseDataModel):
             path = os.path.join(self._path, self.name)
         if not os.path.isdir(path):
             os.mkdir(path)
-        # TODO assume files are flag and use graph traversal to combine them
         for n in self.children.values():
             gens.append(n)
             await n.write()
