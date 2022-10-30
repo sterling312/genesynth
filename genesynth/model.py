@@ -139,9 +139,6 @@ class JsonDataModel(BaseDataModel):
                 fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
                 fh.write(b'\n')
                 await asyncio.sleep(0)
-            fh.seek(0)
-            length = len(list(fh))
-        assert length == self.size, f'expected {self.size} data row, got {length}'
 
     async def write(self):
         gens = []
