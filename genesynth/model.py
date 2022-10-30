@@ -90,6 +90,9 @@ class BaseDataModel(BaseMapFixture):
 
 @dataclass
 class TableDataModel(BaseDataModel):
+    # TODO change this to have default keys
+    metadata: dict = field(default_factory=dict)
+
     @property
     def has_header(self):
         return self.metadata.get('header')
