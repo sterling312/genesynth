@@ -22,7 +22,7 @@ class BaseDataModel(BaseMapFixture):
     Also handles aggregating cached resources and garbage collection.
     name: str - i.e. name of the table
     schema: str - i.e. namespace of the database such as schema
-    metadata: dict[str, str] - config (required) of the dataset such as row size
+    metadata: dict[str, str] - data model specific config (required) of the dataset
     constraints: list[str] - constrait to be added to the data, such as uniqueness check
     label: dict[str, str] - label to be added to the dataset that are not used for generation
     children: list - list od child dependencies
