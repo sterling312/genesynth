@@ -51,6 +51,35 @@ class BaseDataModel(BaseMapFixture):
     def sep(self):
         return self.metadata.get('sep', '').encode('utf-8')
 
+    async def merge(self, nodes, path=None):
+        filenames = [node._file for node in nodes]
+        async with self._filename(path) as fh:
+            for lines in iterate_lines(*filenames):
+                fh.write(self.sep.join(lines))
+                fh.write(b'\n')
+                await asyncio.sleep(0)
+            fh.seek(0)
+            length = len(list(fh))
+            if self.has_header:
+                length -= 1
+        assert length == self.size, f'expected {self.size} data row, got {length}'
+
+    async def write(self):
+        gens = []
+        for n in self.children.values():
+            gens.append(n)
+            n._path = self._dir.name
+            await n.write()
+        await self.merge(gens, path=self._dir.name)
+        self._file = os.path.join(self._dir.name, self.name)
+
+    async def save(self, filename):
+        if self._file is None:
+            await self.write()
+        shutil.copy(self._file, filename)
+
+@dataclass
+class TableDataModel(BaseDataModel):
     @property
     def has_header(self):
         return self.metadata.get('header')
@@ -82,40 +111,19 @@ class BaseDataModel(BaseMapFixture):
             yield fh
             if self.has_footer:
                 fh.write(self.footer)
-        
-    async def merge(self, nodes, path=None):
-        filenames = [node._file for node in nodes]
-        async with self._filename(path) as fh:
-            for lines in iterate_lines(*filenames):
-                fh.write(self.sep.join(lines))
-                fh.write(b'\n')
-                await asyncio.sleep(0)
-            fh.seek(0)
-            length = len(list(fh))
-            if self.has_header:
-                length -= 1
-        assert length == self.size, f'expected {self.size} data row, got {length}'
 
-    async def write(self):
-        gens = []
-        for n in self.children.values():
-            gens.append(n)
-            n._path = self._dir.name
-            await n.write()
-        await self.merge(gens, path=self._dir.name)
-        self._file = os.path.join(self._dir.name, self.name)
-
-    async def save(self, filename):
-        if self._file is None:
-            await self.write()
-        shutil.copy(self._file, filename)
-
-@dataclass
-class TableDataModel(BaseDataModel):
-    pass
 
 @dataclass
 class JsonDataModel(BaseDataModel):
+    @asynccontextmanager
+    async def _filename(self, path=None):
+        if path is None:
+            filename = os.path.join(self._dir.name, self.name)
+        else:
+            filename = os.path.join(path, self.name)
+        with open(filename, 'wb+') as fh:
+            yield fh
+
     async def merge(self, nodes, path=None):
         filenames = {node.name: node._file for node in nodes}
         async with self._filename(path) as fh:
@@ -128,8 +136,6 @@ class JsonDataModel(BaseDataModel):
                 await asyncio.sleep(0)
             fh.seek(0)
             length = len(list(fh))
-            if self.has_header:
-                length -= 1
         assert length == self.size, f'expected {self.size} data row, got {length}'
 
     async def write(self):
