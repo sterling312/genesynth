@@ -80,7 +80,9 @@ def test_write(params):
         'id': SerialFixture(name='id', size=params['size'], min=0, step=1),
         'json': JsonDataModel(name='json', size=params['size'], children=fields),
     }
-    n = DataModel(children=children, **params)
+    n = TableDataModel(children=children, metadata={'sep': ','}, **params)
     asyncio.run(n.write())
     asyncio.run(n.save('foo'))
+    with open('foo') as fh:
+        assert fh.readline() == '0,{"value": "5"}\n'
     os.remove('foo')
