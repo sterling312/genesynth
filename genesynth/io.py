@@ -1,5 +1,6 @@
 import os
 import yaml
+import gzip
 import tempfile
 import networkx as nx
 import numpy as np
@@ -30,6 +31,14 @@ def config_to_graph(G, name, params):
        for field, attributes in properties.items():
            G.add_edge(name, field) # add relationship type here
            config_to_graph(G, field, attributes)
+
+def write_as_gzip(fh_obj, filename):
+    with gzip.open(filename, 'wt') as target:
+        if isinstance(fh_obj, str):
+            fh_obj = open(fh_obj)
+        fh_obj.seek(0)
+        for line in fh_obj:
+            target.write(line)
 
 class CacheCollection:
     def __init__(self, name):

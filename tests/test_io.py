@@ -18,6 +18,15 @@ def table(config):
         break
     return params
 
+@fixture
+def file():
+    with open('foo', 'w+') as fh:
+        fh.write('line1\n')
+        fh.write('line2\n')
+        fh.flush()
+        yield fh
+    os.remove('foo')
+
 def test_config_to_graph(table):
     G = nx.DiGraph()
     config_to_graph(G, 'table', table)
@@ -41,6 +50,11 @@ def test_CacheCollection_load_existing_file(array_file):
 
     arr = asyncio.run(Foo().generate())
     np.testing.assert_array_equal(arr, np.arange(10))
+
+def test_write_as_gz(file):
+    write_as_gzip(file, 'foo.gz')
+    line = gzip.open('foo.gz', 'rb').readline()
+    assert line == b'line1\n'
 
 def test_CacheCollection_cache_array():
     c = CacheCollection('test')
