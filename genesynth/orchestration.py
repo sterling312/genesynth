@@ -1,3 +1,4 @@
+import sys
 import typing
 import enum
 import asyncio
@@ -9,7 +10,8 @@ from genesynth.model import WorkloadType, TableDataModel, JsonDataModel
 from genesynth.io import load_config, config_to_graph
 from genesynth.utils import spawn, co_spawn, wait
 
-uvloop.install()
+if sys.version_info < (3, 11):
+    uvloop.install()
 
 class Constraint(enum.Enum):
     unique = 1 
