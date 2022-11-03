@@ -42,19 +42,23 @@ def write_as_gzip(fh_obj, filename):
         for line in fh_obj:
             fh.write(line)
 
-def write_as_json(fh_obj, filename):
+def write_as_json(fh_obj, filename, header=False):
     with open(filename, 'w') as fh:
         if isinstance(fh_obj, str):
             fh_obj = open(fh_obj)
         fh_obj.seek(0)
+        if header:
+            line = fh_obj.readline()
         records = [json.loads(line.rstrip('\n')) for line in fh_obj]
         json.dump(records, fh)
 
-def write_as_yaml(fh_obj, filename):
+def write_as_yaml(fh_obj, filename, header=False):
     with open(filename, 'w') as fh:
         if isinstance(fh_obj, str):
             fh_obj = open(fh_obj)
         fh_obj.seek(0)
+        if header:
+            line = fh_obj.readline()
         records = [json.loads(line.rstrip('\n')) for line in fh_obj]
         yaml.dump(records, fh)
 
