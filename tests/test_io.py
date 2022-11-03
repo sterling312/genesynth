@@ -57,9 +57,9 @@ def test_write_as_gz(file):
     assert line == '"line1"\n'
 
 def test_write_as_json(file):
-    write_as_json(file.name, 'foo.json')
+    write_as_json(file.name, 'foo.json', header=True)
     data = json.load(open('foo.json'))
-    assert data[0] == 'line1'
+    assert data[0] == 'line2'
 
 def test_write_as_yaml(file):
     write_as_json(file.name, 'foo.yaml')
