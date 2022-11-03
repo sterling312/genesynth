@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from contextlib import asynccontextmanager
 import numpy as np
 from scipy import stats
-from genesynth.io import load_config, config_to_graph
+from genesynth.io import load_config, config_to_graph, write_as_gzip
 from genesynth.types import *
 from genesynth.utils import iterate_lines
 
@@ -86,7 +86,11 @@ class BaseDataModel(BaseMapFixture):
     async def save(self, filename):
         if self._file is None:
             await self.write()
-        shutil.copy(self._file, filename)
+        _, ext = os.path.splitext(filename)
+        if ext == '.gz':
+            write_as_gzip(self._file, filename)
+        else:
+            shutil.copy(self._file, filename)
 
 
 @dataclass
@@ -114,6 +118,8 @@ class TableDataModel(BaseDataModel):
 
     @asynccontextmanager
     async def _filename(self, path=None):
+        """context mamager to create the staged temporary output file for the data model.
+        """
         if path is None:
             filename = os.path.join(self._dir.name, self.name)
         else:

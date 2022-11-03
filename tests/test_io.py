@@ -53,8 +53,8 @@ def test_CacheCollection_load_existing_file(array_file):
 
 def test_write_as_gz(file):
     write_as_gzip(file, 'foo.gz')
-    line = gzip.open('foo.gz', 'rb').readline()
-    assert line == b'line1\n'
+    line = gzip.open('foo.gz', 'rt').readline()
+    assert line == 'line1\n'
 
 def test_CacheCollection_cache_array():
     c = CacheCollection('test')

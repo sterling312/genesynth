@@ -1,5 +1,6 @@
 import pytest
 from pytest import fixture
+import gzip
 import asyncio
 from genesynth.model import *
 
@@ -103,8 +104,8 @@ def test_nested_write(params):
     }
     n = TableDataModel(children=children, metadata={'sep': ',', 'header': True}, **params)
     asyncio.run(n.write())
-    asyncio.run(n.save('foo'))
-    with open('foo') as fh:
+    asyncio.run(n.save('foo.gz'))
+    with gzip.open('foo.gz', 'rt') as fh:
         assert fh.readline().rstrip('\n') == 'id,json,text'
         assert fh.readline().rstrip('\n') == '0,{"map": {"value": "5"}},carol'
-    os.remove('foo')
+    os.remove('foo.gz')
