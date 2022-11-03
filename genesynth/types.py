@@ -57,6 +57,8 @@ class BaseMask:
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
 
     async def write(self):
+        if self._file is not None:
+            return
         arr = await self.generate()
         if self._path is not None:
             filename = os.path.join(self._path, self.name)
