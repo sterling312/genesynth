@@ -74,6 +74,8 @@ class BaseDataModel(BaseMapFixture):
         assert length == self.size, f'expected {self.size} data row, got {length}'
 
     async def write(self):
+        if self._file is not None:
+            return
         gens = []
         for n in self.children.values():
             gens.append(n)
