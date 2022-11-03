@@ -1,6 +1,8 @@
 import os
 import yaml
 import gzip
+import json
+import yaml
 import tempfile
 import networkx as nx
 import numpy as np
@@ -33,12 +35,28 @@ def config_to_graph(G, name, params):
            config_to_graph(G, field, attributes)
 
 def write_as_gzip(fh_obj, filename):
-    with gzip.open(filename, 'wt') as target:
+    with gzip.open(filename, 'wt') as fh:
         if isinstance(fh_obj, str):
             fh_obj = open(fh_obj)
         fh_obj.seek(0)
         for line in fh_obj:
-            target.write(line)
+            fh.write(line)
+
+def write_as_json(fh_obj, filename):
+    with open(filename, 'w') as fh:
+        if isinstance(fh_obj, str):
+            fh_obj = open(fh_obj)
+        fh_obj.seek(0)
+        records = [json.loads(line.rstrip('\n')) for line in fh_obj]
+        json.dump(records, fh)
+
+def write_as_yaml(fh_obj, filename):
+    with open(filename, 'w') as fh:
+        if isinstance(fh_obj, str):
+            fh_obj = open(fh_obj)
+        fh_obj.seek(0)
+        records = [json.loads(line.rstrip('\n')) for line in fh_obj]
+        yaml.dump(records, fh)
 
 class CacheCollection:
     def __init__(self, name):

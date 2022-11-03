@@ -21,8 +21,8 @@ def table(config):
 @fixture
 def file():
     with open('foo', 'w+') as fh:
-        fh.write('line1\n')
-        fh.write('line2\n')
+        fh.write('"line1"\n')
+        fh.write('"line2"\n')
         fh.flush()
         yield fh
     os.remove('foo')
@@ -52,9 +52,19 @@ def test_CacheCollection_load_existing_file(array_file):
     np.testing.assert_array_equal(arr, np.arange(10))
 
 def test_write_as_gz(file):
-    write_as_gzip(file, 'foo.gz')
+    write_as_gzip(file.name, 'foo.gz')
     line = gzip.open('foo.gz', 'rt').readline()
-    assert line == 'line1\n'
+    assert line == '"line1"\n'
+
+def test_write_as_json(file):
+    write_as_json(file.name, 'foo.json')
+    data = json.load(open('foo.json'))
+    assert data[0] == 'line1'
+
+def test_write_as_yaml(file):
+    write_as_json(file.name, 'foo.yaml')
+    data = yaml.load(open('foo.yaml'), yaml.loader.SafeLoader)
+    assert data[0] == 'line1'
 
 def test_CacheCollection_cache_array():
     c = CacheCollection('test')
