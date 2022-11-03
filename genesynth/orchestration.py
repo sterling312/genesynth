@@ -5,8 +5,9 @@ import asyncio
 import uvloop
 from dataclasses import dataclass
 from concurrent import futures
+from multiprocessing import Manager, cpu_count
 from genesynth.graph import Graph
-from genesynth.model import WorkloadType, TableDataModel, JsonDataModel
+from genesynth.model import BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
 from genesynth.io import load_config, config_to_graph
 from genesynth.utils import spawn, co_spawn, wait
 
@@ -36,8 +37,10 @@ class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
     """
-    def __init__(self, graph, worker=4):
+    def __init__(self, graph, worker=cpu_count()):
         self.graph = graph
+        self._worker_manager = Manager()
+        self.queue = self._worker_manager.Queue(worker)
         self.pool = futures.ProcessPoolExecutor(worker)
 
     #@classmethod
@@ -52,10 +55,13 @@ class Orchestration:
         for node in self.graph:
             arr = await self.generate(node)
             await node.write(arr)
-        # TODO  Add reduce step from DataModel and garbage collect
+        # TODO Add reduce step from DataModel and garbage collect
 
     async def generate(self, node):
-        if node.workload == WorkloadType.IO:
+        # TODO replace this with graph traversal and task queue/dequeue
+        if isinstance(node, BaseDataModel):
+            return await self.asyncio(node)
+        elif node.workload == WorkloadType.IO:
             return await self.thread(node)
         elif node.workload == WorkloadType.CPU:
             return await self.process(node)
