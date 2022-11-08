@@ -5,14 +5,11 @@ from scipy import stats
 def mask(arr, value):
     return np.where(arr==value)[0]
 
-def index_value(arr):
-    unique = np.unique(arr)
-    size = arr.size
-    index = {}
-    for val in unique:
-        m = mask(arr, val)
-        size -= m.size
-        index[val] = m
-    assert size == 0, f'number of index has {size} element less than original'
-    return index
+def null_percent(size, percent=0):
+    return np.random.binomial(1, percent/100., size) == 1
 
+def ordered_index(arr):
+    return np.argsort(arr)
+
+def incremental_index(arr):
+    return np.argsort(ordered_index(arr))
