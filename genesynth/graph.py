@@ -5,15 +5,15 @@ from genesynth import utils
 class Node(enum.Enum):
     unique = 1 # node contains no duplicated value
     notnull = 2 # node contains no empty value
-    incremental = 3 # node increases over index
+    sorted = 3 # ordered value, incremental if numeric, sorted if other
     subset = 4 # node contains value within the set (between is just (a...b) eps R)
 
 class Relationship(enum.Enum):
     child = 1 # node is a child of parent
     subset = 2 # node contains subset of copy of parent
-    index = 3 # node contains same index as parent
+    ordered = 3 # node contains value that are based on ordered index of the parent, aka positional identity
     identity = 4 # node contains exact copy of parent
-    incremental_index = 3 # node contains increasing index as parent
+    incremental = 5 # node contains increasing value as parent
 
 class Graph:
     """
