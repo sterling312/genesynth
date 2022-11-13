@@ -18,12 +18,9 @@ class Runner:
         return asyncio.get_running_loop()
 
     def worker(self, fn):
-        cls = method.__self__.__class__
         async def wraps(*args, **kwargs):
-            if True:
-                return await asyncio.wrap_future(self.executor.submit(co_run, fn, *args, **kwargs), loop=self.loop)
-            else:
-                return await self.loop.run_in_executor(None, fn(*args, **kwargs))
+            return await asyncio.wrap_future(self.executor.submit(co_run, fn, *args, **kwargs), loop=self.loop)
+            #return await self.loop.run_in_executor(None, fn(*args, **kwargs))
         self.registry[fn.__qualname__] = wraps
         return fn
 
