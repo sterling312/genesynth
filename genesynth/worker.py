@@ -1,3 +1,4 @@
+import os
 import enum
 import asyncio
 from multiprocessing import Manager, cpu_count
@@ -9,9 +10,11 @@ class WorkloadType(enum.Enum):
     IO = 'thread'
     CPU = 'process'
 
+WORKER = int(os.environ.get('GENESYNTH_WORKER_COUNT') or cpu_count())
+
 class Runner:
     registry = {}
-    def __init__(self, workers=cpu_count()):
+    def __init__(self, workers=WORKER):
         self.executor = futures.ProcessPoolExecutor(workers)
 
     @property
