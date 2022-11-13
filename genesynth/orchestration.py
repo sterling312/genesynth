@@ -4,7 +4,6 @@ import enum
 import asyncio
 import uvloop
 from dataclasses import dataclass
-from concurrent import futures
 from multiprocessing import Manager, cpu_count
 from genesynth.graph import Graph
 from genesynth.model import runner, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
@@ -41,7 +40,6 @@ class Orchestration:
         self.graph = graph
         self._worker_manager = Manager()
         self.queue = self._worker_manager.Queue(worker)
-        self.pool = futures.ProcessPoolExecutor(worker)
 
     #@classmethod
     #def read_yaml(cls, filename):
@@ -69,16 +67,11 @@ class Orchestration:
             return await self.asyncio(node)
 
     async def process(self, node):
-        future = self.pool.submit(spawn, node.generate)
-        return await wait(future)
+        return await runner.run(node.generate)
 
     async def thread(self, node):
         loop = asyncio.get_running_loop()
-        with futures.ThreadPoolExecutor(1) as executor:
-            return await loop.run_in_executor(executor, co_spawn, node.generate)
+        return await loop.run_in_executor(None, co_spawn, node.generate)
 
     async def asyncio(self, node):
         return await node.generate()
-
-    def __del__(self, *args, **kwargs):
-        self.pool.shutdown()
