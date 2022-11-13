@@ -31,3 +31,7 @@ class Runner:
             return await self.registry[qualname](obj)
         else:
             return await method(*args, **kwargs)
+
+    def __del__(self, *args, **kwargs):
+        self.executor.shutdown()
+

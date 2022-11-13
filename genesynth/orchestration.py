@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from concurrent import futures
 from multiprocessing import Manager, cpu_count
 from genesynth.graph import Graph
-from genesynth.model import BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
+from genesynth.model import runner, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
 from genesynth.io import load_config, config_to_graph
 from genesynth.utils import spawn, co_spawn, wait
 
@@ -79,3 +79,6 @@ class Orchestration:
 
     async def asyncio(self, node):
         return await node.generate()
+
+    def __del__(self, *args, **kwargs):
+        self.pool.shutdown()
