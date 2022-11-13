@@ -10,12 +10,15 @@ from mimesis.random import Random
 from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
 from genesynth.io import CacheCollection
+from genesynth.worker import WorkloadType, Runner
 from genesynth import mat
 
 def reseed(seed=None):
     BaseMask.seed = seed
     np.random.seed(seed)
     random.seed(seed)
+
+runner = Runner()
 
 class datatypes(dict):
     def register(self, fn):
@@ -25,11 +28,6 @@ class datatypes(dict):
 class Hashabledict(dict):
     def __hash__(self):
         return hash(frozenset(self))
-
-class WorkloadType(enum.Enum):
-    DEFAULT = 'asyncio'
-    IO = 'thread'
-    CPU = 'process'
 
 @dataclass(unsafe_hash=True)
 class BaseMask:

@@ -75,7 +75,7 @@ class Orchestration:
     async def thread(self, node):
         loop = asyncio.get_running_loop()
         with futures.ThreadPoolExecutor(1) as executor:
-            return await loop.run_in_executor(executor, co_spawn, node.generate())
+            return await loop.run_in_executor(executor, co_spawn, node.generate)
 
     async def asyncio(self, node):
         return await node.generate()
