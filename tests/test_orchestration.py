@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import networkx as nx
 import numpy as np
 from genesynth.orchestration import *
-from genesynth.types import reseed, SerialFixture, StringFixture
+from genesynth.types import reseed, runner, SerialFixture, StringFixture
 
 @fixture
 def node():
@@ -20,7 +20,7 @@ def string():
 @fixture
 def o():
     G = nx.DiGraph()
-    return Orchestration(G, worker=1)
+    return Orchestration(G, runner=runner)
 
 def test_process(o, node):
     arr = asyncio.run(o.process(node))

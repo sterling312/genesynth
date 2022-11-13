@@ -36,10 +36,11 @@ class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
     """
-    def __init__(self, graph, worker=cpu_count()):
+    def __init__(self, graph, runner=runner):
         self.graph = graph
+        self.runner = runner
         self._worker_manager = Manager()
-        self.queue = self._worker_manager.Queue(worker)
+        self.queue = self._worker_manager.Queue(runner.executor._max_workers)
 
     #@classmethod
     #def read_yaml(cls, filename):
@@ -67,7 +68,7 @@ class Orchestration:
             return await self.asyncio(node)
 
     async def process(self, node):
-        return await runner.run(node.generate)
+        return await self.runner.run(node.generate)
 
     async def thread(self, node):
         loop = asyncio.get_running_loop()
