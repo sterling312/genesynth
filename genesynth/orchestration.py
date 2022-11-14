@@ -38,7 +38,7 @@ class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
     """
-    def __init__(self, graph, runner=Runner(registry=registry), thread=10):
+    def __init__(self, graph, thread=10, runner=Runner(registry=registry)):
         self.graph = graph
         self.runner = runner
         self._worker_manager = Manager()
