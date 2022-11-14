@@ -9,7 +9,6 @@ from mimesis import Generic
 from mimesis.random import Random
 from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
-from genesynth.io import CacheCollection
 from genesynth.worker import WorkloadType, Runner, Registry
 from genesynth import mat
 
