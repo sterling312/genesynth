@@ -1,6 +1,7 @@
 import os
 import enum
 import asyncio
+import functools
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.utils import co_spawn
@@ -10,30 +11,25 @@ class WorkloadType(enum.Enum):
     IO = 'thread'
     CPU = 'process'
 
-WORKER = int(os.environ.get('GENESYNTH_WORKER_COUNT') or cpu_count())
-
 class Registry(dict):
     def add_worker(self, fn):
         self[fn.__qualname__] = fn
         return fn
 
 class Runner:
-    registry = {}
-    def __init__(self, registry, workers=WORKER):
+    def __init__(self, registry, workers=cpu_count()):
         self.executor = futures.ProcessPoolExecutor(workers)
-        for fn in registry.values():
-            self.worker(fn)
+        self.registry = {qualname: self._wraps(fn) for qualname, fn in registry.items()}
 
     @property
     def loop(self):
         return asyncio.get_running_loop()
 
-    def worker(self, fn):
+    def _wraps(self, fn):
+        @functools.wraps(fn)
         async def wraps(*args, **kwargs):
             return await asyncio.wrap_future(self.executor.submit(co_spawn, fn, *args, **kwargs), loop=self.loop)
-            #return await self.loop.run_in_executor(None, fn(*args, **kwargs))
-        self.registry[fn.__qualname__] = wraps
-        return fn
+        return wraps
 
     async def run(self, method, *args, **kwargs):
         obj = method.__self__ 
@@ -42,7 +38,3 @@ class Runner:
             return await self.registry[qualname](obj)
         else:
             return await method(*args, **kwargs)
-
-    def __del__(self, *args, **kwargs):
-        self.executor.shutdown()
-

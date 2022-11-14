@@ -41,7 +41,8 @@ class Orchestration:
         self.graph = graph
         self.runner = runner
         self._worker_manager = Manager()
-        self.queue = self._worker_manager.Queue(runner.executor._max_workers)
+        self.max_workers = runner.executor._max_workers
+        self.queue = self._worker_manager.Queue(self.max_workers)
 
     #@classmethod
     #def read_yaml(cls, filename):
