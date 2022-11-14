@@ -5,6 +5,7 @@ import asyncio
 import uvloop
 from dataclasses import dataclass
 from multiprocessing import Manager, cpu_count
+from concurrent import futures
 from genesynth.graph import Graph
 from genesynth.model import registry, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
 from genesynth.worker import Runner
@@ -37,12 +38,13 @@ class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
     """
-    def __init__(self, graph, runner=Runner(registry=registry)):
+    def __init__(self, graph, runner=Runner(registry=registry), thread=10):
         self.graph = graph
         self.runner = runner
         self._worker_manager = Manager()
         self.max_workers = runner.executor._max_workers
         self.queue = self._worker_manager.Queue(self.max_workers)
+        self.executor = futures.ThreadPoolExecutor(thread)
 
     #@classmethod
     #def read_yaml(cls, filename):
@@ -74,7 +76,7 @@ class Orchestration:
 
     async def thread(self, node):
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, co_spawn, node.generate)
+        return await loop.run_in_executor(self.executor, co_spawn, node.generate)
 
     async def asyncio(self, node):
         return await node.generate()
