@@ -20,6 +20,11 @@ def test_null_percent(arr):
     assert mask.sum() == 5
     np.testing.assert_array_equal(mask.data, [True, False, True, False, True, False, True, False, True, False])
 
+def test_indexed(arr):
+    idx = np.random.randint(0, 10, 10)
+    array = indexed(arr, idx)
+    np.testing.assert_array_equal(array, [9, 0, 0, 9, 0, 9, 0, 7, 7, 9])
+
 def test_ordered_index(arr):
     idx = ordered_index(arr)
     np.testing.assert_array_equal(idx, [4, 5, 6, 0, 3, 8, 7, 1, 2, 9])

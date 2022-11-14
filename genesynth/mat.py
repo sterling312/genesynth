@@ -11,5 +11,8 @@ def null_percent(size, percent=0):
 def ordered_index(arr):
     return np.argsort(arr)
 
+def indexed(arr, idx):
+    return arr[idx]
+
 def incremental_index(arr):
     return np.argsort(ordered_index(arr))
