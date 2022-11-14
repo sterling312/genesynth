@@ -28,7 +28,7 @@ def test_process(o, node):
     arr = asyncio.run(o.process(node))
     np.testing.assert_array_equal(arr, np.arange(10))
 
-def test_process(o, string):
+def test_worker_process(o, string):
     arr = asyncio.run(o.process(string))
     np.testing.assert_array_equal(arr, ['carol', 'square', 'returned', 'diary', 'lab', 'indicators', 'patterns', 'scenes', 'bi', 'alerts'])
 
