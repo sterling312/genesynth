@@ -18,8 +18,9 @@ class Registry(dict):
 
 class Runner:
     def __init__(self, registry, workers=cpu_count()):
+        self.registry = registry
         self.executor = futures.ProcessPoolExecutor(workers)
-        self.registry = {qualname: self._wraps(fn) for qualname, fn in registry.items()}
+        self.methods = {qualname: self._wraps(fn) for qualname, fn in registry.items()}
 
     @property
     def loop(self):
@@ -34,7 +35,7 @@ class Runner:
     async def run(self, method, *args, **kwargs):
         obj = method.__self__ 
         qualname = f'{obj.__class__.__name__}.{method.__name__}'
-        if qualname in self.registry:
-            return await self.registry[qualname](obj)
+        if qualname in self.methods:
+            return await self.methods[qualname](obj)
         else:
             return await method(*args, **kwargs)
