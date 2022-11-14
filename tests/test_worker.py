@@ -52,17 +52,23 @@ def test_registry():
 
 @pytest.mark.asyncio
 async def test_runner():
+    workers = 2
     assert list(registry.keys()) == ['Foo.foo', 'Bar.foo', 'Bar.bar', 'foo']
     assert len(registry) == 4
 
-    runner = Runner(registry=registry, workers=1)
-    assert runner.executor._max_workers == 1
+    runner = Runner(registry=registry, workers=workers)
+    assert runner.executor._max_workers == workers
 
     wraps = runner._wraps(Bar.bar)
     assert wraps.__qualname__ == Bar.bar.__qualname__
     assert wraps.__name__ == 'bar'
 
+    assert not runner.executor._processes
     with pytest.raises(ValueError):
         assert 1 == await runner.run(Bar().foo, 1)
+    assert len(runner.executor._processes) <= workers
+    assert psutil.pid_exists(list(set(runner.executor._processes))[0])
     assert 1 == await runner.run(Bar().bar, 1)
+    assert len(runner.executor._processes) <= workers
     assert 1 == await runner.run(Bar().buzz, 1)
+    assert len(runner.executor._processes) <= workers
