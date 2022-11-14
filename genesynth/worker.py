@@ -18,9 +18,11 @@ class Registry(dict):
         return fn
 
 class Runner:
+    registry = {}
     def __init__(self, registry, workers=WORKER):
         self.executor = futures.ProcessPoolExecutor(workers)
-        self.registry = registry
+        for fn in registry.values():
+            self.worker(fn)
 
     @property
     def loop(self):
