@@ -10,7 +10,7 @@ from genesynth.graph import Graph
 from genesynth.model import registry, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
 from genesynth.worker import Runner
 from genesynth.io import load_config, config_to_graph
-from genesynth.utils import spawn, co_spawn, wait
+from genesynth.utils import spawn, wait
 
 if sys.version_info < (3, 11):
     uvloop.install()
@@ -76,7 +76,7 @@ class Orchestration:
 
     async def thread(self, node):
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(self.executor, co_spawn, node.generate)
+        return await loop.run_in_executor(self.executor, spawn, node.generate)
 
     async def asyncio(self, node):
         return await node.generate()

@@ -4,7 +4,7 @@ import asyncio
 import functools
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
-from genesynth.utils import co_spawn
+from genesynth.utils import spawn
 
 class WorkloadType(enum.Enum):
     DEFAULT = 'asyncio'
@@ -30,7 +30,7 @@ class Runner:
     def _wraps(self, fn):
         @functools.wraps(fn)
         async def wraps(*args, **kwargs):
-            return await asyncio.wrap_future(self.executor.submit(co_spawn, fn, *args, **kwargs), loop=self.loop)
+            return await asyncio.wrap_future(self.executor.submit(spawn, fn, *args, **kwargs), loop=self.loop)
         return wraps
 
     async def run(self, method, *args, **kwargs):

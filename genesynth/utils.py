@@ -16,9 +16,6 @@ def sorted_groupby(arr, func, reverse=False):
 def spawn(fn, *args, **kwargs):
     return asyncio.run(fn(*args, **kwargs))
 
-def co_spawn(fn, *args, **kwargs):
-    return asyncio.run(fn(*args, **kwargs))
-
 async def waits(*futures, timeout=None):
     done, notdone = futures.wait(futures, timeout=timeout, return_when='FIRST_COMPLETED')
     return done.pop().result()
