@@ -174,7 +174,7 @@ class StringFixture(BaseTextFixture):
     def __post_init__(self):
         self.generic = Generic(locale=self.locale, seed=self.seed)
 
-    @registry.add_worker
+    @registry.to_worker
     async def generate(self):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:
