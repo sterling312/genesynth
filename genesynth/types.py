@@ -180,3 +180,7 @@ class StringFixture(BaseTextFixture):
         if self.field is not None:
             func = getattr(func, self.field)
         return np.array([func()[:self.length] for _ in range(self.size)])
+
+    @registry.to_worker
+    async def write(self):
+        return await super().write()
