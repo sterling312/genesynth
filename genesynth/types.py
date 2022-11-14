@@ -10,7 +10,7 @@ from mimesis.random import Random
 from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
 from genesynth.io import CacheCollection
-from genesynth.worker import WorkloadType, Runner
+from genesynth.worker import WorkloadType, Runner, Registry
 from genesynth import mat
 
 def reseed(seed=None):
@@ -18,7 +18,7 @@ def reseed(seed=None):
     np.random.seed(seed)
     random.seed(seed)
 
-runner = Runner()
+registry = Registry()
 
 class datatypes(dict):
     def register(self, fn):
@@ -174,7 +174,7 @@ class StringFixture(BaseTextFixture):
     def __post_init__(self):
         self.generic = Generic(locale=self.locale, seed=self.seed)
 
-    @runner.worker
+    @registry.add_worker
     async def generate(self):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:

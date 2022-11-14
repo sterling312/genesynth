@@ -5,7 +5,8 @@ from dataclasses import dataclass
 import networkx as nx
 import numpy as np
 from genesynth.orchestration import *
-from genesynth.types import reseed, runner, SerialFixture, StringFixture
+from genesynth.worker import Runner
+from genesynth.types import reseed, registry, SerialFixture, StringFixture
 
 @fixture
 def node():
@@ -20,6 +21,7 @@ def string():
 @fixture
 def o():
     G = nx.DiGraph()
+    runner = Runner(registry=registry)
     return Orchestration(G, runner=runner)
 
 def test_process(o, node):

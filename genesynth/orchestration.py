@@ -6,7 +6,8 @@ import uvloop
 from dataclasses import dataclass
 from multiprocessing import Manager, cpu_count
 from genesynth.graph import Graph
-from genesynth.model import runner, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
+from genesynth.model import registry, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
+from genesynth.worker import Runner
 from genesynth.io import load_config, config_to_graph
 from genesynth.utils import spawn, co_spawn, wait
 
@@ -36,7 +37,7 @@ class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
     """
-    def __init__(self, graph, runner=runner):
+    def __init__(self, graph, runner=Runner(registry=registry)):
         self.graph = graph
         self.runner = runner
         self._worker_manager = Manager()

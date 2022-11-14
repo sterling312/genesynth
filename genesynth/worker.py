@@ -12,10 +12,15 @@ class WorkloadType(enum.Enum):
 
 WORKER = int(os.environ.get('GENESYNTH_WORKER_COUNT') or cpu_count())
 
+class Registry(dict):
+    def add_worker(self, fn):
+        self[fn.__qualname__] = fn
+        return fn
+
 class Runner:
-    registry = {}
-    def __init__(self, workers=WORKER):
+    def __init__(self, registry, workers=WORKER):
         self.executor = futures.ProcessPoolExecutor(workers)
+        self.registry = registry
 
     @property
     def loop(self):
