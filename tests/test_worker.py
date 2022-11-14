@@ -1,6 +1,7 @@
 import pytest
 from pytest import fixture
 import asyncio
+import psutil
 from genesynth.worker import *
 
 registry = Registry()
@@ -8,6 +9,18 @@ registry = Registry()
 class Foo:
     @registry.to_worker
     def foo(self, a):
+        return a
+
+class Bar:
+    @registry.to_worker
+    def foo(self, a):
+        return a
+
+    @registry.to_worker
+    async def bar(self, a):
+        return a
+
+    async def buzz(self, a):
         return a
 
 @registry.to_worker
@@ -37,26 +50,17 @@ def test_registry():
 
 @pytest.mark.asyncio
 async def test_runner():
-    r = Registry()
-    class Bar:
-        def foo(self, a):
-            return a
+    assert list(registry.keys()) == ['Foo.foo', 'Bar.foo', 'Bar.bar', 'foo']
+    assert len(registry) == 4
 
-        @r.to_worker
-        async def bar(self, a):
-            return a
-
-        async def buzz(self, a):
-            return a
-
-    runner = Runner(registry=r, workers=1)
+    runner = Runner(registry=registry, workers=1)
     assert runner.executor._max_workers == 1
 
     wraps = runner._wraps(Bar.bar)
     assert wraps.__qualname__ == Bar.bar.__qualname__
     assert wraps.__name__ == 'bar'
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         assert 1 == await runner.run(Bar().foo, 1)
     assert 1 == await runner.run(Bar().bar, 1)
     assert 1 == await runner.run(Bar().buzz, 1)

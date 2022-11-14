@@ -37,6 +37,6 @@ class Runner:
         obj = method.__self__ 
         qualname = f'{obj.__class__.__name__}.{method.__name__}'
         if qualname in self.methods:
-            return await self.methods[qualname](obj)
+            return await self.methods[qualname](obj, *args, **kwargs)
         else:
             return await method(*args, **kwargs)
