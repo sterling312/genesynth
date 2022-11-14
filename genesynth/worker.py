@@ -19,6 +19,7 @@ class Registry(dict):
 class Runner:
     def __init__(self, registry, workers=cpu_count()):
         self.registry = registry
+        self.max_workers = workers
         self.executor = futures.ProcessPoolExecutor(workers)
         self.methods = {qualname: self._wraps(fn) for qualname, fn in registry.items()}
 

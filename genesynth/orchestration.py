@@ -42,7 +42,7 @@ class Orchestration:
         self.graph = graph
         self.runner = runner
         self._worker_manager = Manager()
-        self.max_workers = runner.executor._max_workers
+        self.max_workers = runner.max_workers * thread
         self.queue = self._worker_manager.Queue(self.max_workers)
         self.executor = futures.ThreadPoolExecutor(thread)
 
