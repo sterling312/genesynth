@@ -34,6 +34,8 @@ def test_registry():
         def bar(self, a):
             return a
 
+    assert len(r) == 1
+
     b = Bar()
     assert b.bar(1) == 1
     assert Bar.bar.__qualname__ in r
