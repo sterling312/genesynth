@@ -68,7 +68,9 @@ async def test_runner():
         assert 1 == await runner.run(Bar().foo, 1)
     assert len(runner.executor._processes) <= workers
     assert psutil.pid_exists(list(set(runner.executor._processes))[0])
+    assert psutil.Process(list(set(runner.executor._processes))[0]).name() == 'Python'
     assert 1 == await runner.run(Bar().bar, 1)
     assert len(runner.executor._processes) <= workers
     assert 1 == await runner.run(Bar().buzz, 1)
     assert len(runner.executor._processes) <= workers
+
