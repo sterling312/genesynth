@@ -45,6 +45,6 @@ properties:
                     name: table1.column1
             constraints: 
                 - unique
-      constraints:
-          notnull:
-              - table1
+constraints:
+  notnull:
+      - table1
