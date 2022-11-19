@@ -1,4 +1,5 @@
 import os
+import logging
 import yaml
 import gzip
 import json
@@ -15,6 +16,8 @@ import numpy as np
 5. meta.parameter is configuration, constraint is validation
 """
 
+logger = logging.getLogger(__name__)
+
 def read_dot(filename):
     return nx.DiGraph(nx.nx_pydot.read_dot(filename))
 
@@ -23,16 +26,19 @@ def load_config(filename):
         data = yaml.safe_load(fh)
     return data
 
-def config_to_graph(G, name, params):
-   type = params['type']
-   metadata = params.get('metadata')
-   constraints = params.get('constraints')
-   G.add_node(name, metadata=metadata) # convert constraints into attributes
-   properties = params.get('properties')
-   if properties is not None:
-       for field, attributes in properties.items():
-           G.add_edge(name, field) # add relationship type here
-           config_to_graph(G, field, attributes)
+def config_to_graph(fullname, params, G=nx.Graph()):
+    name = fullname.rsplit('.', 1)[-1]
+    type = params['type']
+    metadata = params.get('metadata')
+    constraints = params.get('constraints')
+    G.add_node(name, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
+    properties = params.get('properties')
+    if properties is not None:
+        for field, attributes in properties.items():
+            G.add_edge(name, field) # add relationship type here
+            field_fullname = f'{fullname}.{field}'
+            config_to_graph(field_fullname, attributes, G=G)
+    return G
 
 def write_as_gzip(fh_obj, filename):
     with gzip.open(filename, 'wt') as fh:
