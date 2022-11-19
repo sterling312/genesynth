@@ -29,7 +29,7 @@ def file():
 
 def test_config_to_graph(table):
     G = nx.DiGraph()
-    config_to_graph(G, 'table', table)
+    config_to_graph('table', table, G=G)
 
 @fixture
 def array_file():
