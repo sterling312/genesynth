@@ -22,6 +22,7 @@ registry = WorkerRegistry()
 class Datatypes(dict):
     def register(self, alias: List):
         def wraps(obj):
+            assert BaseMask in obj.__mro__, f'type {obj.__name__} needs to be subclass of BaseMask'
             for name in alias:
                 self[name] = obj
             return obj
