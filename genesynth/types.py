@@ -19,14 +19,19 @@ def reseed(seed=None):
 
 registry = WorkerRegistry()
 
-class datatypes(dict):
-    def register(self, fn):
-        self[fn.__name__] = fn
-        return fn
+class Datatypes(dict):
+    def register(self, alias: List):
+        def wraps(obj):
+            for name in alias:
+                self[name] = obj
+            return obj
+        return wraps
 
 class Hashabledict(dict):
     def __hash__(self):
         return hash(frozenset(self))
+
+types = Datatypes()
 
 @dataclass(unsafe_hash=True)
 class BaseMask:
@@ -69,6 +74,7 @@ class BaseNumberFixture(BaseMask):
     null = np.nan
     pass
 
+@types.register(['text'])
 @dataclass(unsafe_hash=True)
 class BaseTextFixture(BaseMask):
     length: int = None
@@ -90,6 +96,7 @@ class BaseForeign(BaseMask):
         arr = await self.depends_on.generate()
         return arr
 
+@types.register(['array', 'list', 'tuple'])
 @dataclass(unsafe_hash=True)
 class BaseArrayFixture(BaseMask):
     null = []
@@ -100,12 +107,16 @@ class BaseArrayFixture(BaseMask):
 
     async def __aiter__(self):
         for node in self.children:
-            node.size = self.size
-            yield await node.generate()
+            if isinstance(node, BaseMask):
+                node.size = self.size
+                yield await node.generate()
+            else:
+                yield node
 
     async def generate(self):
         return [arr async for arr in self]
 
+@types.register(['map', 'struct'])
 @dataclass(unsafe_hash=True)
 class BaseMapFixture(BaseMask):
     null = {}
@@ -116,13 +127,17 @@ class BaseMapFixture(BaseMask):
 
     async def __aiter__(self):
         for key, node in self.children.items():
-            node.size = self.size
-            arr = await node.generate()
-            yield key, arr
+            if isinstance(node, BaseMask):
+                node.size = self.size
+                arr = await node.generate()
+                yield key, arr
+            else:
+                yield node
 
     async def generate(self):
         return {key: arr async for key, arr in self}
 
+@types.register(['integer'])
 @dataclass(unsafe_hash=True)
 class IntegerFixture(BaseNumberFixture):
     min: int
@@ -132,6 +147,7 @@ class IntegerFixture(BaseNumberFixture):
     async def generate(self):
         return np.random.randint(self.min, self.max, self.size)
 
+@types.register(['serial'])
 @dataclass(unsafe_hash=True)
 class SerialFixture(BaseNumberFixture):
     min: int = 0
@@ -141,11 +157,13 @@ class SerialFixture(BaseNumberFixture):
     async def generate(self):
         return np.arange(self.min, self.min + self.size * self.step, self.step)
 
+@types.register(['boolean'])
 @dataclass(unsafe_hash=True)
 class BooleanFixture(BaseNumberFixture):
     async def generate(self):
         return np.random.randint(0, 2, self.size).astype(bool)
 
+@types.register(['float', 'double'])
 @dataclass(unsafe_hash=True)
 class FloatFixture(BaseNumberFixture):
     min: int
@@ -154,6 +172,7 @@ class FloatFixture(BaseNumberFixture):
     async def generate(self):
         return stats.uniform.rvs(self.min, self.max, self.size)
 
+@types.register(['decimal', 'numeric'])
 @dataclass(unsafe_hash=True)
 class DecimalFixture(FloatFixture):
     precision: int
@@ -163,6 +182,7 @@ class DecimalFixture(FloatFixture):
         arr = await super().generate()
         return np.round(arr, self.scale)
 
+@types.register(['string'])
 @dataclass(unsafe_hash=True)
 class StringFixture(BaseTextFixture):
     null = ''
