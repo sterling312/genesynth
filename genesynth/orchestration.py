@@ -5,16 +5,20 @@ import asyncio
 import uvloop
 import networkx as nx
 from dataclasses import dataclass
+from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.graph import Graph
 from genesynth.model import registry, types, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
+from genesynth.constraints import extensions
 from genesynth.worker import Runner
 from genesynth.io import load_config
 from genesynth.utils import spawn, wait
 
 if sys.version_info < (3, 11):
     uvloop.install()
+
+datatypes = ChainMap(types, extensions)
 
 class Constraint(enum.Enum):
     unique = 1 
@@ -41,7 +45,7 @@ def config_to_graph(G, fullname, params, size=0):
     metadata = params.get('metadata')
     metadata['size'] = metadata.get('size') or size
     constraints = params.get('constraints')
-    node = types[type].from_params(name=name, **metadata)
+    node = datatypes[type].from_params(name=name, **metadata)
     G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
     properties = params.get('properties')
     if properties is not None:
