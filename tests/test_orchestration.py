@@ -24,18 +24,22 @@ def o():
     runner = Runner(registry=registry)
     return Orchestration(G, runner=runner)
 
-def test_process(o, node):
-    arr = asyncio.run(o.process(node))
+@pytest.mark.asyncio
+async def test_process(o, node):
+    arr = await o.process(node)
     np.testing.assert_array_equal(arr, np.arange(10))
 
-def test_worker_process(o, string):
-    arr = asyncio.run(o.process(string))
+@pytest.mark.asyncio
+async def test_worker_process(o, string):
+    arr = await o.process(string)
     np.testing.assert_array_equal(arr, ['carol', 'square', 'returned', 'diary', 'lab', 'indicators', 'patterns', 'scenes', 'bi', 'alerts'])
 
-def test_thread(o, node):
-    arr = asyncio.run(o.thread(node))
+@pytest.mark.asyncio
+async def test_thread(o, node):
+    arr = await o.thread(node)
     np.testing.assert_array_equal(arr, np.arange(10))
 
-def test_asyncio(o, node):
-    arr = asyncio.run(o.asyncio(node))
+@pytest.mark.asyncio
+async def test_asyncio(o, node):
+    arr = await o.asyncio(node)
     np.testing.assert_array_equal(arr, np.arange(10))

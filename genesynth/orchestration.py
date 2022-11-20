@@ -41,21 +41,28 @@ class Orchestration:
     def __init__(self, graph, thread=10, runner=Runner(registry=registry)):
         self.graph = graph
         self.runner = runner
-        self._worker_manager = Manager()
         self.max_workers = runner.max_workers * thread
-        self.queue = self._worker_manager.Queue(self.max_workers)
+        self.queue = asyncio.Queue(self.max_workers)
         self.executor = futures.ThreadPoolExecutor(thread)
 
-    #@classmethod
-    #def read_yaml(cls, filename):
-    #    data = load_config(filename)
+    @classmethod
+    def read_yaml(cls, filename, name='root'):
+        data = load_config(filename)
+        # TODO wrap node in types
+        G = config_to_graph(name, data)
+        graph = Graph(G, name=name)
+        return cls(graph)
+
+    async def walk(self):
+        for node in self.graph.traversal():
+            await self.queue.put(node)
 
     async def __aiter__(self):
         """
         graph.iter: degree_search -> iterate node -> dependency_graph -> generate
         orchestraion.iter: type check -> aggregate by nearest map/array -> garbage collect
         """
-        for node in self.graph:
+        for node in self.graph.G:
             arr = await self.generate(node)
             await node.write(arr)
         # TODO Add reduce step from DataModel and garbage collect
