@@ -9,7 +9,7 @@ from mimesis import Generic
 from mimesis.random import Random
 from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
-from genesynth.worker import WorkloadType, Runner, Registry
+from genesynth.worker import WorkloadType, Runner, WorkerRegistry
 from genesynth import mat
 
 def reseed(seed=None):
@@ -17,7 +17,7 @@ def reseed(seed=None):
     np.random.seed(seed)
     random.seed(seed)
 
-registry = Registry()
+registry = WorkerRegistry()
 
 class datatypes(dict):
     def register(self, fn):

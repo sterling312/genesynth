@@ -32,7 +32,7 @@ class Relationship(enum.Enum):
     subset = 2 # node contains subset of copy of parent
     index = 3 # node contains same index as parent
     identity = 4 # node contains exact copy of parent
-    incremental_index = 3 # node contains increasing index as parent
+    incremental_index = 5 # node contains increasing index as parent
 
 class Orchestration:
     """

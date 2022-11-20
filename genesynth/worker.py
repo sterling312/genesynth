@@ -11,7 +11,7 @@ class WorkloadType(enum.Enum):
     IO = 'thread'
     CPU = 'process'
 
-class Registry(dict):
+class WorkerRegistry(dict):
     def to_worker(self, fn):
         self[fn.__qualname__] = fn
         return fn

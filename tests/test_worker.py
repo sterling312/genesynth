@@ -4,7 +4,7 @@ import asyncio
 import psutil
 from genesynth.worker import *
 
-registry = Registry()
+registry = WorkerRegistry()
 
 class Foo:
     @registry.to_worker
@@ -28,7 +28,7 @@ def foo(a):
     return a
 
 def test_registry():
-    r = Registry()
+    r = WorkerRegistry()
     class Bar:
         @r.to_worker
         def bar(self, a):
