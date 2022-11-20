@@ -45,6 +45,13 @@ class BaseMask:
     _file = None
     _path = None
 
+    @classmethod
+    def from_params(cls, **kwargs):
+        fields = set(cls.__dataclass_fields__.keys())
+        keys = set(kwargs.keys())
+        params = {field: kwargs[field] for field in fields & keys}
+        return cls(**params)
+
     def mask(self):
         pass
 

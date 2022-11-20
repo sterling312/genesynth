@@ -14,7 +14,7 @@ from genesynth.io import load_config, write_as_gzip
 from genesynth.types import *
 from genesynth.utils import iterate_lines
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class BaseDataModel(BaseMapFixture):
     """
     Handles data structure grouping based on the graph.
@@ -38,6 +38,10 @@ class BaseDataModel(BaseMapFixture):
     def __post_init__(self):
         super().__post_init__()
         self._dir = tempfile.TemporaryDirectory()
+        self.metadata = Hashabledict(self.metadata)
+        self.constraints = Hashabledict(self.constraints)
+        self.label = Hashabledict(self.label)
+        self.children = Hashabledict(self.children)
 
     async def __aiter__(self):
         pass
@@ -95,7 +99,8 @@ class BaseDataModel(BaseMapFixture):
             shutil.copy(self._file, filename)
 
 
-@dataclass
+@types.register(['object', 'table'])
+@dataclass(unsafe_hash=True)
 class TableDataModel(BaseDataModel):
     # TODO change this to have default keys
     metadata: dict = field(default_factory=dict)
@@ -135,7 +140,8 @@ class TableDataModel(BaseDataModel):
                 fh.write(self.footer)
 
 
-@dataclass
+@types.register(['json'])
+@dataclass(unsafe_hash=True)
 class JsonDataModel(BaseDataModel):
     async def merge(self, nodes, path=None):
         filenames = {node.name: node._file for node in nodes}

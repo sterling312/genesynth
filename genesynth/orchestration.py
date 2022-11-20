@@ -39,13 +39,14 @@ def config_to_graph(G, fullname, params, size=0):
     name = fullname.rsplit('.', 1)[-1]
     type = params['type']
     metadata = params.get('metadata')
-    size = metadata.get('size', size)
+    metadata['size'] = metadata.get('size') or size
     constraints = params.get('constraints')
-    node = types[type](name, size=size)
+    node = types[type].from_params(name=name, **metadata)
     G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
     properties = params.get('properties')
     if properties is not None:
         for field, attributes in properties.items():
+            field_fullname = f'{fullname}.{field}'
             child = config_to_graph(G, field_fullname, attributes, size=size)
             G.add_edge(node, child) # add relationship type here
     return node
@@ -64,7 +65,7 @@ class Orchestration:
     @classmethod
     def read_yaml(cls, filename, name='root'):
         data = load_config(filename)
-        size = data['size']
+        size = data['metadata']['size']
         # TODO wrap node in types
         G = nx.Graph()
         config_to_graph(G, name, data, size=size)
