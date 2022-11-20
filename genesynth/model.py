@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from contextlib import asynccontextmanager
 import numpy as np
 from scipy import stats
-from genesynth.io import load_config, config_to_graph, write_as_gzip
+from genesynth.io import load_config, write_as_gzip
 from genesynth.types import *
 from genesynth.utils import iterate_lines
 

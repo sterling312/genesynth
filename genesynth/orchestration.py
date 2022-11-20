@@ -3,13 +3,14 @@ import typing
 import enum
 import asyncio
 import uvloop
+import networkx as nx
 from dataclasses import dataclass
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.graph import Graph
-from genesynth.model import registry, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
+from genesynth.model import registry, types, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
 from genesynth.worker import Runner
-from genesynth.io import load_config, config_to_graph
+from genesynth.io import load_config
 from genesynth.utils import spawn, wait
 
 if sys.version_info < (3, 11):
@@ -34,6 +35,21 @@ class Relationship(enum.Enum):
     identity = 4 # node contains exact copy of parent
     incremental_index = 5 # node contains increasing index as parent
 
+def config_to_graph(G, fullname, params, size=0):
+    name = fullname.rsplit('.', 1)[-1]
+    type = params['type']
+    metadata = params.get('metadata')
+    size = metadata.get('size', size)
+    constraints = params.get('constraints')
+    node = types[type](name, size=size)
+    G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
+    properties = params.get('properties')
+    if properties is not None:
+        for field, attributes in properties.items():
+            child = config_to_graph(G, field_fullname, attributes, size=size)
+            G.add_edge(node, child) # add relationship type here
+    return node
+
 class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
@@ -48,8 +64,10 @@ class Orchestration:
     @classmethod
     def read_yaml(cls, filename, name='root'):
         data = load_config(filename)
+        size = data['size']
         # TODO wrap node in types
-        G = config_to_graph(name, data)
+        G = nx.Graph()
+        config_to_graph(G, name, data, size=size)
         graph = Graph(G, name=name)
         return cls(graph)
 

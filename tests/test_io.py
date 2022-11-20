@@ -27,10 +27,6 @@ def file():
         yield fh
     os.remove('foo')
 
-def test_config_to_graph(table):
-    G = nx.DiGraph()
-    config_to_graph('table', table, G=G)
-
 @fixture
 def array_file():
     arr = np.arange(10)    
