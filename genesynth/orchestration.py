@@ -9,8 +9,7 @@ from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.graph import Graph
-from genesynth.model import registry, types, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
-from genesynth.constraints import extensions
+from genesynth.model import registry, types, extensions, BaseDataModel, WorkloadType, TableDataModel, JsonDataModel
 from genesynth.worker import Runner
 from genesynth.io import load_config
 from genesynth.utils import spawn, wait

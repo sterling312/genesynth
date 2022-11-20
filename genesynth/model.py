@@ -14,6 +14,8 @@ from genesynth.io import load_config, write_as_gzip
 from genesynth.types import *
 from genesynth.utils import iterate_lines
 
+extensions = Datatypes()  
+
 @dataclass(unsafe_hash=True)
 class BaseDataModel(BaseMapFixture):
     """

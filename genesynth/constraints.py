@@ -1,7 +1,4 @@
 import enum
-from genesynth.types import Datatypes
-
-extensions = Datatypes()  
 
 class Builtin(enum.Enum):
     unique = 1 
