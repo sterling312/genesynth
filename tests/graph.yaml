@@ -4,6 +4,7 @@ type: object
 description: "describes the database contract within a namespace"
 metadata:
   namespace: public
+  size: 20
 properties:
   table1:
     type: object
