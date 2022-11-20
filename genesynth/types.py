@@ -45,6 +45,8 @@ class BaseMask:
     _file = None
     _path = None
 
+    # TODO handle notnull and unique constraits
+
     @classmethod
     def from_params(cls, **kwargs):
         fields = set(cls.__dataclass_fields__.keys())
@@ -151,6 +153,8 @@ class IntegerFixture(BaseNumberFixture):
     max: int
     null = None
 
+    # TODO add type conversio to Serial when constraint is incremental
+
     async def generate(self):
         return np.random.randint(self.min, self.max, self.size)
 
@@ -196,6 +200,8 @@ class StringFixture(BaseTextFixture):
     subtype: str = 'text'
     field: str = 'sentence'
     locale = Locale.EN
+
+    # TODO set field to uuid when constraint is uuid
 
     def __post_init__(self):
         self.generic = Generic(locale=self.locale, seed=self.seed)
