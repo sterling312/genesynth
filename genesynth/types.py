@@ -1,3 +1,7 @@
+"""
+Core library that determines how data will be generated based on respective types.
+"""
+
 import os
 import enum
 import random

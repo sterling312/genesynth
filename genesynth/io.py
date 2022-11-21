@@ -1,3 +1,7 @@
+"""
+IO is the utility library that manages how config and data gets loaded into the library as well as how it is written out.
+"""
+
 import os
 import logging
 import yaml

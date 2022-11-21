@@ -1,3 +1,9 @@
+"""
+Orchestration is sorely responsible for integration graph and schedule processing based on the correct order.
+This module should ONLY dictate the dependency tree based on processing optimization and not entity relationship.
+Orchestration can use higher level datatypes from Model to do garbage collection to optimize for cache datasize.
+"""
+
 import sys
 import typing
 import enum

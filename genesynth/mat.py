@@ -1,3 +1,7 @@
+"""
+Mat contains all matrix and masking operations that meets the constraint needs.
+"""
+
 import logging
 import numpy as np
 from scipy import stats

@@ -1,3 +1,9 @@
+"""
+Graph is solely responsible for entity relationships and logical order of operations.
+Note that this is not intended to optimize processing order of operatsions and optimization.
+The graph is required to be able to evaluate the dependency in isolation; this means no business logic.
+"""
+
 import enum
 import networkx as nx
 from genesynth import utils

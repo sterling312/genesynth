@@ -1,3 +1,7 @@
+"""
+Worker is the uilitiy library that handles how to create worker process or other processing methodologies.
+"""
+
 import os
 import enum
 import asyncio

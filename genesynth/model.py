@@ -1,3 +1,7 @@
+"""
+Model contains higher level abstraction that glues together underlying datatypes.
+"""
+
 import os
 import shutil
 import glob
