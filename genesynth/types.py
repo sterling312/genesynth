@@ -1,5 +1,6 @@
 """
 Core library that determines how data will be generated based on respective types.
+It will be possible to represent each type as a protocol buffer for serialization.
 """
 
 import os
@@ -14,6 +15,7 @@ from mimesis.random import Random
 from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
 from genesynth.worker import WorkloadType, Runner, WorkerRegistry
+from genesynth.constraints import *
 from genesynth import mat
 
 def reseed(seed=None):
