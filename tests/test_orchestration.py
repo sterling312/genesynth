@@ -6,7 +6,7 @@ import networkx as nx
 import numpy as np
 from genesynth.orchestration import *
 from genesynth.worker import Runner
-from genesynth.types import reseed, registry, SerialFixture, StringFixture
+from genesynth.types import reseed, worker, SerialFixture, StringFixture
 
 @fixture
 def node():
@@ -21,7 +21,7 @@ def string():
 @fixture
 def o():
     G = nx.DiGraph()
-    runner = Runner(registry=registry)
+    runner = Runner(registry=worker)
     return Orchestration(G, runner=runner)
 
 @pytest.mark.asyncio

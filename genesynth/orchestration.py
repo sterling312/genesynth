@@ -15,7 +15,7 @@ from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.graph import Graph
-from genesynth.model import registry, types, BaseDataModel, WorkloadType
+from genesynth.model import worker, types, BaseDataModel, WorkloadType
 from genesynth.extensions import extensions
 from genesynth.worker import Runner
 from genesynth.io import load_config
@@ -65,7 +65,7 @@ class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
     """
-    def __init__(self, graph, thread=10, runner=Runner(registry=registry)):
+    def __init__(self, graph, thread=10, runner=Runner(registry=worker)):
         self.graph = graph
         self.runner = runner
         self.max_workers = runner.max_workers * thread

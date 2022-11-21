@@ -23,7 +23,7 @@ def reseed(seed=None):
     np.random.seed(seed)
     random.seed(seed)
 
-registry = WorkerRegistry()
+worker = WorkerRegistry()
 
 class Datatypes(dict):
     def register(self, alias: List):
@@ -214,13 +214,13 @@ class StringFixture(BaseTextFixture):
     def __post_init__(self):
         self.generic = Generic(locale=self.locale, seed=self.seed)
 
-    @registry.to_worker
+    @worker.register
     async def generate(self):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:
             func = getattr(func, self.field)
         return np.array([func()[:self.length] for _ in range(self.size)])
 
-    @registry.to_worker
+    @worker.register
     async def write(self):
         return await super().write()

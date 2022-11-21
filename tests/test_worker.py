@@ -4,33 +4,33 @@ import asyncio
 import psutil
 from genesynth.worker import *
 
-registry = WorkerRegistry()
+worker = WorkerRegistry()
 
 class Foo:
-    @registry.to_worker
+    @worker.register
     def foo(self, a):
         return a
 
 class Bar:
-    @registry.to_worker
+    @worker.register
     def foo(self, a):
         return a
 
-    @registry.to_worker
+    @worker.register
     async def bar(self, a):
         return a
 
     async def buzz(self, a):
         return a
 
-@registry.to_worker
+@worker.register
 def foo(a):
     return a
 
 def test_registry():
     r = WorkerRegistry()
     class Bar:
-        @r.to_worker
+        @r.register
         def bar(self, a):
             return a
 
@@ -43,20 +43,20 @@ def test_registry():
 
     f = Foo()
     assert f.foo(1) == 1
-    assert Foo.foo.__qualname__ in registry
-    assert registry[Foo.foo.__qualname__](f, 1) == 1
+    assert Foo.foo.__qualname__ in worker
+    assert worker[Foo.foo.__qualname__](f, 1) == 1
 
     assert foo(1) == 1
-    assert foo.__qualname__ in registry
-    assert registry[foo.__qualname__](1) == 1
+    assert foo.__qualname__ in worker
+    assert worker[foo.__qualname__](1) == 1
 
 @pytest.mark.asyncio
 async def test_runner():
     workers = 2
-    assert list(registry.keys()) == ['Foo.foo', 'Bar.foo', 'Bar.bar', 'foo']
-    assert len(registry) == 4
+    assert list(worker.keys()) == ['Foo.foo', 'Bar.foo', 'Bar.bar', 'foo']
+    assert len(worker) == 4
 
-    runner = Runner(registry=registry, workers=workers)
+    runner = Runner(registry=worker, workers=workers)
     assert runner.executor._max_workers == workers
 
     wraps = runner._wraps(Bar.bar)
