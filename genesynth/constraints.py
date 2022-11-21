@@ -1,4 +1,5 @@
 import enum
+from genesynth.mat import mask, null_percent, ordered_index, incremental_index
 
 class Builtin(enum.Enum):
     unique = 1 
