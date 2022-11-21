@@ -48,8 +48,9 @@ class Relationship(enum.Enum):
 def config_to_graph(G, fullname, params, size=0):
     name = fullname.rsplit('.', 1)[-1]
     type = params['type']
-    metadata = params.get('metadata')
+    metadata = params.get('metadata', {})
     metadata['size'] = metadata.get('size') or size
+    foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
     node = datatypes[type].from_params(name=name, **metadata)
     G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes

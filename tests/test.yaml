@@ -13,7 +13,7 @@ properties:
           size: 20
       properties: 
           column1:
-            type: integer
+            type: serial
             description: ""
             metadata:
                 start: 0
@@ -22,9 +22,7 @@ properties:
                 - incremental
           column2:
             type: string
-            metadata:
-                - uuid
-            constraint:
+            constraints:
                 - uuid
       constraints:
           - notnull
@@ -36,16 +34,18 @@ properties:
           column3:
             type: integer
             metadata: 
+                min: 0
+                max: 20
                 weight: 10
             constraints:
                 - unique
-          column4:
-            type: integer
-            metadata:
-                foreign: 
-                    name: table1.column1
-            constraints: 
-                - unique
+          #column4:
+          #  type: integer
+          #  metadata:
+          #      foreign: 
+          #          name: table1.column1
+          #  constraints: 
+          #      - unique
 constraints:
   notnull:
       - table1
