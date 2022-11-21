@@ -56,6 +56,7 @@ class BaseMask:
 
     @classmethod
     def from_params(cls, **kwargs):
+        # TODO add type conversion based on constraints
         fields = set(cls.__dataclass_fields__.keys())
         keys = set(kwargs.keys())
         params = {field: kwargs[field] for field in fields & keys}
