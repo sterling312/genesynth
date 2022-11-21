@@ -1,6 +1,18 @@
 import enum
 from genesynth.mat import mask, null_percent, ordered_index, incremental_index
 
+"""
+Constraints will govern the following:
+Node Level:
+    - type choice 
+    - default parameter translation
+    - masking and sampling
+    - ordering
+    - *data validation (this will not be provided out of the box)
+Edge Level:
+    - processing order of operations during orchestration
+"""
+
 class Builtin(enum.Enum):
     unique = 1 
     notnull = 2
@@ -17,3 +29,5 @@ class Constraints(enum.Enum):
     FORMAT = 'format'
     INCREMENTAL = 'incremental'
     BETWEEN = 'between'
+
+
