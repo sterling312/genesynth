@@ -1,6 +1,7 @@
 """
 Core library that determines how data will be generated based on respective types (dataclass).
 It will be possible to represent each type as a protocol buffer for serialization.
+All type must provide async generate method and optional write method.
 """
 
 import os
