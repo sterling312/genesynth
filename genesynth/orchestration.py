@@ -20,6 +20,7 @@ from genesynth.extensions import extensions
 from genesynth.worker import Runner
 from genesynth.io import load_config
 from genesynth.utils import spawn, wait
+from genesynth.constraints import *
 
 if sys.version_info < (3, 11):
     uvloop.install()

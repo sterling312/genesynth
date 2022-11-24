@@ -31,4 +31,8 @@ class Constraints(enum.Enum):
     INCREMENTAL = 'incremental'
     BETWEEN = 'between'
 
+class NodeConstraint:
+    pass
 
+class EdgeConstraint:
+    pass
