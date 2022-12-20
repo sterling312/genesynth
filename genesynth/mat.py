@@ -47,9 +47,7 @@ def gkernel(n: int, sig: float):
 
 def gaussian_smooth(arr, sig):
     k = gkernel(arr.size + 1, sig)
-    # TODO double check off by one error
-    start = int(arr.size/2)
-    return signal.fftconvolve(arr, k)[start: arr.size]
+    return signal.fftconvolve(arr, k, mode='same')
 
 def bootstrapped_gaussian_smooth(arr, confidence_level=0.95):
     b = bootstrap(arr, np.std, confidence_level=confidence_level)
