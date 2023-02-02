@@ -87,7 +87,7 @@ class Orchestration:
     def read_yaml(cls, filename, name='root'):
         data = load_config(filename)
         size = data['metadata']['size']
-        G = nx.Graph()
+        G = nx.DiGraph()
         config_to_graph(G, name, data, size=size)
         graph = Graph(G, name=name)
         return cls(graph)
