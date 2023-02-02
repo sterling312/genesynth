@@ -5,6 +5,7 @@ Orchestration can use higher level datatypes from Model to do garbage collection
 """
 
 import sys
+import logging
 import typing
 import enum
 import asyncio
@@ -14,6 +15,7 @@ from dataclasses import dataclass
 from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
+from genesynth.types import Hashabledict
 from genesynth.graph import Graph
 from genesynth.model import worker, types, BaseDataModel, WorkloadType
 from genesynth.extensions import extensions
@@ -24,6 +26,8 @@ from genesynth.constraints import *
 
 if sys.version_info < (3, 11):
     uvloop.install()
+
+logger = logging.getLogger(__name__)
 
 datatypes = ChainMap(types, extensions)
 
@@ -54,13 +58,18 @@ def config_to_graph(G, fullname, params, size=0):
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
     node = datatypes[type].from_params(name=name, **metadata)
-    G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
     properties = params.get('properties')
     if properties is not None:
+        children = {}
         for field, attributes in properties.items():
             field_fullname = f'{fullname}.{field}'
             child = config_to_graph(G, field_fullname, attributes, size=size)
+            children[child] = child
+        node.children = Hashabledict(children)
+        # add node to graph after setting data field children
+        for child in children.values():
             G.add_edge(node, child) # add relationship type here
+    G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
     return node
 
 class Orchestration:
@@ -78,14 +87,15 @@ class Orchestration:
     def read_yaml(cls, filename, name='root'):
         data = load_config(filename)
         size = data['metadata']['size']
-        # TODO wrap node in types
-        G = nx.Graph()
+        G = nx.DiGraph()
         config_to_graph(G, name, data, size=size)
         graph = Graph(G, name=name)
         return cls(graph)
 
     async def walk(self):
-        for node in self.graph.traversal():
+        # TODO check to make sure this is correct
+        for parent, node in self.graph.traversal():
+            logger.debug(node)
             await self.queue.put(node)
 
     async def __aiter__(self):
@@ -93,10 +103,23 @@ class Orchestration:
         graph.iter: degree_search -> iterate node -> dependency_graph -> generate
         orchestraion.iter: type check -> aggregate by nearest map/array -> garbage collect
         """
-        for node in self.graph.G:
-            arr = await self.generate(node)
-            await node.write(arr)
+        #for node in self.graph.G:
+        #    arr = await self.generate(node)
+        #    await node.write(arr)
+
         # TODO Add reduce step from DataModel and garbage collect
+        await self.walk()
+        while self.queue.qsize() > 0:
+            node = await self.queue.get()
+            arr = await self.generate(node)
+            logger.debug(arr)
+            try:
+                await node.write()
+            except TypeError:
+                await node.write(arr)
+
+    def run(self):
+        asyncio.run(self.__aiter__())
 
     async def generate(self, node):
         # TODO replace this with graph traversal and task queue/dequeue
