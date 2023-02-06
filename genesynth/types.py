@@ -50,8 +50,9 @@ class BaseMask:
     null = None
     _index = None
     _mask = None
-    _file = None
-    _path = None
+    _file = None # cache directory
+    _path = None # cache filename
+    _defer = None # parent node if deferred
 
     # TODO handle notnull and unique constraits
 
@@ -62,6 +63,17 @@ class BaseMask:
         keys = set(kwargs.keys())
         params = {field: kwargs[field] for field in fields & keys}
         return cls(**params)
+
+    # TODO This does not work without redesigning to allow unit of work pattern
+    @classmethod
+    def from_foreign(cls, **kwargs):
+        foreign = kwargs.pop('foreign')
+        defer = foreign['name']
+        # TODO fetch params from parent node
+        params = kwargs
+        node = cls.from_params(**params)
+        node._defer = defer
+        return node
 
     def mask(self):
         pass
@@ -86,6 +98,9 @@ class BaseMask:
             filename = self.name
         np.savetxt(filename, arr, fmt="%s", delimiter='\n')
         self._file = filename
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(name='{self.name}', size={self.size})"
 
 @dataclass(unsafe_hash=True)
 class BaseNumberFixture(BaseMask):

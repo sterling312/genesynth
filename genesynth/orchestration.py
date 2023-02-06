@@ -57,7 +57,12 @@ def config_to_graph(G, fullname, params, size=0):
     metadata['size'] = metadata.get('size') or size
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
-    node = datatypes[type].from_params(name=name, **metadata)
+    #node = datatypes[type].from_params(name=name, **metadata)
+    if 'foreign' in metadata:
+        # TODO fix this to fetch deferred data from foreign node
+        node = datatypes[type].from_foreign(name=name, **metadata)
+    else:
+        node = datatypes[type].from_params(name=name, **metadata)
     properties = params.get('properties')
     if properties is not None:
         children = {}

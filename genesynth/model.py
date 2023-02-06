@@ -20,7 +20,7 @@ from genesynth.utils import iterate_lines
 
 extensions = Datatypes()  
 
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=False)
 class BaseDataModel(BaseMapFixture):
     """
     Handles data structure grouping based on the graph.
@@ -104,9 +104,12 @@ class BaseDataModel(BaseMapFixture):
         else:
             shutil.copy(self._file, filename)
 
+    def __hash__(self):
+        return hash(str(self))
+
 
 @types.register(['object', 'table'])
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=False)
 class TableDataModel(BaseDataModel):
     # TODO change this to have default keys
     metadata: dict = field(default_factory=dict)
@@ -144,6 +147,9 @@ class TableDataModel(BaseDataModel):
             yield fh
             if self.has_footer:
                 fh.write(self.footer)
+
+    def __hash__(self):
+        return hash(str(self))
 
 
 @types.register(['json'])
