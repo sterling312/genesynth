@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 import os
+import argparse
 import asyncio
-import click
 from genesynth.orchestration import *
 
-def run(filename, output=None):
+parser = argparse.ArgumentParser()
+parser.add_argument('--filename', required=True, help='filename')
+parser.add_argument('--output', help='filename')
+
+def main(filename, output=None):
     if output is None:
         output, ext = os.path.splitext(os.path.basename(filename))
     pipe = Orchestration.read_yaml(filename)
@@ -12,11 +16,6 @@ def run(filename, output=None):
     root = pipe.graph.root.pop()
     asyncio.run(root.save(output))
 
-@click.command()
-@click.option('--filename', help='filename')
-@click.option('--output', default=None, help='output file')
-def main(filename, output):
-    run(filename, output)
-
 if __name__ == '__main__':
-    main()
+    args = parser.parse_args()
+    main(args.filename, args.output)
