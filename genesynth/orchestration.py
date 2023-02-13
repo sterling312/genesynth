@@ -94,7 +94,7 @@ class Orchestration:
         size = data['metadata']['size']
         G = nx.DiGraph()
         config_to_graph(G, name, data, size=size)
-        graph = Graph(G, name=name)
+        graph = Graph(G, name=name, metadata=data['metadata'])
         return cls(graph)
 
     async def walk(self):
