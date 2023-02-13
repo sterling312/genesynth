@@ -60,9 +60,9 @@ def config_to_graph(G, fullname, params, size=0):
     #node = datatypes[type].from_params(name=name, **metadata)
     if 'foreign' in metadata:
         # TODO fix this to fetch deferred data from foreign node
-        node = datatypes[type].from_foreign(name=name, **metadata)
+        node = datatypes[type].from_foreign(name=name, metadata=metadata, **metadata)
     else:
-        node = datatypes[type].from_params(name=name, **metadata)
+        node = datatypes[type].from_params(name=name, metadata=metadata, **metadata)
     properties = params.get('properties')
     if properties is not None:
         children = {}
@@ -102,6 +102,10 @@ class Orchestration:
         for parent, node in self.graph.traversal():
             logger.debug(node)
             await self.queue.put(node)
+
+    @property
+    def root(self):
+        return next(iter(self.graph.root))
 
     async def __aiter__(self):
         """
