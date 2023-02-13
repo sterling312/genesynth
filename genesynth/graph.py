@@ -21,6 +21,16 @@ class Relationship(enum.Enum):
     identity = 4 # node contains exact copy of parent
     incremental = 5 # node contains increasing value as parent
 
+def find_node(G, name):
+    for n in G.nodes:
+        if n.name == name:
+            return n
+
+def find_child_node(G, parent, child):
+    node = find_node(G, parent)
+    g = G.subgraph(nx.descendants(G, node))
+    return find_node(g, child) 
+
 class Graph:
     """
     Handles all things graph traversal.
@@ -43,6 +53,11 @@ class Graph:
     @property
     def root(self):
         return {n for n in self.G.nodes if self.G.in_degree(n) == 0}
+
+    def subgraph(self, node):
+        """return subgraph based on children
+        """
+        return self.G.subgraph(self.children(node))
 
     @property
     def leaf(self):

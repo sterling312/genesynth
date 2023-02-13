@@ -64,17 +64,6 @@ class BaseMask:
         params = {field: kwargs[field] for field in fields & keys}
         return cls(**params)
 
-    # TODO This does not work without redesigning to allow unit of work pattern
-    @classmethod
-    def from_foreign(cls, **kwargs):
-        foreign = kwargs.pop('foreign')
-        defer = foreign['name']
-        # TODO fetch params from parent node
-        params = kwargs
-        node = cls.from_params(**params)
-        node._defer = defer
-        return node
-
     def mask(self):
         pass
 

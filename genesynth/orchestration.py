@@ -16,7 +16,7 @@ from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.types import Hashabledict
-from genesynth.graph import Graph
+from genesynth.graph import Graph, find_node, find_child_node
 from genesynth.model import worker, types, BaseDataModel, WorkloadType
 from genesynth.extensions import extensions
 from genesynth.worker import Runner
@@ -55,12 +55,13 @@ def config_to_graph(G, fullname, params, size=0):
     type = params['type']
     metadata = params.get('metadata', {})
     metadata['size'] = metadata.get('size') or size
+    metadata['sep'] = metadata.get('sep', '')
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
     #node = datatypes[type].from_params(name=name, **metadata)
-    if 'foreign' in metadata:
-        # TODO fix this to fetch deferred data from foreign node
-        node = datatypes[type].from_foreign(name=name, metadata=metadata, **metadata)
+    if foreign:
+        parent, child = foreign['name'].split('.')
+        node = find_child_node(G, parent, child)
     else:
         node = datatypes[type].from_params(name=name, metadata=metadata, **metadata)
     properties = params.get('properties')

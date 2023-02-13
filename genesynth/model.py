@@ -36,7 +36,7 @@ class BaseDataModel(BaseMapFixture):
     """
     name: str
     schema: str = None # namespace from metadata
-    sep: bytes = None
+    sep: bytes = b''
     metadata: dict = field(default_factory=dict)
     constraints: list = field(default_factory=list)
     label: dict = field(default_factory=dict)
@@ -51,7 +51,9 @@ class BaseDataModel(BaseMapFixture):
         self.label = Hashabledict(self.label)
         self.children = Hashabledict(self.children)
         # TODO allow support for string instead of just bytes
-        self.sep = self.metadata.get('sep', '').encode('utf-8')
+        self.sep = self.metadata.get('sep', self.sep)
+        if isinstance(self.sep, str):
+            self.sep = self.sep.encode('utf-8')
 
     async def __aiter__(self):
         pass

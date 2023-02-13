@@ -42,13 +42,13 @@ properties:
                 weight: 10
             constraints:
                 - unique
-          #column4:
-          #  type: integer
-          #  metadata:
-          #      foreign: 
-          #          name: table1.column1
-          #  constraints: 
-          #      - unique
+          column4:
+            type: integer
+            metadata:
+                foreign:
+                    name: table1.column1
+            constraints:
+                - unique
 constraints:
   notnull:
       - table1
