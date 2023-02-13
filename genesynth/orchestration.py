@@ -61,7 +61,9 @@ def config_to_graph(G, fullname, params, size=0):
     #node = datatypes[type].from_params(name=name, **metadata)
     if foreign:
         parent, child = foreign['name'].split('.')
-        node = find_child_node(G, parent, child)
+        f_node = find_child_node(G, parent, child)
+        # TODO preserve generated data but keep the attribute
+        node = f_node
     else:
         node = datatypes[type].from_params(name=name, metadata=metadata, **metadata)
     properties = params.get('properties')
