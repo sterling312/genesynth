@@ -5,12 +5,14 @@ description: "describes the database contract within a namespace"
 metadata:
     namespace: public
     size: 20
+    sep: ','
 properties:
     table1:
       type: object
       metadata:
           namespace: public
           size: 20
+          sep: ','
       properties: 
           column1:
             type: serial
@@ -30,6 +32,7 @@ properties:
       type: object
       metadata:
           weight: 10
+          sep: ','
       properties:
           column3:
             type: integer
@@ -39,13 +42,13 @@ properties:
                 weight: 10
             constraints:
                 - unique
-          #column4:
-          #  type: integer
-          #  metadata:
-          #      foreign: 
-          #          name: table1.column1
-          #  constraints: 
-          #      - unique
+          column4:
+            type: integer
+            metadata:
+                foreign:
+                    name: table1.column1
+            constraints:
+                - unique
 constraints:
   notnull:
       - table1

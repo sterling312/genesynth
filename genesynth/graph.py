@@ -21,6 +21,16 @@ class Relationship(enum.Enum):
     identity = 4 # node contains exact copy of parent
     incremental = 5 # node contains increasing value as parent
 
+def find_node(G, name):
+    for n in G.nodes:
+        if n.name == name:
+            return n
+
+def find_child_node(G, parent, child):
+    node = find_node(G, parent)
+    g = G.subgraph(nx.descendants(G, node))
+    return find_node(g, child) 
+
 class Graph:
     """
     Handles all things graph traversal.
@@ -31,6 +41,9 @@ class Graph:
         self.name = name
         self.attr = attr
         self.ref = ref
+
+    def subgraph(self, nodes):
+        return self.G.subgraph(nodes)
 
     @property
     def nodes(self):
@@ -45,14 +58,25 @@ class Graph:
         return {n for n in self.G.nodes if self.G.in_degree(n) == 0}
 
     @property
+    def model_nodes(self):
+        return self.subgraph({n for n, d in self.G.nodes(data=True) if not n.is_data})
+
+    @property
+    def data_nodes(self):
+        return self.subgraph({n for n, d in self.G.nodes(data=True) if n.is_data})
+
+    def filter(self, **attrs):
+        return self.subgraph({n for n, d in self.G.nodes(data=True) if d.items() >= attrs.items()})
+
+    @property
     def leaf(self):
-        return {n for n in self.G.nodes if self.G.in_degree(n) == 1 and self.G.out_degree(n) == 0}
+        return self.subgraph({n for n in self.G.nodes if self.G.in_degree(n) == 1 and self.G.out_degree(n) == 0})
 
     def parents(self, node):
-        return nx.ancestors(self.G, node)
+        return self.subgraph(nx.ancestors(self.G, node))
 
     def children(self, node):
-        return nx.descendants(self.G, node)
+        return self.subgraph(nx.descendants(self.G, node))
 
     def node_degree(self):
         return dict(self.G.in_degree())
@@ -102,6 +126,12 @@ class Graph:
 
     def centrality(self):
         return nx.eigenvector_centrality(self.G)
+
+    def transitive_closure(self):
+        return nx.dag.transitive_closure(self.G)
+
+    def transitive_reduction(self):
+        return nx.dag.transitive_reduction(self.G)
 
     def domain_traversal(self, source=None):
         if source is None:

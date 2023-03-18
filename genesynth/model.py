@@ -20,7 +20,7 @@ from genesynth.utils import iterate_lines
 
 extensions = Datatypes()  
 
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=False)
 class BaseDataModel(BaseMapFixture):
     """
     Handles data structure grouping based on the graph.
@@ -28,13 +28,16 @@ class BaseDataModel(BaseMapFixture):
     Also handles aggregating cached resources and garbage collection.
     name: str - i.e. name of the table
     schema: str - i.e. namespace of the database such as schema
+    sep: bytes - i.e. separator between columns, force conversion from string to bytes
     metadata: dict[str, str] - data model specific config (required) of the dataset
     constraints: list[str] - constrait to be added to the data, such as uniqueness check
     label: dict[str, str] - label to be added to the dataset that are not used for generation
     children: list - list od child dependencies
     """
+    is_data = False
     name: str
     schema: str = None # namespace from metadata
+    sep: bytes = b''
     metadata: dict = field(default_factory=dict)
     constraints: list = field(default_factory=list)
     label: dict = field(default_factory=dict)
@@ -48,6 +51,10 @@ class BaseDataModel(BaseMapFixture):
         self.constraints = Hashabledict(self.constraints)
         self.label = Hashabledict(self.label)
         self.children = Hashabledict(self.children)
+        # TODO allow support for string instead of just bytes
+        self.sep = self.metadata.get('sep', self.sep)
+        if isinstance(self.sep, str):
+            self.sep = self.sep.encode('utf-8')
 
     async def __aiter__(self):
         pass
@@ -56,10 +63,6 @@ class BaseDataModel(BaseMapFixture):
         gens = [n.generate() for n in self.children.values()]
         done, pending = await asyncio.wait(gens)
         return [await f for f in done]
-
-    @property
-    def sep(self):
-        return self.metadata.get('sep', '').encode('utf-8')
 
     @asynccontextmanager
     async def _filename(self, path=None):
@@ -71,6 +74,8 @@ class BaseDataModel(BaseMapFixture):
             yield fh
 
     async def merge(self, nodes, path=None):
+        """Combine children cache files into one
+        """
         filenames = [node._file for node in nodes]
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames):
@@ -104,9 +109,12 @@ class BaseDataModel(BaseMapFixture):
         else:
             shutil.copy(self._file, filename)
 
+    def __hash__(self):
+        return hash(str(self))
+
 
 @types.register(['object', 'table'])
-@dataclass(unsafe_hash=True)
+@dataclass(unsafe_hash=False)
 class TableDataModel(BaseDataModel):
     # TODO change this to have default keys
     metadata: dict = field(default_factory=dict)
@@ -145,10 +153,14 @@ class TableDataModel(BaseDataModel):
             if self.has_footer:
                 fh.write(self.footer)
 
+    def __hash__(self):
+        return hash(str(self))
+
 
 @types.register(['json'])
 @dataclass(unsafe_hash=True)
 class JsonDataModel(BaseDataModel):
+    is_data = True
     async def merge(self, nodes, path=None):
         filenames = {node.name: node._file for node in nodes}
         async with self._filename(path) as fh:
