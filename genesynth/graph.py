@@ -127,6 +127,12 @@ class Graph:
     def centrality(self):
         return nx.eigenvector_centrality(self.G)
 
+    def transitive_closure(self):
+        return nx.dag.transitive_closure(self.G)
+
+    def transitive_reduction(self):
+        return nx.dag.transitive_reduction(self.G)
+
     def domain_traversal(self, source=None):
         if source is None:
             source = list(self.G.nodes)[0]
