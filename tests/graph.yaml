@@ -3,48 +3,96 @@ $ref: ""
 type: object
 description: "describes the database contract within a namespace"
 metadata:
-  namespace: public
-  size: 20
+    namespace: public
+    size: 20
+    sep: ','
 properties:
-  table1:
-    type: object
-    metadata:
-      namespace: public
-      size: 20
-    properties: 
-      column1:
-        type: integer
-        description: ""
+    table1:
+        type: object
         metadata:
-          start: 0
-          step: 1
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            column1:
+                type: serial
+                description: ""
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            column2:
+                type: string
+                constraints:
+                    - uuid
+            column3:
+                type: json
+                properties:
+                    k1:
+                        type: string
+                    k2:
+                        type: string
         constraints:
-          - incremental
-      column2:
-        type: string
-        metadata: {}
-        constraint:
-          - uuid
-    constraints:
-      - notnull
-  table2:
-    type: object
-    metadata:
-      weight: 10
-    properties:
-      column3:
-        type: integer
-        metadata: 
-          weight: 10
-        constraints:
-          - unique
-      column4:
-        type: integer
+            - notnull
+    table2:
+        type: object
         metadata:
-          foreign: 
-            name: table1.column1
-        constraints: 
-          - unique
+            weight: 10
+            sep: ','
+        properties:
+            column1:
+                type: serial
+                description: ""
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            column2:
+                type: integer
+                metadata:
+                    foreign:
+                        name: table1.column1
+                constraints:
+                    - unique
+            column3:
+                type: integer
+                metadata: 
+                    min: 0
+                    max: 20
+                    weight: 10
+                constraints:
+                    - unique
+    table3:
+        type: object
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            column1:
+                type: serial
+                description: ""
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            column2:
+                type: integer
+                metadata:
+                    foreign:
+                        name: table2.column1
+                constraints:
+                    - unique
+            column3:
+                type: integer
+                metadata: 
+                    min: 0
+                    max: 20
+                    weight: 10
+                constraints:
+                    - unique
 constraints:
-  notnull:
-   - table1
+    notnull:
+        - table1
