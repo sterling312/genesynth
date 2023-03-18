@@ -32,7 +32,10 @@ properties:
                     k1:
                         type: string
                     k2:
-                        type: string
+                        type: json
+                        properties:
+                            k3:
+                                type: string
         constraints:
             - notnull
     table2:
