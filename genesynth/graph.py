@@ -59,24 +59,24 @@ class Graph:
 
     @property
     def model_nodes(self):
-        return {n for n, d in self.G.nodes(data=True) if not n.is_data}
+        return self.subgraph({n for n, d in self.G.nodes(data=True) if not n.is_data})
 
     @property
     def data_nodes(self):
-        return {n for n, d in self.G.nodes(data=True) if n.is_data}
+        return self.subgraph({n for n, d in self.G.nodes(data=True) if n.is_data})
 
     def filter(self, **attrs):
-        return {n for n, d in self.G.nodes(data=True) if d.items() >= attrs.items()}
+        return self.subgraph({n for n, d in self.G.nodes(data=True) if d.items() >= attrs.items()})
 
     @property
     def leaf(self):
-        return {n for n in self.G.nodes if self.G.in_degree(n) == 1 and self.G.out_degree(n) == 0}
+        return self.subgraph({n for n in self.G.nodes if self.G.in_degree(n) == 1 and self.G.out_degree(n) == 0})
 
     def parents(self, node):
-        return nx.ancestors(self.G, node)
+        return self.subgraph(nx.ancestors(self.G, node))
 
     def children(self, node):
-        return nx.descendants(self.G, node)
+        return self.subgraph(nx.descendants(self.G, node))
 
     def node_degree(self):
         return dict(self.G.in_degree())
