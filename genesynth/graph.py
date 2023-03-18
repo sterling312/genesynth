@@ -42,6 +42,9 @@ class Graph:
         self.attr = attr
         self.ref = ref
 
+    def subgraph(self, nodes):
+        return self.G.subgraph(nodes)
+
     @property
     def nodes(self):
         return self.G.nodes
@@ -54,10 +57,16 @@ class Graph:
     def root(self):
         return {n for n in self.G.nodes if self.G.in_degree(n) == 0}
 
-    def subgraph(self, node):
-        """return subgraph based on children
-        """
-        return self.G.subgraph(self.children(node))
+    @property
+    def model_nodes(self):
+        return {n for n, d in self.G.nodes(data=True) if not n.is_data}
+
+    @property
+    def data_nodes(self):
+        return {n for n, d in self.G.nodes(data=True) if n.is_data}
+
+    def filter(self, **attrs):
+        return {n for n, d in self.G.nodes(data=True) if d.items() >= attrs.items()}
 
     @property
     def leaf(self):

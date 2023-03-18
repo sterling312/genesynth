@@ -34,6 +34,7 @@ class BaseDataModel(BaseMapFixture):
     label: dict[str, str] - label to be added to the dataset that are not used for generation
     children: list - list od child dependencies
     """
+    is_data = False
     name: str
     schema: str = None # namespace from metadata
     sep: bytes = b''
@@ -159,6 +160,7 @@ class TableDataModel(BaseDataModel):
 @types.register(['json'])
 @dataclass(unsafe_hash=True)
 class JsonDataModel(BaseDataModel):
+    is_data = True
     async def merge(self, nodes, path=None):
         filenames = {node.name: node._file for node in nodes}
         async with self._filename(path) as fh:

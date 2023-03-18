@@ -43,6 +43,7 @@ types = Datatypes()
 
 @dataclass(unsafe_hash=True)
 class BaseMask:
+    is_data = True
     seed = None
     name: str
     size: int
