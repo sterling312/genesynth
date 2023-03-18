@@ -13,8 +13,7 @@ def main(filename, output=None):
         output, ext = os.path.splitext(os.path.basename(filename))
     pipe = Orchestration.read_yaml(filename)
     pipe.run()
-    root = pipe.graph.root.pop()
-    asyncio.run(root.save(output))
+    asyncio.run(pipe.root.save(output))
 
 if __name__ == '__main__':
     args = parser.parse_args()
