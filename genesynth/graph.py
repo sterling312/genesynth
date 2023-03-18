@@ -26,10 +26,13 @@ def find_node(G, name):
         if n.name == name:
             return n
 
-def find_child_node(G, parent, child):
+def find_child_node(G, parent, *children):
     node = find_node(G, parent)
     g = G.subgraph(nx.descendants(G, node))
-    return find_node(g, child) 
+    for child in children:
+        node = find_node(g, child) 
+        g = G.subgraph(nx.descendants(g, node))
+    return node
 
 class Graph:
     """

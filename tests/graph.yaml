@@ -53,7 +53,7 @@ properties:
                 type: integer
                 metadata:
                     foreign:
-                        name: table1.column1
+                        name: table1.column3.k1
                 constraints:
                     - unique
             column3:
