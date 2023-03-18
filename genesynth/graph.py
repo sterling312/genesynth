@@ -93,19 +93,13 @@ class Graph:
         for degree, iterable in sorted_degree:
             yield degree, list(zip(*iterable))[0]
 
-    def dependency_graph(self, node):
-        """
-        Return all parents of the node
-        """
-        return self.G.subgraph(self.parents(node))
-
     #async def __aiter__(self):
     #    """
     #    degree_search -> iterate node -> dependency_graph -> generate
     #    """
     #    for degree, nodes in self.degree_search():
     #        for node in nodes:
-    #            for n in self.dependency_graph(node).nodes:
+    #            for n in self.parents(node).nodes:
     #                arr = await n.generate()
     #                yield n, arr
     #            arr = await node.generate()
@@ -115,7 +109,7 @@ class Graph:
         for degree, nodes in self.degree_search():
             for node in nodes:
                 # TODO reverse order this iter
-                for n in self.dependency_graph(node).nodes:
+                for n in self.parents(node).nodes:
                     # TODO This needs to be fixed
                     yield n
                 yield node
