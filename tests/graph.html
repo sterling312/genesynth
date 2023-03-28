@@ -87,48 +87,18 @@
 
                   
 
-                  // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "blue", "id": "root", "label": "root", "shape": "dot", "size": 10}, {"color": "green", "id": "2", "label": "2", "shape": "dot", "size": 10}, {"color": "green", "id": "8", "label": "8", "shape": "dot", "size": 10}, {"color": "green", "id": "12", "label": "12", "shape": "dot", "size": 10}, {"color": "orange", "id": "3", "label": "3", "shape": "dot", "size": 10}, {"color": "orange", "id": "4", "label": "4", "shape": "dot", "size": 10}, {"color": "orange", "id": "5", "label": "5", "shape": "dot", "size": 10}, {"color": "orange", "id": "9", "label": "9", "shape": "dot", "size": 10}, {"color": "orange", "id": "10", "label": "10", "shape": "dot", "size": 10}, {"color": "orange", "id": "11", "label": "11", "shape": "dot", "size": 10}, {"color": "orange", "id": "13", "label": "13", "shape": "dot", "size": 10}, {"color": "orange", "id": "14", "label": "14", "shape": "dot", "size": 10}, {"color": "orange", "id": "15", "label": "15", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "6", "label": "6", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "7", "label": "7", "shape": "dot", "size": 10}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "root", "to": "2", "width": 1}, {"arrows": "to", "from": "root", "to": "8", "width": 1}, {"arrows": "to", "from": "root", "to": "12", "width": 1}, {"arrows": "to", "from": "2", "to": "3", "width": 1}, {"arrows": "to", "from": "2", "to": "4", "width": 1}, {"arrows": "to", "from": "2", "to": "5", "width": 1}, {"arrows": "to", "from": "8", "to": "9", "width": 1}, {"arrows": "to", "from": "8", "to": "10", "width": 1}, {"arrows": "to", "from": "8", "to": "11", "width": 1}, {"arrows": "to", "from": "12", "to": "13", "width": 1}, {"arrows": "to", "from": "12", "to": "14", "width": 1}, {"arrows": "to", "from": "12", "to": "15", "width": 1}, {"arrows": "to", "from": "3", "to": "6", "width": 1}, {"arrows": "to", "from": "3", "to": "7", "width": 1}, {"arrows": "to", "color": "red", "from": "11", "label": "subset", "to": "13", "width": 1}, {"arrows": "to", "color": "red", "from": "14", "label": "index", "to": "13", "width": 1}, {"arrows": "to", "color": "red", "from": "7", "label": "idenity", "to": "9", "width": 1}]);
+                  var DOTstring = "strict digraph entity {   root [color=blue]   2 [color=green]   8 [color=green]   12 [color=green]    3 [color=orange]   4 [color=orange]   5 [color=orange]   9 [color=orange]   10 [color=orange]   11 [color=orange]   13 [color=orange]   14 [color=orange]   15 [color=orange]    root -> 2   2 -> 3   2 -> 4   2 -> 5   3 -> 6   3 -> 7    root -> 8   8 -> 9   8 -> 10   8 -> 11    root -> 12   12 -> 13   12 -> 14   12 -> 15    7 -> 9 [label=idenity, color=red]   11 -> 13 [label=subset, color=red]   14 -> 13 [label=index, color=red] }";
+                  var parsedData = vis.network.convertDot(DOTstring);
 
-                  nodeColors = {};
-                  allNodes = nodes.get({ returnType: "Object" });
-                  for (nodeId in allNodes) {
-                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  data = {
+                    nodes: parsedData.nodes,
+                    edges: parsedData.edges
                   }
-                  allEdges = edges.get({ returnType: "Object" });
-                  // adding nodes and edges to the graph
-                  data = {nodes: nodes, edges: edges};
 
-                  var options = {
-    "configure": {
-        "enabled": false
-    },
-    "edges": {
-        "color": {
-            "inherit": true
-        },
-        "smooth": {
-            "enabled": true,
-            "type": "dynamic"
-        }
-    },
-    "interaction": {
-        "dragNodes": true,
-        "hideEdgesOnDrag": false,
-        "hideNodesOnDrag": false
-    },
-    "physics": {
-        "enabled": true,
-        "stabilization": {
-            "enabled": true,
-            "fit": true,
-            "iterations": 1000,
-            "onlyDynamicEdges": false,
-            "updateInterval": 50
-        }
-    }
-};
+                  var options = parsedData.options;
+                  options.nodes = {
+                      shape: "dot"
+                  }
 
                   
 
