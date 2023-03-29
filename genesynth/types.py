@@ -9,7 +9,7 @@ import enum
 import random
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
-from datetime import datetime, time
+from datetime import datetime, date, time
 import numpy as np
 import pandas as pd
 from scipy import stats
