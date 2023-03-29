@@ -71,6 +71,12 @@ class Graph:
     def filter(self, **attrs):
         return self.subgraph({n for n, d in self.G.nodes(data=True) if d.items() >= attrs.items()})
 
+    def find_node(self, name):
+        return find_node(self.G, name)
+
+    def find_child_node(self, parent, *children):
+        return find_child_node(self.G, parent, *children)
+
     @property
     def leaf(self):
         return self.subgraph({n for n in self.G.nodes if self.G.in_degree(n) == 1 and self.G.out_degree(n) == 0})
