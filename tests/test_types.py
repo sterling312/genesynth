@@ -65,6 +65,11 @@ def test_timestamp(params):
     arr = np.array([datetime(2020,1,1), datetime(2020,1,2), datetime(2020,1,3), datetime(2020,1,4), datetime(2020,1,5), datetime(2020,1,6), datetime(2020,1,7), datetime(2020,1,8), datetime(2020,1,9), datetime(2020,1,10)])
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
+def test_time(params):
+    n = BaseTime(min=time(0), max=time(23, 59, 59), **params)
+    arr = np.array([time(0), time(2, 39, 59, 888888), time(5, 19, 59, 777777), time(7, 59, 59, 666666), time(10, 39, 59, 555555), time(13, 19, 59, 444444), time(15, 59, 59, 333333), time(18, 39, 59, 222222), time(21, 19, 59, 111111), time(23, 59, 59)])
+    np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
+
 def test_map(params):
     children = {
         'id': SerialFixture(name='id', size=params['size'], min=0, step=1),

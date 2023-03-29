@@ -9,7 +9,7 @@ import enum
 import random
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, time
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -128,6 +128,7 @@ class BaseTextFixture(BaseMask):
 class BaseTimestamp(BaseMask):
     min: datetime = datetime.fromtimestamp(0)
     max: datetime = datetime.now()
+
     async def generate(self):
         return pd.date_range(self.min, self.max, periods=self.size).to_pydatetime()
 
@@ -140,14 +141,22 @@ class BaseDate(BaseTimestamp):
 @types.register(['time'])
 @dataclass(unsafe_hash=True)
 class BaseTime(BaseTimestamp):
+    min: time = time(0)
+    max: time = time(23, 59, 59)
+
     async def generate(self):
-        return pd.date_range(self.min, self.max, periods=self.size).time
+        min = datetime.fromtimestamp(0).replace(hour=self.min.hour, minute=self.min.minute,
+            second=self.min.second, microsecond=self.min.microsecond)
+        max = datetime.fromtimestamp(0).replace(hour=self.max.hour, minute=self.max.minute,
+            second=self.max.second, microsecond=self.max.microsecond)
+        return pd.date_range(min, max, periods=self.size).time
 
 @dataclass(unsafe_hash=True)
 class BaseForeign(BaseMask):
     depends_on: str
     graph: Any
     node = None
+
     async def generate(self):
         if self.node is None:
             parent, *child = self.depends_on.split('.')

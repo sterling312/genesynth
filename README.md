@@ -43,7 +43,6 @@ pip install -r requirements.txt
 * graph visualization
 * convert serial to autoincrement constraint for integer type
 * convert password to constraint of string type
-* fix time type
 
 ## nice to have features to add
 * support external scheduler
