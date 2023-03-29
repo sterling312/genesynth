@@ -46,6 +46,20 @@ def test_string(params):
     arr = np.array(['Walter', 'Hershel', 'Rudolf', 'Shirl', 'Jackeline', 'Ron', 'Martin', 'Afton', 'Keren', 'Zackary'])
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
+def test_password(params):
+    n = BcryptPassword(**params)
+    arr = np.array(['$2b$12$i0VpEBOWfbZAVaBSo63bbH6xnAbnBEoonCrbZINl91huSS6AZPsK2',
+                    '$2b$12$0FKcpXzkIRPxBFWGyEbcR8KykF8VH1oF7JCqH7aWY2TYGIAd1JmFE',
+                    '$2b$12$wvHMLCbokK1XXYp0PfbaUpgMvejGkqSCtDbxAlg3FmLYbbjSjRQHn',
+                    '$2b$12$8XGnOyJtNds82s1t6Uzpa2cY7Jk18RFxvmPAmgPsEu23bmu9WvnPZ',
+                    '$2b$12$5v2QE9oSfk4nVL0wvs1L73iIgce1WZvMWxJnfq3I5CrWZaPfh2co9',
+                    '$2b$12$AhkoUg4x84spDgOca8sKBtd488gnM8HQPqHtpfr8BON6ytut03suH',
+                    '$2b$12$JKpbpeIeeNsXE1jFXe6kW9YtgF5s3i4bt3X40UQlAjSPpd7YIH0Cy',
+                    '$2b$12$upbOzJdwihqZyyLoaGFOBQToEDnzI44rOceF2jV2tQ0xRTK137Jkp',
+                    '$2b$12$nJUdQSvFkTc8YMq47iW0ORB58xXAkuh47hLzhspUalBbMLZmrHqKp',
+                    '$2b$12$QXY8HE1VJxrgYhUH7V8iFJtFwGaBBsyWQEOxmarL2ZF9CZzU9skMG'])
+    np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
+
 def test_timestamp(params):
     n = BaseTimestamp(min='2020-01-01', max='2020-01-10', **params)
     arr = np.array([datetime(2020,1,1), datetime(2020,1,2), datetime(2020,1,3), datetime(2020,1,4), datetime(2020,1,5), datetime(2020,1,6), datetime(2020,1,7), datetime(2020,1,8), datetime(2020,1,9), datetime(2020,1,10)])

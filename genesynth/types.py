@@ -260,3 +260,12 @@ class StringFixture(BaseTextFixture):
     @worker.register
     async def write(self):
         return await super().write()
+
+@types.register(['password'])
+@dataclass(unsafe_hash=True)
+class BcryptPassword(BaseTextFixture):
+    rounds: int = 12
+    prefix: str = '2b'
+
+    async def generate(self):
+        return np.array([f'${self.prefix}${self.rounds}${self.random.randstr(length=53)}' for _ in range(self.size)])
