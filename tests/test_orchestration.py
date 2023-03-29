@@ -46,4 +46,4 @@ async def test_asyncio(o, node):
 
 def test_orchestration_read_yaml():
     o = Orchestration.read_yaml('tests/test.yaml')
-    assert len(o.graph.nodes) == 6
+    assert len(o.graph.nodes) == 7

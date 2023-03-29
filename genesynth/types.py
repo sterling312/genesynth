@@ -19,6 +19,7 @@ from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
 from genesynth.worker import WorkloadType, Runner, WorkerRegistry
 from genesynth.constraints import *
+from genesynth.graph import find_node, find_child_node
 from genesynth import mat
 
 def reseed(seed=None):
@@ -144,9 +145,12 @@ class BaseTime(BaseTimestamp):
 
 @dataclass(unsafe_hash=True)
 class BaseForeign(BaseMask):
-    depends_on: Any
+    depends_on: str
+    graph: Any
     async def generate(self):
-        arr = await self.depends_on.generate()
+        parent, *child = self.depends_on.split('.')
+        node = find_child_node(self.graph, parent, *child)
+        arr = await node.generate()
         return arr
 
 @types.register(['array', 'list', 'tuple'])

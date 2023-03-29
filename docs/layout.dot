@@ -20,6 +20,7 @@ strict digraph genesynth {
         "types.py" -> "model.py" [xlabel="basic types"]
         "model.py" -> "orchestration.py" [xlabel="AST"]
         "graph.py" -> "orchestration.py" [xlabel="required order of operation"]
+        "graph.py" -> "types.py" [xlabel="foreign reference and graph traversal"]
         "io.py" -> "orchestration.py" [xlabel="io adapters"]
         "orchestration.py" -> "cli.py" [style=dashed]
         "orchestration.py" -> "server.py" [style=dashed, xlabel="aiohttp/gRPC"]

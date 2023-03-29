@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
-from genesynth.types import Hashabledict
+from genesynth.types import Hashabledict, BaseForeign
 from genesynth.graph import Graph, find_node, find_child_node
 from genesynth.model import worker, types, BaseDataModel, WorkloadType
 from genesynth.extensions import extensions
@@ -58,13 +58,8 @@ def config_to_graph(G, fullname, params, size=0):
     metadata['sep'] = metadata.get('sep', '')
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
-    #node = datatypes[type].from_params(name=name, **metadata)
     if foreign:
-        parent, *child = foreign['name'].split('.')
-        f_node = find_child_node(G, parent, *child)
-        # TODO preserve generated data but keep the attribute
-        # NOTE: this currently produce a bug where if the referenced node is not present before references, it will error with look up error
-        node = f_node
+        node = BaseForeign.from_params(name=name, graph=G, depends_on=foreign['name'], metadata=metadata, **metadata)
     else:
         node = datatypes[type].from_params(name=name, metadata=metadata, **metadata)
     properties = params.get('properties')
