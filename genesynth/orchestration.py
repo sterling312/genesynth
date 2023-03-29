@@ -63,6 +63,7 @@ def config_to_graph(G, fullname, params, size=0):
         parent, *child = foreign['name'].split('.')
         f_node = find_child_node(G, parent, *child)
         # TODO preserve generated data but keep the attribute
+        # NOTE: this currently produce a bug where if the referenced node is not present before references, it will error with look up error
         node = f_node
     else:
         node = datatypes[type].from_params(name=name, metadata=metadata, **metadata)
