@@ -33,11 +33,11 @@ def model(fixture_graph):
 
 def test_parents(G):
     parent = G.parents('2')
-    assert parent == {'root'}
+    assert set(parent.nodes) == {'root'}
 
 def test_children(G):
     children = G.children('3')
-    assert children == {'9', '6', '7'}
+    assert set(children.nodes) == {'9', '6', '7'}
 
 def test_node_degree(G):
     degree = G.node_degree()
