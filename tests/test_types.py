@@ -46,6 +46,11 @@ def test_string(params):
     arr = np.array(['Walter', 'Hershel', 'Rudolf', 'Shirl', 'Jackeline', 'Ron', 'Martin', 'Afton', 'Keren', 'Zackary'])
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
+def test_timestamp(params):
+    n = BaseTimestamp(min='2020-01-01', max='2020-01-10', **params)
+    arr = np.array([datetime(2020,1,1), datetime(2020,1,2), datetime(2020,1,3), datetime(2020,1,4), datetime(2020,1,5), datetime(2020,1,6), datetime(2020,1,7), datetime(2020,1,8), datetime(2020,1,9), datetime(2020,1,10)])
+    np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
+
 def test_map(params):
     children = {
         'id': SerialFixture(name='id', size=params['size'], min=0, step=1),

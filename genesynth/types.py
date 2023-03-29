@@ -11,6 +11,7 @@ from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 import numpy as np
+import pandas as pd
 from scipy import stats
 from mimesis import Generic
 from mimesis.random import Random
@@ -124,8 +125,8 @@ class BaseTextFixture(BaseMask):
 @types.register(['timestamp', 'datetime'])
 @dataclass(unsafe_hash=True)
 class BaseTimestamp(BaseMask):
-    min = datetime.fromtimestamp(0)
-    max = datetime.now()
+    min: datetime = datetime.fromtimestamp(0)
+    max: datetime = datetime.now()
     async def generate(self):
         return pd.date_range(self.min, self.max, periods=self.size).to_pydatetime()
 
