@@ -31,7 +31,6 @@ pip install -r requirements.txt
 * intermediary data temporary cache
 
 ## key features to add
-* add timestamp support
 * add yaml validator
 * add header support
 * rename column referenced by foreign relationship
