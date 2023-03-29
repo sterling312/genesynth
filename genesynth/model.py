@@ -185,8 +185,8 @@ class JsonDataModel(BaseDataModel):
             os.mkdir(path)
         for n in self.children.values():
             gens.append(n)
-            # TODO defer this to orchestrator
             n._path = path
+            # TODO defer this to orchestrator
             await n.write()
         await self.merge(gens, path)
         self._file = os.path.join(path, self.name)
