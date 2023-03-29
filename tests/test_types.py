@@ -1,6 +1,7 @@
 import pytest
 from pytest import fixture
 import asyncio
+import networkx as nx
 from genesynth.types import *
 
 @fixture(scope='function')
@@ -73,6 +74,15 @@ def test_date(params):
 def test_time(params):
     n = BaseTime(min=time(0), max=time(23, 59, 59), **params)
     arr = np.array([time(0), time(2, 39, 59, 888888), time(5, 19, 59, 777777), time(7, 59, 59, 666666), time(10, 39, 59, 555555), time(13, 19, 59, 444444), time(15, 59, 59, 333333), time(18, 39, 59, 222222), time(21, 19, 59, 111111), time(23, 59, 59)])
+    np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
+
+def test_foreign(params):
+    parent = IntegerFixture(min=0, max=100, name='parent', size=params['size'])
+    child = IntegerFixture(min=0, max=100, name='child', size=params['size'])
+    G = nx.DiGraph()
+    G.add_edge(parent, child)
+    n = BaseForeign.from_params(graph=G, depends_on='parent.child', **params)
+    arr = np.array([37, 12, 72, 9, 75, 5, 79, 64, 16, 1])
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
 def test_map(params):
