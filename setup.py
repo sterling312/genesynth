@@ -25,6 +25,8 @@ if __name__ == '__main__':
     setuptools.setup(
         name=name,
         version=version,
+        license='MIT',
+        author='Gang Huang',
         description=description,
         long_description=readme(),
         long_description_content_type="text/x-rst",

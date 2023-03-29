@@ -18,6 +18,7 @@ pip install -r requirements.txt
 # project status
 
 ## supported feature
+* load yaml as configuration file
 * arbitrary row size support
 * data type mapping with configurable parameters
 * JSON (semi-structured data) support
@@ -30,6 +31,7 @@ pip install -r requirements.txt
 * intermediary data temporary cache
 
 ## key features to add
+* add yaml validator
 * rename column referenced by foreign relationship
 * additional output file formats (JSON, PSQL dump, CSV with quotes, etc)
 * add support for JSON arrays
