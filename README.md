@@ -32,6 +32,7 @@ pip install -r requirements.txt
 
 ## key features to add
 * add yaml validator
+* add header support
 * rename column referenced by foreign relationship
 * additional output file formats (JSON, PSQL dump, CSV with quotes, etc)
 * add support for JSON arrays
