@@ -147,10 +147,12 @@ class BaseTime(BaseTimestamp):
 class BaseForeign(BaseMask):
     depends_on: str
     graph: Any
+    node = None
     async def generate(self):
-        parent, *child = self.depends_on.split('.')
-        node = find_child_node(self.graph, parent, *child)
-        arr = await node.generate()
+        if self.node is None:
+            parent, *child = self.depends_on.split('.')
+            self.node = find_child_node(self.graph, parent, *child)
+        arr = await self.node.generate()
         return arr
 
 @types.register(['array', 'list', 'tuple'])
