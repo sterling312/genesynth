@@ -9,6 +9,7 @@ import enum
 import random
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
+from datetime import datetime
 import numpy as np
 from scipy import stats
 from mimesis import Generic
@@ -120,9 +121,25 @@ class BaseTextFixture(BaseMask):
     async def generate(self):
         return np.array([self.random.randstr()[:self.length] for _ in range(self.size)])
 
+@types.register(['timestamp', 'datetime'])
 @dataclass(unsafe_hash=True)
 class BaseTimestamp(BaseMask):
-    pass
+    min = datetime.fromtimestamp(0)
+    max = datetime.now()
+    async def generate(self):
+        return pd.date_range(self.min, self.max, periods=self.size).to_pydatetime()
+
+@types.register(['date'])
+@dataclass(unsafe_hash=True)
+class BaseDate(BaseTimestamp):
+    async def generate(self):
+        return pd.date_range(self.min, self.max, periods=self.size).date
+
+@types.register(['time'])
+@dataclass(unsafe_hash=True)
+class BaseTime(BaseTimestamp):
+    async def generate(self):
+        return pd.date_range(self.min, self.max, periods=self.size).time
 
 @dataclass(unsafe_hash=True)
 class BaseForeign(BaseMask):
