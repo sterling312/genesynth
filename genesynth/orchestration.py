@@ -131,7 +131,11 @@ class Orchestration:
                 await node.write(arr)
 
     def run(self):
-        asyncio.run(self.__aiter__())
+        loop = asyncio.get_running_loop()
+        if loop and loop.is_running():
+            loop.create_task(self.__aiter__())
+        else:
+            asyncio.run(self.__aiter__())
 
     async def generate(self, node):
         # TODO replace this with graph traversal and task queue/dequeue
