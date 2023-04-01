@@ -1,0 +1,482 @@
+version: 2
+$ref: ""
+type: object
+description: "describes the database contract within a namespace"
+metadata:
+    namespace: public
+    size: 20
+    sep: ','
+properties:
+    user:
+        type: table
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            id:
+                type: serial
+                description: "Unique ID for each user"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            username:
+                type: string
+                description: "Username for the user"
+            email:
+                type: string
+                description: "Email address for the user"
+            password:
+                type: string
+                description: "Encrypted password for the user"
+                metadata:
+                    length: 60
+            password_salt:
+                type: string
+                description: "Password salt"
+                metadata:
+                    length: 29
+            first_name:
+                type: string
+                description: "First name of the user"
+            last_name:
+                type: string
+                description: "Last name of the user"
+            phone:
+                type: string
+                description: "Phone number of the user"
+                metadata:
+                    length: 20
+            address:
+                type: string
+                description: "Address of the user"
+            city:
+                type: string
+                description: "City where the user resides"
+                metadata:
+                    length: 100
+            state:
+                type: string
+                description: "State where the user resides"
+                metadata:
+                    length: 100
+            country:
+                type: string
+                description: "Country where the user resides"
+                metadata:
+                    length: 100
+            postal_code:
+                type: string
+                description: "Postal code where the user resides"
+                metadata:
+                    length: 20
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the user was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the user was last updated"
+
+    product:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each product"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            name:
+                type: string
+                description: "Name of the product"
+            description:
+                type: text
+                description: "Description of the product"
+            price:
+                type: decimal
+                description: "Price of the product"
+                metadata:
+                    min: 1
+                    max: 100
+                    precision: 10
+                    scale: 2
+            image:
+                type: string
+                description: "URL to an image of the product"
+            category_id:
+                type: integer
+                description: "ID of the category to which the product belongs"
+                metadata:
+                    foreign:
+                        name: category.id
+            stock:
+                type: integer
+                description: "Number of units of the product available in inventory"
+                metadata:
+                    min: 0
+                    max: 1000
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the product was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the product was last updated"
+
+    category:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each category"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            name:
+                type: string
+                description: "Name of the category"
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the category was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the category was last updated"
+
+    order:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each order"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            user_id:
+                type: integer
+                description: "ID of the user who placed the order"
+                metadata:
+                    foreign:
+                        name: user.id
+            total_price:
+                type: decimal
+                description: "Total price of the order"
+                metadata:
+                    min: 1
+                    max: 1000
+                    precision: 10
+                    scale: 2
+            payment_status:
+                type: string
+                description: "Payment status of the order"
+                metadata:
+                    length: 20
+            payment_method:
+                type: string
+                description: "Payment method used for the order"
+                metadata:
+                    length: 100
+            shipping_status:
+                type: string
+                description: "Shipping status of the order"
+                metadata:
+                    length: 20
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the order was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the order was last updated"
+
+    order_item:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each order item"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            order_id:
+                type: integer
+                description: "ID of the order to which the item belongs"
+                metadata:
+                    foreign:
+                        name: order.id
+            product_id:
+                type: integer
+                description: "ID of the product in the order item"
+                metadata:
+                    foreign:
+                        name: product.id
+            quantity:
+                type: integer
+                description: ""
+                metadata:
+                    min: 0
+                    max: 100
+            price:
+                type: decimal
+                description: "Price of the product at the time of the order"
+                metadata:
+                    min: 1
+                    max: 100
+                    precision: 10
+                    scale: 2
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the order item was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the order item was last updated"
+
+    payment:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each payment record"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            order_id:
+                type: integer
+                description: "ID of the order to which the payment relates"
+                metadata:
+                    foreign:
+                        name: order.id
+            amount:
+                type: decimal
+                description: "Amount of the payment"
+                metadata:
+                    min: 1
+                    max: 1000
+                    precision: 10
+                    scale: 2
+            method:
+                type: string
+                description: "Payment method used for the payment"
+                metadata:
+                    length: 100
+            status:
+                type: string
+                description: 'Payment status (e.g. "paid" or "pending")'
+                metadata:
+                    length: 20
+            transaction_id:
+                type: string
+                description: "ID of the payment transaction"
+                constraints:
+                    - notnull
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the payment was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the payment was last updated"
+
+    shipping:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each shipping record"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            order_id:
+                type: integer
+                description: "ID of the order to which the shipping relates"
+                metadata:
+                    foreign:
+                        name: order.id
+            address:
+                type: string
+                description: "Shipping address"
+            city:
+                type: string
+                description: "City where the order is being shipped"
+                metadata:
+                    length: 100
+            state:
+                type: string
+                description: "State where the order is being shipped"
+                metadata:
+                    length: 100
+            country:
+                type: string
+                description: "Country where the order is being shipped"
+                metadata:
+                    length: 100
+            postal_code:
+                type: string
+                description: "Postal code where the order is being shipped"
+                metadata:
+                    length: 20
+            method:
+                type: string
+                description: "Shipping method used for the order"
+                metadata:
+                    length: 100
+            tracking_num:
+                type: string
+                description: "Tracking number for the shipment (if applicable)"
+            status:
+                type: string
+                description: 'Shipping status (e.g. "shipped" or "in transit")'
+                metadata:
+                    length: 20
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the shipping record was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the shipping record was updated"
+
+    cart:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each cart record"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            user_id:
+                type: integer
+                description: "ID of the user who owns the cart"
+                metadata:
+                    foreign:
+                        name: user.id
+            product_id:
+                type: integer
+                description: "ID of the product in the cart"
+                metadata:
+                    foreign:
+                        name: product.id
+            quantity:
+                type: integer
+                description: "Number of units of the product in the cart"
+                metadata:
+                    min: 0
+                    max: 100
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the cart record was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the cart record was last updated"
+
+    wishlist:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each wishlist record"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            user_id:
+                type: integer
+                description: "ID of the user who owns the wishlist"
+                metadata:
+                    foreign:
+                        name: user.id
+            product_id:
+                type: integer
+                description: "ID of the product in the wishlist"
+                metadata:
+                    foreign:
+                        name: product.id
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the wishlist record was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the wishlist record was last updated"
+
+    review:
+        type: table
+        metadata:
+            weight: 10
+            sep: ','
+        properties:
+            id:
+                type: serial
+                description: "Unique ID for each review"
+                metadata:
+                    start: 0
+                    step: 1
+                constraints:
+                    - incremental
+            user_id:
+                type: integer
+                description: "ID of the user who wrote the review"
+                metadata:
+                    foreign:
+                        name: user.id
+            product_id:
+                type: integer
+                description: "ID of the product being reviewed"
+                metadata:
+                    foreign:
+                        name: product.id
+            title:
+                type: string
+                description: "Title of the review"
+            body:
+                type: text
+                description: "Body of the review"
+            rating:
+                type: integer
+                description: "Rating given by the user (e.g. 1 to 5 stars)"
+                metadata:
+                    min: 1
+                    max: 5
+            created_at:
+                type: timestamp
+                description: "Timestamp of when the review was created"
+            updated_at:
+                type: timestamp
+                description: "Timestamp of when the review was created"
+
