@@ -19,7 +19,7 @@ from mimesis.locales import Locale
 from mimesis.builtins import USASpecProvider
 from genesynth.worker import WorkloadType, Runner, WorkerRegistry
 from genesynth.constraints import *
-from genesynth.graph import find_node, find_child_node
+from genesynth.graph import nx, find_node, find_child_node
 from genesynth import mat
 
 def reseed(seed=None):
@@ -142,13 +142,20 @@ class BaseTime(BaseTimestamp):
 @dataclass(unsafe_hash=True)
 class BaseForeign(BaseMask):
     depends_on: str
-    graph: Any
-    node = None
+    graph: nx.DiGraph
+    _node = None
+
+    @property
+    def node(self):
+        if self._node is None:
+            parent, *child = self.depends_on.split('.')
+            self._node = find_child_node(self.graph, parent, *child)
+        return self._node
+
+    def resolve_fkey_edge(self):
+        self.graph.add_edge(self.node, self, label='fkey', type='fkey')
 
     async def generate(self):
-        if self.node is None:
-            parent, *child = self.depends_on.split('.')
-            self.node = find_child_node(self.graph, parent, *child)
         arr = await self.node.generate()
         return arr
 

@@ -59,9 +59,10 @@ def config_to_graph(G, fullname, params, size=0):
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
     if foreign:
-        node = BaseForeign.from_params(name=name, graph=G, depends_on=foreign['name'], metadata=metadata, **metadata)
+        depends_on = f'root.{foreign["name"]}'
+        node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
     else:
-        node = datatypes[type].from_params(name=name, metadata=metadata, **metadata)
+        node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
     properties = params.get('properties')
     if properties is not None:
         children = {}
@@ -73,7 +74,7 @@ def config_to_graph(G, fullname, params, size=0):
         # add node to graph after setting data field children
         for child in children.values():
             G.add_edge(node, child) # add relationship type here
-    G.add_node(node, label=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
+    G.add_node(node, label=fullname, xlabel=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
     return node
 
 class Orchestration:
@@ -94,6 +95,9 @@ class Orchestration:
         G = nx.DiGraph()
         config_to_graph(G, name, data, size=size)
         graph = Graph(G, name=name, metadata=data['metadata'])
+        for n in graph.nodes:
+            if isinstance(n, BaseForeign):
+                n.resolve_fkey_edge()
         return cls(graph)
 
     async def walk(self):

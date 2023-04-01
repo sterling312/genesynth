@@ -78,7 +78,7 @@ def test_time(params):
 
 def test_foreign(params):
     parent = IntegerFixture(min=0, max=100, name='parent', size=params['size'])
-    child = IntegerFixture(min=0, max=100, name='child', size=params['size'])
+    child = IntegerFixture(min=0, max=100, name='parent.child', size=params['size'])
     G = nx.DiGraph()
     G.add_edge(parent, child)
     n = BaseForeign.from_params(graph=G, depends_on='parent.child', **params)

@@ -30,7 +30,8 @@ def find_child_node(G, parent, *children):
     node = find_node(G, parent)
     g = G.subgraph(nx.descendants(G, node))
     for child in children:
-        node = find_node(g, child) 
+        parent = f'{parent}.{child}'
+        node = find_node(g, parent) 
         g = G.subgraph(nx.descendants(g, node))
     return node
 
