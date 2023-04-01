@@ -50,7 +50,7 @@ class Relationship(enum.Enum):
     identity = 4 # node contains exact copy of parent
     incremental_index = 5 # node contains increasing index as parent
 
-def config_to_graph(G, fullname, params, size=0):
+def config_to_graph(G, fullname, params, size=0, root='root'):
     name = fullname.rsplit('.', 1)[-1]
     type = params['type']
     metadata = params.get('metadata', {})
@@ -59,7 +59,7 @@ def config_to_graph(G, fullname, params, size=0):
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints')
     if foreign:
-        depends_on = f'root.{foreign["name"]}'
+        depends_on = f'{root}.{foreign["name"]}'
         node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
     else:
         node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
@@ -68,7 +68,7 @@ def config_to_graph(G, fullname, params, size=0):
         children = {}
         for field, attributes in properties.items():
             field_fullname = f'{fullname}.{field}'
-            child = config_to_graph(G, field_fullname, attributes, size=size)
+            child = config_to_graph(G, field_fullname, attributes, size=size, root=root)
             children[child] = child
         node.children = Hashabledict(children)
         # add node to graph after setting data field children
@@ -93,7 +93,7 @@ class Orchestration:
         data = load_config(filename)
         size = data['metadata']['size']
         G = nx.DiGraph()
-        config_to_graph(G, name, data, size=size)
+        config_to_graph(G, name, data, size=size, root=name)
         graph = Graph(G, name=name, metadata=data['metadata'])
         for n in graph.nodes:
             if isinstance(n, BaseForeign):
