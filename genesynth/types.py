@@ -89,7 +89,7 @@ class BaseMask:
             filename = os.path.join(self._path, self.name)
         else:
             filename = self.name
-        np.savetxt(filename, arr, fmt="%s", delimiter='\n')
+        np.savetxt(filename, arr, fmt='"%s"', delimiter='\n')
         self._file = filename
 
     def __str__(self):

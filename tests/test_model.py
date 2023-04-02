@@ -87,7 +87,7 @@ def test_write(params):
     asyncio.run(n.save('foo'))
     with open('foo') as fh:
         assert fh.readline().rstrip('\n') == 'id,json,text'
-        assert fh.readline().rstrip('\n') == '0,{"value": "5"},carol'
+        assert fh.readline().rstrip('\n') == '"0",{"value": "\\"5\\""},"carol"'
     os.remove('foo')
 
 def test_nested_write(params):
@@ -107,5 +107,5 @@ def test_nested_write(params):
     asyncio.run(n.save('foo.gz'))
     with gzip.open('foo.gz', 'rt') as fh:
         assert fh.readline().rstrip('\n') == 'id,json,text'
-        assert fh.readline().rstrip('\n') == '0,{"map": {"value": "5"}},carol'
+        assert fh.readline().rstrip('\n') == '"0",{"map": {"value": "\\"5\\""}},"carol"'
     os.remove('foo.gz')
