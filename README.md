@@ -30,6 +30,7 @@ pip install -r requirements.txt
 * built-in orchestrator using graph
 * thread and process support
 * intermediary data temporary cache
+* graph visualization
 
 ## key features to add
 * add yaml validator
@@ -41,7 +42,6 @@ pip install -r requirements.txt
 * add support statistical distribution via kernel convolution
 * optimize orchestration and disk cache efficiency
 * optimize thread/process based generation
-* graph visualization
 * convert serial to autoincrement constraint for integer type
 * convert password to constraint of string type
 
