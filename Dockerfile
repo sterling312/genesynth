@@ -7,6 +7,6 @@ ADD dev-requirements.txt /tmp/
 RUN python -m pip install -r /tmp/dev-requirements.txt
 
 WORKDIR /home
-RUN mkdir -p /home/genesynth
-ADD . /home/genesynth/
-RUN cd genesynth && python setup.py install
+RUN mkdir -p /tmp/genesynth
+ADD . /tmp/genesynth/
+RUN cd /tmp/genesynth && python setup.py install
