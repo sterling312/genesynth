@@ -10,6 +10,7 @@ pip install -r requirements.txt
 
 # example
 ```
+>>> from genesynth.orchestration import Orchestration
 >>> pipe = Orchestration.read_yaml('tests/graph.yaml') 
 >>> pipe.run()
 >>> pipe.root.save('graph.csv')
