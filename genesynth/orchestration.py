@@ -131,7 +131,10 @@ class Orchestration:
                 await node.write(arr)
 
     def run(self):
-        loop = asyncio.get_running_loop()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.get_event_loop()
         if loop and loop.is_running():
             loop.create_task(self.__aiter__())
         else:
@@ -152,7 +155,10 @@ class Orchestration:
         return await self.runner.run(node.generate)
 
     async def thread(self, node):
-        loop = asyncio.get_running_loop()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.get_event_loop()
         return await loop.run_in_executor(self.executor, spawn, node.generate)
 
     async def asyncio(self, node):

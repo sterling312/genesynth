@@ -10,10 +10,10 @@ pip install -r requirements.txt
 
 # example
 ```
->>> from genesynth.orchestration import Orchestration
+>>> from genesynth.orchestration import *
 >>> pipe = Orchestration.read_yaml('tests/graph.yaml') 
 >>> pipe.run()
->>> pipe.root.save('graph.csv')
+>>> asyncio.run(pipe.root.save('graph.csv'))
 ```
 
 # project status
