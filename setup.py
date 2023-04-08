@@ -30,7 +30,6 @@ if __name__ == '__main__':
         description=description,
         long_description=readme(),
         long_description_content_type="text/x-rst",
-        author='gang',
         packages=setuptools.find_packages(),
         python_requires='>=3.9',
         install_requires=dep(),
