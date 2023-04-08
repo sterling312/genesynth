@@ -54,8 +54,8 @@ class BaseMask:
     null = None
     _index = None
     _mask = None
-    _file = None # cache directory
-    _path = None # cache filename
+    _file = None # cache filename
+    _path = None # cache directory
     _defer = None # parent node if deferred
 
     # TODO handle notnull and unique constraits
