@@ -51,6 +51,9 @@ class Relationship(enum.Enum):
     incremental_index = 5 # node contains increasing index as parent
 
 def config_to_graph(G, fullname, params, size=0, root='root'):
+    # TODO move this logic into io.py without disrupting package dependency
+    # TODO incorporate Node and Relationship into node
+    # TODO incorporate Constraint into node
     name = fullname.rsplit('.', 1)[-1]
     type = params['type']
     metadata = params.get('metadata', {})

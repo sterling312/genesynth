@@ -147,6 +147,7 @@ class BaseForeign(BaseMask):
 
     @property
     def node(self):
+        # TODO Add parent _path to this node
         if self._node is None:
             parent, *child = self.depends_on.split('.')
             self._node = find_child_node(self.graph, parent, *child)
