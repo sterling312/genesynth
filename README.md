@@ -49,5 +49,5 @@ pip install -r requirements.txt
 * support external scheduler
 * support NLP based text generation
 * support sklearn
-* support integration with pytorch
+* support integration with pytorch embedding
 * support for object reference via $ref
