@@ -28,25 +28,6 @@ if sys.version_info < (3, 11):
 
 logger = logging.getLogger(__name__)
 
-class Constraint(enum.Enum):
-    unique = 1 
-    notnull = 2
-    incremental = 3
-    uuid = 4
-
-class Node(enum.Enum):
-    unique = 1 # node contains no duplicated value
-    notnull = 2 # node contains no empty value
-    incremental = 3 # node increases over index
-    subset = 4 # node contains value within the set (between is just (a...b) eps R)
-
-class Relationship(enum.Enum):
-    child = 1 # node is a child of parent
-    subset = 2 # node contains subset of copy of parent
-    index = 3 # node contains same index as parent
-    identity = 4 # node contains exact copy of parent
-    incremental_index = 5 # node contains increasing index as parent
-
 class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
