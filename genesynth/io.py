@@ -11,7 +11,7 @@ import yaml
 import tempfile
 import networkx as nx
 import numpy as np
-from genesynth.types import Hashabledict, BaseForeign
+from genesynth.types import Hashabledict, BaseForeign, BaseArrayFixture
 from genesynth.extensions import datatypes
 from genesynth.constraints import *
 
@@ -68,7 +68,10 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     name = fullname.rsplit('.', 1)[-1]
     container = None
     type = params['type']
-    if type.startswith('[') and type.endswith(']'):
+    if isinstance(type, (list, tuple)):
+        type = type[0]
+        container = 'array'
+    elif type.startswith('[') and type.endswith(']'):
         type = type.strip('[]')
         container = 'array'
     metadata = params.get('metadata', {})
@@ -79,6 +82,8 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     if foreign:
         depends_on = f'{root}.{foreign["name"]}'
         node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
+    elif container == 'array':
+        node = datatypes[type].from_params(name=fullname, metadata=metadata, is_array=True, **metadata)
     else:
         node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
     properties = params.get('properties')
@@ -88,9 +93,7 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
             field_fullname = f'{fullname}.{field}'
             child = schema_to_graph(G, field_fullname, attributes, size=size, root=root)
             children[child] = child
-        if container is not None and container == 'array':
-            node.children = tuple(children.values())
-        else:
+        if container is None:
             node.children = Hashabledict(children)
         # add node to graph after setting data field children
         for child in children.values():

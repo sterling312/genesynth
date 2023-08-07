@@ -61,12 +61,15 @@ class BaseMask:
     # TODO handle notnull and unique constraits
 
     @classmethod
-    def from_params(cls, **kwargs):
+    def from_params(cls, is_array=False, **kwargs):
         # TODO add type conversion based on constraints
         fields = set(cls.__dataclass_fields__.keys())
         keys = set(kwargs.keys())
         params = {field: kwargs[field] for field in fields & keys}
-        return cls(**params)
+        if is_array:
+            return BaseArrayFixture(name=params['name'], size=params['size'], children=(cls(**params), ))
+        else:
+            return cls(**params)
 
     def mask(self):
         pass
