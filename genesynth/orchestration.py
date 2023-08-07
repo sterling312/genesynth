@@ -12,15 +12,14 @@ import asyncio
 import uvloop
 import networkx as nx
 from dataclasses import dataclass
-from collections import ChainMap
 from multiprocessing import Manager, cpu_count
 from concurrent import futures
 from genesynth.types import Hashabledict, BaseForeign
 from genesynth.graph import Graph, find_node, find_child_node
 from genesynth.model import worker, types, BaseDataModel, WorkloadType
-from genesynth.extensions import extensions
+from genesynth.extensions import datatypes
 from genesynth.worker import Runner
-from genesynth.io import load_config
+from genesynth.io import load_config, config_to_graph
 from genesynth.utils import spawn, wait
 from genesynth.constraints import *
 
@@ -28,8 +27,6 @@ if sys.version_info < (3, 11):
     uvloop.install()
 
 logger = logging.getLogger(__name__)
-
-datatypes = ChainMap(types, extensions)
 
 class Constraint(enum.Enum):
     unique = 1 
@@ -50,36 +47,6 @@ class Relationship(enum.Enum):
     identity = 4 # node contains exact copy of parent
     incremental_index = 5 # node contains increasing index as parent
 
-def config_to_graph(G, fullname, params, size=0, root='root'):
-    # TODO move this logic into io.py without disrupting package dependency
-    # TODO incorporate Node and Relationship into node
-    # TODO incorporate Constraint into node
-    name = fullname.rsplit('.', 1)[-1]
-    type = params['type']
-    metadata = params.get('metadata', {})
-    metadata['size'] = metadata.get('size') or size
-    metadata['sep'] = metadata.get('sep', '')
-    foreign = metadata.pop('foreign', None)
-    constraints = params.get('constraints')
-    if foreign:
-        depends_on = f'{root}.{foreign["name"]}'
-        node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
-    else:
-        node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
-    properties = params.get('properties')
-    if properties is not None:
-        children = {}
-        for field, attributes in properties.items():
-            field_fullname = f'{fullname}.{field}'
-            child = config_to_graph(G, field_fullname, attributes, size=size, root=root)
-            children[child] = child
-        node.children = Hashabledict(children)
-        # add node to graph after setting data field children
-        for child in children.values():
-            G.add_edge(node, child) # add relationship type here
-    G.add_node(node, label=fullname, xlabel=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
-    return node
-
 class Orchestration:
     """
     Handles processing optimization by determing the type of worker that can be used for each data type.
@@ -98,9 +65,9 @@ class Orchestration:
         G = nx.DiGraph()
         config_to_graph(G, name, data, size=size, root=name)
         graph = Graph(G, name=name, metadata=data['metadata'])
-        for n in graph.nodes:
-            if isinstance(n, BaseForeign):
-                n.resolve_fkey_edge()
+        #for n in graph.nodes:
+        #    if isinstance(n, BaseForeign):
+        #        n.resolve_fkey_edge()
         return cls(graph)
 
     async def walk(self):

@@ -11,6 +11,8 @@ import yaml
 import tempfile
 import networkx as nx
 import numpy as np
+from genesynth.types import Hashabledict, BaseForeign
+from genesynth.extensions import datatypes
 
 """
 1. construct graph based on input configuration
@@ -57,6 +59,36 @@ def write_as_yaml(fh_obj, filename, header=False):
             line = fh_obj.readline()
         records = [json.loads(line.rstrip('\n')) for line in fh_obj]
         yaml.dump(records, fh)
+
+def config_to_graph(G, fullname, params, size=0, root='root'):
+    # TODO move this logic into io.py without disrupting package dependency
+    # TODO incorporate Node and Relationship into node
+    # TODO incorporate Constraint into node
+    name = fullname.rsplit('.', 1)[-1]
+    type = params['type']
+    metadata = params.get('metadata', {})
+    metadata['size'] = metadata.get('size') or size
+    metadata['sep'] = metadata.get('sep', '')
+    foreign = metadata.pop('foreign', None)
+    constraints = params.get('constraints')
+    if foreign:
+        depends_on = f'{root}.{foreign["name"]}'
+        node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
+    else:
+        node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
+    properties = params.get('properties')
+    if properties is not None:
+        children = {}
+        for field, attributes in properties.items():
+            field_fullname = f'{fullname}.{field}'
+            child = config_to_graph(G, field_fullname, attributes, size=size, root=root)
+            children[child] = child
+        node.children = Hashabledict(children)
+        # add node to graph after setting data field children
+        for child in children.values():
+            G.add_edge(node, child) # add relationship type here
+    G.add_node(node, label=fullname, xlabel=name, _id=fullname, type=type, metadata=metadata) # convert constraints into attributes
+    return node
 
 class CacheCollection:
     def __init__(self, name):

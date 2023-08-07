@@ -147,14 +147,16 @@ class BaseForeign(BaseMask):
 
     @property
     def node(self):
-        # TODO Add parent _path to this node
         if self._node is None:
             parent, *child = self.depends_on.split('.')
             self._node = find_child_node(self.graph, parent, *child)
+            self._node._path = self._path
+            self.resolve_fkey_edge()
         return self._node
 
     def resolve_fkey_edge(self):
-        self.graph.add_edge(self.node, self, label='fkey', type='fkey')
+        if (self.node, self) not in self.graph.edges:
+            self.graph.add_edge(self.node, self, label='fkey', type='fkey')
 
     async def generate(self):
         arr = await self.node.generate()
