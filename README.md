@@ -51,4 +51,4 @@ pip install -r requirements.txt
 * support sklearn
 * support integration with pytorch embedding
 * support for object reference via $ref
-* fix compatibility with JSON schema array notation
+* fix compatibility with [swagger array notation](https://swagger.io/docs/specification/data-models/data-types/#array)
