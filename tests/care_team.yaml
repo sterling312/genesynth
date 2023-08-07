@@ -1,0 +1,134 @@
+version: 2
+$ref: ""
+type: object
+description: "describes the database contract within a namespace"
+metadata:
+    namespace: public
+    size: 20
+    sep: ','
+properties:
+    CareTeam:
+        type: CareTeam
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            identifier:
+                $ref: "Identifier"
+                type: [object]
+                metadata: {}
+                constraints: []
+            status:
+                type: string
+                metadata: {}
+                constraints: []
+            category:
+                $ref: "CodeableConcept"
+                type: [object]
+                metadata: {}
+                constraints: []
+            name:
+                type: string
+                metadata: {}
+                constraints: []
+            subject: 
+                $ref: "Reference"
+                type: [object]
+                metadata: {}
+                constraints: []
+            encounter:
+                $ref: "Reference"
+                type: [object]
+                metadata: {}
+                constraints: []
+            period: 
+                $ref: "Period"
+                type: object
+                metadata: {}
+                constraints: []
+            participant:
+                type: [object]
+                properties:
+                  role:
+                    type: object
+                    $ref: "CodeableConcept"
+                  member:
+                    type: object
+                    $ref: "Reference"
+                  onBehalfOf:
+                    type: object
+                    $ref: "Reference"
+                  period:
+                    type: object
+                    $ref: "Period"
+            reasonCode:
+                $ref: "CodeableConcept"
+                type: [object]
+                metadata: {}
+                constraints: []
+            reasonReference:
+                $ref: "Reference"
+                type: [object]
+                metadata: {}
+                constraints: []
+            managingOrganization:
+                $ref: "Reference"
+                type: [object]
+                metadata: {}
+                constraints: []
+            telecom:
+                $ref: "ContactPoint"
+                type: [object]
+                metadata: {}
+                constraints: []
+            note:
+                $ref: "Annotation"
+                type: [object]
+                metadata: {}
+                constraints: []
+    Identifier:
+        $ref: "Identifier"
+        type: object
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            name: string
+    Period:
+        $ref: "Period"
+        type: object
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            name: string
+    Reference:
+        $ref: "Reference"
+        type: object
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            name: string
+    CodeableConcept:
+        $ref: "CodeableConcept"
+        type: object
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            name: string
+    Annotation:
+        $ref: "Annotation"
+        type: object
+        metadata:
+            namespace: public
+            size: 20
+            sep: ','
+        properties: 
+            name: string
