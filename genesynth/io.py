@@ -83,7 +83,7 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
         depends_on = f'{root}.{foreign["name"]}'
         node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
     elif container == 'array':
-        node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
+        node = datatypes[type].from_params(name=fullname, metadata=metadata, is_array=True, **metadata)
     else:
         node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
     properties = params.get('properties')
@@ -93,9 +93,7 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
             field_fullname = f'{fullname}.{field}'
             child = schema_to_graph(G, field_fullname, attributes, size=size, root=root)
             children[child] = child
-        if container is not None and container == 'array':
-            node.children = tuple(children.values())
-        else:
+        if container is None:
             node.children = Hashabledict(children)
         # add node to graph after setting data field children
         for child in children.values():
