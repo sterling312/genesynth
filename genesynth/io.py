@@ -66,7 +66,11 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     # TODO incorporate Node and Relationship into node
     # TODO incorporate Constraint into node
     name = fullname.rsplit('.', 1)[-1]
+    container = None
     type = params['type']
+    if type.startswith('[') and type.endswith(']'):
+        type = type.strip('[]')
+        container = 'array'
     metadata = params.get('metadata', {})
     metadata['size'] = metadata.get('size') or size
     metadata['sep'] = metadata.get('sep', '')
@@ -82,7 +86,7 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
         children = {}
         for field, attributes in properties.items():
             field_fullname = f'{fullname}.{field}'
-            child = config_to_graph(G, field_fullname, attributes, size=size, root=root)
+            child = schema_to_graph(G, field_fullname, attributes, size=size, root=root)
             children[child] = child
         node.children = Hashabledict(children)
         # add node to graph after setting data field children
