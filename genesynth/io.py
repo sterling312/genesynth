@@ -13,6 +13,7 @@ import networkx as nx
 import numpy as np
 from genesynth.types import Hashabledict, BaseForeign
 from genesynth.extensions import datatypes
+from genesynth.constraints import *
 
 """
 1. construct graph based on input configuration

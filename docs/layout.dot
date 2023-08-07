@@ -17,6 +17,7 @@ strict digraph genesynth {
         label="genesynth"
         "mat.py" -> "types.py" [xlabel="statistical models"]
         "constraints.py" -> "model.py" [xlabel="encode human readable constraints"]
+        "constraints.py" -> "io.py" [xlabel="encode human readable constraints"]
         "types.py" -> "io.py" [xlabel="basic types"]
         "types.py" -> "extensions.py" [xlabel="basic types"]
         "extensions.py" -> "io.py" [xlabel="basic types"]
