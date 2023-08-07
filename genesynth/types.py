@@ -43,6 +43,7 @@ class Hashabledict(dict):
         return hash(frozenset(self))
 
 types = Datatypes()
+datatypes = types
 
 @dataclass(unsafe_hash=True)
 class BaseMask:
