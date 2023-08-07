@@ -61,7 +61,7 @@ def write_as_yaml(fh_obj, filename, header=False):
         records = [json.loads(line.rstrip('\n')) for line in fh_obj]
         yaml.dump(records, fh)
 
-def config_to_graph(G, fullname, params, size=0, root='root'):
+def schema_to_graph(G, fullname, params, size=0, root='root'):
     # TODO move this logic into io.py without disrupting package dependency
     # TODO incorporate Node and Relationship into node
     # TODO incorporate Constraint into node

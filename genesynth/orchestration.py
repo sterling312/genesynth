@@ -19,7 +19,7 @@ from genesynth.graph import Graph, find_node, find_child_node
 from genesynth.model import worker, types, BaseDataModel, WorkloadType
 from genesynth.extensions import datatypes
 from genesynth.worker import Runner
-from genesynth.io import load_config, config_to_graph
+from genesynth.io import load_config, schema_to_graph
 from genesynth.utils import spawn, wait
 from genesynth.constraints import *
 
@@ -44,7 +44,7 @@ class Orchestration:
         data = load_config(filename)
         size = data['metadata']['size']
         G = nx.DiGraph()
-        config_to_graph(G, name, data, size=size, root=name)
+        schema_to_graph(G, name, data, size=size, root=name)
         graph = Graph(G, name=name, metadata=data['metadata'])
         #for n in graph.nodes:
         #    if isinstance(n, BaseForeign):
