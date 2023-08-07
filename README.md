@@ -50,3 +50,4 @@ pip install -r requirements.txt
 * support NLP based text generation
 * support sklearn
 * support integration with pytorch
+* support for object reference via $ref
