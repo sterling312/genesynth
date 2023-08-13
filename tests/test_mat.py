@@ -7,8 +7,7 @@ from genesynth.mat import *
 @fixture(scope='function')
 def arr():
     reseed(1)
-    # arr = np.random.randint(0, 10, 10)
-    # array([5, 8, 9, 5, 0, 0, 1, 7, 6, 9])
+    # arr = np.random.randint(0, 10, 10) # array([5, 8, 9, 5, 0, 0, 1, 7, 6, 9])
     arr = np.array([5, 8, 9, 5, 0, 0, 1, 7, 6, 9])
     yield arr
 
