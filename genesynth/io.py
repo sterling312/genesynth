@@ -83,9 +83,9 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
         depends_on = f'{root}.{foreign["name"]}'
         node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
     elif container == 'array':
-        container = datatypes[type].from_params(name=fullname, metadata=metadata, is_array=True, **metadata)
-        #node = datatypes['json'].from_params(name=fullname, metadata=metadata, is_array=True, **metadata)
-        node = datatypes['array'].from_params(name=fullname, metadata=metadata, is_array=True, **metadata)
+        node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
+        #node = datatypes[type].from_params(name=fullname, metadata=metadata, is_array=True, **metadata)
+        #node = datatypes['array'].from_params(name=f'[{fullname}]', metadata=metadata, is_array=True, **metadata)
     else:
         node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
     properties = params.get('properties')
@@ -98,9 +98,8 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
         if container is None:
             node.children = Hashabledict(children)
         else:
-            container.children = Hashabledict(children)
-            #node.children = Hashabledict({container: container})
-            node.children = (container, )
+            node.children = Hashabledict(children)
+            #node.children = (container, )
         # add node to graph after setting data field children
         for child in children.values():
             G.add_edge(node, child) # add relationship type here
