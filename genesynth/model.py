@@ -200,9 +200,9 @@ class JsonArrayDataModel(JsonDataModel):
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames.values()):
                 # TODO add support for array
-                record = [json.loads(value) if isinstance(node, BaseMapFixture) else value 
-                            for node, key, value in zip(nodes, filenames.keys(), lines)]
-                fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
+                record = {key: json.loads(value) if isinstance(node, BaseMapFixture) else value 
+                            for node, key, value in zip(nodes, filenames.keys(), lines)}
+                fh.write(json.dumps([record], default=lambda x: x.decode('ascii')).encode('utf-8'))
                 fh.write(b'\n')
                 await asyncio.sleep(0)
             fh.seek(0)
