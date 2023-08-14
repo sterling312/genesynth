@@ -91,8 +91,8 @@ class BaseMask:
         if isinstance(self, BaseArrayFixture):
             arr = await self.generate()
             arr = np.array(arr)
-            if len(arr.shape) == 3:
-                arr = arr[:, 0, :] # TODO figure out what to do when there are different type in array
+            if arr.ndim > 2:
+                arr = np.squeeze(arr) # TODO temporary hack. need to figure out how to output this better
         else:
             arr = await self.generate()
         if self._path is not None:
