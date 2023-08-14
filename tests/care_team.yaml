@@ -8,9 +8,8 @@ metadata:
     sep: ','
 properties:
     CareTeam:
-        type: CareTeam
+        type: object
         metadata:
-            namespace: public
             size: 20
             sep: ','
         properties: 
@@ -91,44 +90,54 @@ properties:
         $ref: "Identifier"
         type: object
         metadata:
-            namespace: public
             size: 20
             sep: ','
         properties: 
-            name: string
+            name: 
+                type: string
+                metadata: {}
+                constraints: []
     Period:
         $ref: "Period"
         type: object
         metadata:
-            namespace: public
             size: 20
             sep: ','
         properties: 
-            name: string
+            name: 
+                type: string
+                metadata: {}
+                constraints: []
     Reference:
         $ref: "Reference"
         type: object
         metadata:
-            namespace: public
             size: 20
             sep: ','
         properties: 
-            name: string
+            name: 
+                type: string
+                metadata: {}
+                constraints: []
     CodeableConcept:
         $ref: "CodeableConcept"
         type: object
         metadata:
-            namespace: public
             size: 20
             sep: ','
         properties: 
-            name: string
+            name: 
+                type: string
+                metadata: {}
+                constraints: []
     Annotation:
         $ref: "Annotation"
         type: object
         metadata:
-            namespace: public
             size: 20
             sep: ','
         properties: 
-            name: string
+            name: 
+                type: string
+                metadata: {}
+                constraints: []
