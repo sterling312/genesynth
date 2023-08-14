@@ -52,3 +52,4 @@ pip install -r requirements.txt
 * support integration with pytorch embedding
 * support for object reference via $ref
 * fix compatibility with [JSON schema array notation](https://json-schema.org/understanding-json-schema/reference/array.html#items)
+* remove the need to do numpy.squeeze when writing out for deeply nested file
