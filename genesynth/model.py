@@ -60,7 +60,7 @@ class BaseDataModel(BaseMapFixture):
         pass
 
     async def generate(self):
-        gens = [n.generate() for n in self.children.values()]
+        gens = [asyncio.create_task(n.generate()) for n in self.children.values()]
         done, pending = await asyncio.wait(gens)
         return [await f for f in done]
 
