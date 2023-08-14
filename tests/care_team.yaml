@@ -68,7 +68,7 @@ properties:
                 constraints: []
                 properties: 
                     name: 
-                        type: string
+                        type: json
                         metadata: {}
                         constraints: []
                         properties: 
