@@ -1,0 +1,163 @@
+version: 2
+$ref: ""
+type: object
+description: "describes the database contract within a namespace"
+metadata:
+    namespace: public
+    size: 20
+    sep: ','
+properties:
+    CareTeam:
+        type: json
+        metadata:
+            size: 20
+            sep: ','
+        properties: 
+            identifier:
+                $ref: "Identifier"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            status:
+                type: string
+                metadata: {}
+                constraints: []
+            category:
+                $ref: "CodeableConcept"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            name:
+                type: string
+                metadata: {}
+                constraints: []
+            subject: 
+                $ref: "Reference"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            encounter:
+                $ref: "Reference"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            period: 
+                $ref: "Period"
+                type: json
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: json
+                        metadata: {}
+                        constraints: []
+                        properties: 
+                            name: 
+                                type: string
+                                metadata: {}
+                                constraints: []
+            participant:
+                type: [json]
+                properties:
+                    role:
+                        type: json
+                        $ref: "CodeableConcept"
+                        properties: 
+                            name: 
+                                type: string
+                                metadata: {}
+                                constraints: []
+                    member:
+                        type: json
+                        $ref: "Reference"
+                        properties: 
+                            name: 
+                                type: string
+                                metadata: {}
+                                constraints: []
+                    onBehalfOf:
+                        type: json
+                        $ref: "Reference"
+                        properties: 
+                            name: 
+                                type: string
+                                metadata: {}
+                                constraints: []
+                    period:
+                        type: json
+                        $ref: "Period"
+                        properties: 
+                            name: 
+                                type: string
+                                metadata: {}
+                                constraints: []
+            reasonCode:
+                $ref: "CodeableConcept"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            reasonReference:
+                $ref: "Reference"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            managingOrganization:
+                $ref: "Reference"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            telecom:
+                $ref: "ContactPoint"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
+            note:
+                $ref: "Annotation"
+                type: [json]
+                metadata: {}
+                constraints: []
+                properties: 
+                    name: 
+                        type: string
+                        metadata: {}
+                        constraints: []
