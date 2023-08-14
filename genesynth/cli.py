@@ -5,8 +5,8 @@ import asyncio
 from genesynth.orchestration import *
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--filename', required=True, help='filename')
-parser.add_argument('--output', help='filename')
+parser.add_argument('-f', '--filename', required=True, help='schema file')
+parser.add_argument('-o', '--output', help='output filename if given. defaults to input filename without extension')
 parser.add_argument('--stdout', action='store_true', help='print output to stdout')
 
 def main(filename, output=None, stdout=False):

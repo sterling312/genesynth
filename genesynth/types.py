@@ -88,7 +88,13 @@ class BaseMask:
     async def write(self):
         if self._file is not None:
             return
-        arr = await self.generate()
+        if isinstance(self, BaseArrayFixture):
+            arr = await self.generate()
+            arr = np.array(arr)
+            if len(arr.shape) == 3:
+                arr = arr[:, 0, :] # TODO figure out what to do when there are different type in array
+        else:
+            arr = await self.generate()
         if self._path is not None:
             filename = os.path.join(self._path, self.name)
         else:
