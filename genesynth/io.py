@@ -95,6 +95,8 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
             children[child] = child
         if container is None:
             node.children = Hashabledict(children)
+        elif container == 'array':
+            node.children = tuple(children.values())
         # add node to graph after setting data field children
         for child in children.values():
             G.add_edge(node, child) # add relationship type here
