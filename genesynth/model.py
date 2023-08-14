@@ -190,3 +190,21 @@ class JsonDataModel(BaseDataModel):
             await n.write()
         await self.merge(gens, path)
         self._file = os.path.join(path, self.name)
+
+@types.register(['json_array'])
+@dataclass(unsafe_hash=True)
+class JsonArrayDataModel(JsonDataModel):
+    is_data = True
+    async def merge(self, nodes, path=None):
+        filenames = {node.name: node._file for node in nodes}
+        async with self._filename(path) as fh:
+            for lines in iterate_lines(*filenames.values()):
+                # TODO add support for array
+                record = [json.loads(value) if isinstance(node, BaseMapFixture) else value 
+                            for node, key, value in zip(nodes, filenames.keys(), lines)]
+                fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
+                fh.write(b'\n')
+                await asyncio.sleep(0)
+            fh.seek(0)
+            length = len(list(fh))
+        assert length == self.size, f'expected {self.size} data row, got {length}'
