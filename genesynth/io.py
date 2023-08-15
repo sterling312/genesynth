@@ -82,8 +82,10 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     if foreign:
         depends_on = f'{root}.{foreign["name"]}'
         node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
-    elif container == 'array':
+    elif container == 'array' and type == 'json':
         node = datatypes['json_array'].from_params(name=fullname, metadata=metadata, **metadata)
+    elif container == 'array':
+        node = BaseArrayFixture.from_params(name=fullname, metadata=metadata, **metadata)
     else:
         node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
     properties = params.get('properties')
@@ -93,7 +95,10 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
             field_fullname = f'{fullname}.{field}'
             child = schema_to_graph(G, field_fullname, attributes, size=size, root=root)
             children[child] = child
-        node.children = Hashabledict(children)
+        if container == 'array' and type != 'json':
+            node.children = tuple(children)
+        else:
+            node.children = Hashabledict(children)
         # add node to graph after setting data field children
         for child in children.values():
             G.add_edge(node, child) # add relationship type here
