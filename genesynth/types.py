@@ -146,6 +146,7 @@ class BaseTime(BaseTimestamp):
             second=self.max.second, microsecond=self.max.microsecond)
         return pd.date_range(min, max, periods=self.size).time
 
+@types.register(['foreign'])
 @dataclass(unsafe_hash=True)
 class BaseForeign(BaseMask):
     depends_on: str

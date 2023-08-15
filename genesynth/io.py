@@ -11,7 +11,7 @@ import yaml
 import tempfile
 import networkx as nx
 import numpy as np
-from genesynth.types import Hashabledict, BaseForeign, BaseArrayFixture
+from genesynth.types import Hashabledict
 from genesynth.extensions import datatypes
 from genesynth.constraints import *
 
@@ -81,11 +81,11 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     constraints = params.get('constraints')
     if foreign:
         depends_on = f'{root}.{foreign["name"]}'
-        node = BaseForeign.from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
+        node = datatypes['foreign'].from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
     elif container == 'array' and type == 'json':
         node = datatypes['json_array'].from_params(name=fullname, metadata=metadata, **metadata)
     elif container == 'array':
-        node = BaseArrayFixture.from_params(name=fullname, metadata=metadata, **metadata)
+        node = datatypes['array'].from_params(name=fullname, metadata=metadata, **metadata)
     else:
         node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
     properties = params.get('properties')
