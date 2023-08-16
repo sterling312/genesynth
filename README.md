@@ -16,6 +16,11 @@ pip install -r requirements.txt
 >>> asyncio.run(pipe.root.save('graph.csv'))
 ```
 
+```
+$ pip install genesynth
+$ python -m genesynth.cli -f tests/test.yaml --stdout
+```
+
 # project status
 
 ## supported feature
