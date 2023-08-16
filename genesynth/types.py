@@ -57,7 +57,7 @@ class BaseMask:
     _index = None
     _mask = None
     _file = None # cache filename
-    _hashfile = False
+    _hashfile = True
     _path = None # cache directory
     _defer = None # parent node if deferred
 
@@ -105,6 +105,10 @@ class BaseMask:
 
     def __str__(self):
         return f"{self.__class__.__name__}(name='{self.name}', size={self.size})"
+
+    def __del__(self, *args, **kwargs):
+        if os.path.isfile(self._file):
+            os.remove(self._file)
 
 @dataclass(unsafe_hash=True)
 class BaseNumberFixture(BaseMask):
