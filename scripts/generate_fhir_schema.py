@@ -34,43 +34,12 @@ PROTO_TYPE_TO_DATATYPE = {
 
 FHIR_TYPES = {
     # datatypes.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/datatypes.proto
-    'String': 'string',
-    'Extension': 'json',
-    'Id': 'string',
-    'Instant': 'timestamp',
-    'Uri': 'string',
-    'DateTime': 'datetime',
-    'Decimal': 'decimal',
-    'Boolean': 'boolean',
-    'Integer': 'integer',
-    'Date': 'date',
-    'Time': 'time',
-    'MimeTypeCode': 'string',
-    'LanguageCode': 'string',
-    'Base64Binary': 'string', # This will be changed to bytes when tye type is supported
-    'UnsignedInt': 'integer',
-    'Coding': 'json',
-    'Xhtml': 'string',
-    'IdentifierUseCode': 'string',
-    'CodeableConcept': 'json',
-    'Period': 'object',
-    'Reference': 'string',
-    'QuantityComparatorCode': 'string',
-    'Code': 'string',
-    'Attachment': 'json',
-    'Quantity': 'decimal',
-    # codes.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/codes.proto
-    'NarrativeStatusCode': 'string',
-    'QuestionnaireItemTypeCode': 'string',
+    'Reference': 'json',
     # resources.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/resources.proto
     'ContainedResource': 'json',
-    'Answer': 'object',
-    'Value': 'object',
-    'EnableWhen': 'object',
-    'Option': 'object',
-    'Initial': 'object',
-    'Item': 'object',
+    'Answer': 'json',
 }
+
 
 def type_helper():
     type_iterator = filter(lambda x: x.startswith('TYPE_'), descriptor.FieldDescriptor.__dict__.keys())
@@ -88,6 +57,9 @@ def type_inspector(field):
         for sub in field.message_type.fields:
             if sub.name == 'extension':
                 # skip extension for now
+                continue
+            if sub.message_type is not None and field.message_type.name == sub.message_type.name:
+                # prevent protobuf infinite recursion when the message type is defined within existing message
                 continue
             subfield[sub.name] = type_inspector(sub)
         return subfield
