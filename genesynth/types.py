@@ -7,6 +7,7 @@ All type must provide async generate method and optional write method.
 import os
 import enum
 import random
+import hashlib
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 from datetime import datetime, date, time
@@ -56,6 +57,7 @@ class BaseMask:
     _index = None
     _mask = None
     _file = None # cache filename
+    _hashfile = False
     _path = None # cache directory
     _defer = None # parent node if deferred
 
@@ -96,6 +98,8 @@ class BaseMask:
             filename = os.path.join(self._path, self.name)
         else:
             filename = self.name
+        if self._hashfile:
+            filename = hashlib.md5(filename.encode('ascii')).hexdigest()
         np.savetxt(filename, arr, fmt='"%s"', delimiter='\n')
         self._file = filename
 
