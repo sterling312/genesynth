@@ -10,6 +10,7 @@ from google.protobuf import descriptor, json_format
 
 #sys.setrecursionlimit(10000)
 
+# https://protobuf.dev/reference/cpp/api-docs/google.protobuf.descriptor/
 PROTO_TYPE_TO_DATATYPE = {
     'TYPE_DOUBLE': 'double',
     'TYPE_FLOAT': 'float',
@@ -32,7 +33,7 @@ PROTO_TYPE_TO_DATATYPE = {
 }
 
 FHIR_TYPES = {
-    # datatypes.proto
+    # datatypes.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/datatypes.proto
     'String': 'string',
     'Extension': 'json',
     'Id': 'string',
@@ -58,10 +59,10 @@ FHIR_TYPES = {
     'Code': 'string',
     'Attachment': 'json',
     'Quantity': 'decimal',
-    # codes.proto
+    # codes.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/codes.proto
     'NarrativeStatusCode': 'string',
     'QuestionnaireItemTypeCode': 'string',
-    # resources.proto
+    # resources.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/resources.proto
     'ContainedResource': 'json',
     'Answer': 'object',
     'Value': 'object',
