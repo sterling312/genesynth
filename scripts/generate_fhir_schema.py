@@ -5,6 +5,7 @@ note that this has google-fhir==0.7.3 dependency, which only works with python<=
 
 import sys
 import json
+import yaml
 from proto.google.fhir.proto.stu3 import resources_pb2 as stu3, datatypes_pb2 as fhir_type, codes_pb2 as stu3_code
 from google.protobuf import descriptor, json_format
 
@@ -82,8 +83,37 @@ def proto_schema(obj):
 def proto_to_dict(message):
     return json_format.MessageToDict(message, including_default_value_fields=True)
 
-def to_yaml(schema):
-    pass
+def to_fixture_schema(schema):
+    properties = {}
+    for key, value in schema.items():
+        if value in PROTO_TYPE_TO_DATATYPE.values():
+            if value in ('integer',):
+                properties[key] = {'type': value, 'metadata': {'min': 0, 'max': 100}}
+            else:
+                properties[key] = {'type': value, 'metadata': {}}
+        elif value == 'json':
+            # Since terminal json type needs to be configured customly, replacing it with text for now
+            #properties[key] = {'type': 'json', 'metadata': {}, 'properties': {}}
+            properties[key] = {'type': 'text', 'metadata': {}, 'properties': {}}
+        else:
+            properties[key] = {'type': 'json', 'metadata': {}, 'properties': to_fixture_schema(value)}
+    return properties
+
+def main(*objects, size=20):
+    config = {
+        'version': 2,
+        '$ref': '',
+        'type': 'json',
+        'description': f'fhir resources {objects}',
+        'metadata': {'namespace': 'public', 'size': size, 'sep': ','},
+    }
+    properties = {}
+    for name in objects:
+        obj = getattr(stu3, name)
+        schema = proto_schema(obj)
+        properties[name] = {'type': 'json', 'metadata': {'size': size}, 'properties': to_fixture_schema(schema)}
+    config['properties'] = properties
+    return config
 
 if __name__ == '__main__':
-    print(json.dumps(proto_schema(getattr(stu3, sys.argv[1]))))
+    print(yaml.dump(main(*sys.argv[1:]), indent=2))
