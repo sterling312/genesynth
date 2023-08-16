@@ -8,8 +8,6 @@ import json
 from proto.google.fhir.proto.stu3 import resources_pb2 as stu3, datatypes_pb2 as fhir_type, codes_pb2 as stu3_code
 from google.protobuf import descriptor, json_format
 
-#sys.setrecursionlimit(10000)
-
 # https://protobuf.dev/reference/cpp/api-docs/google.protobuf.descriptor/
 PROTO_TYPE_TO_DATATYPE = {
     'TYPE_DOUBLE': 'double',
@@ -32,6 +30,7 @@ PROTO_TYPE_TO_DATATYPE = {
     'TYPE_SINT64': 'integer',
 }
 
+# Currently using this to prevent hitting recursion limit due to some weird self-reference in protobuf
 FHIR_TYPES = {
     # datatypes.proto https://github.com/google/fhir/blob/master/proto/google/fhir/proto/stu3/datatypes.proto
     'Reference': 'json',
@@ -82,6 +81,9 @@ def proto_schema(obj):
 
 def proto_to_dict(message):
     return json_format.MessageToDict(message, including_default_value_fields=True)
+
+def to_yaml(schema):
+    pass
 
 if __name__ == '__main__':
     print(json.dumps(proto_schema(getattr(stu3, sys.argv[1]))))
