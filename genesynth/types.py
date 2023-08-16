@@ -284,7 +284,7 @@ class StringFixture(BaseTextFixture):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:
             func = getattr(func, self.field)
-        return np.array([func()[:self.length] for _ in range(self.size)])
+        return np.array([str(func())[:self.length] for _ in range(self.size)])
 
     @worker.register
     async def write(self):
