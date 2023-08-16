@@ -35,6 +35,7 @@ class BaseDataModel(BaseMapFixture):
     children: list - list od child dependencies
     """
     is_data = False
+    full_key = False
     name: str
     schema: str = None # namespace from metadata
     sep: bytes = b''
@@ -166,7 +167,7 @@ class JsonDataModel(BaseDataModel):
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames.values()):
                 # TODO add support for array
-                record = {key: json.loads(value) if isinstance(node, BaseMapFixture) else value 
+                record = {key if self.full_key else key.split('.')[-1] : json.loads(value) if isinstance(node, BaseMapFixture) else value 
                             for node, key, value in zip(nodes, filenames.keys(), lines)}
                 fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
                 fh.write(b'\n')
@@ -200,7 +201,7 @@ class JsonArrayDataModel(JsonDataModel):
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames.values()):
                 # TODO add support for array
-                record = {key: json.loads(value) if isinstance(node, BaseMapFixture) else value 
+                record = {key if self.full_key else key.split('.')[-1] : json.loads(value) if isinstance(node, BaseMapFixture) else value 
                             for node, key, value in zip(nodes, filenames.keys(), lines)}
                 fh.write(json.dumps([record], default=lambda x: x.decode('ascii')).encode('utf-8'))
                 fh.write(b'\n')
