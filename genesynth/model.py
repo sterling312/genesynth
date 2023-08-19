@@ -101,14 +101,15 @@ class BaseDataModel(BaseMapFixture):
         await self.merge(gens, path=self._dir.name)
         self._file = os.path.join(self._dir.name, self.name)
 
-    async def save(self, filename):
+    async def save(self, filename=None):
         if self._file is None:
             await self.write()
-        _, ext = os.path.splitext(filename)
-        if ext == '.gz':
-            write_as_gzip(self._file, filename)
-        else:
-            shutil.copy(self._file, filename)
+        if filename is not None:
+            _, ext = os.path.splitext(filename)
+            if ext == '.gz':
+                write_as_gzip(self._file, filename)
+            else:
+                shutil.copy(self._file, filename)
 
     def __hash__(self):
         return hash(str(self))
@@ -167,14 +168,15 @@ class JsonDataModel(BaseDataModel):
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames.values()):
                 # TODO add support for array
-                record = {key if self.full_key else key.split('.')[-1] : json.loads(value) if isinstance(node, BaseMapFixture) else value 
+                record = {key if self.full_key else key.split('.')[-1] : \
+                            json.loads(value) if isinstance(node, BaseMapFixture) else value 
                             for node, key, value in zip(nodes, filenames.keys(), lines)}
                 fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
                 fh.write(b'\n')
                 await asyncio.sleep(0)
             fh.seek(0)
             length = len(list(fh))
-        assert length == self.size, f'expected {self.size} data row, got {length}'
+        assert length == self.size, f'expected {self.name} to have {self.size} data row, got {length}'
 
     async def write(self):
         gens = []
