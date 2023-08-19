@@ -61,7 +61,10 @@ def type_inspector(field):
             if sub.message_type is not None and field.message_type.name == sub.message_type.name:
                 # prevent protobuf infinite recursion when the message type is defined within existing message
                 continue
-            subfield[sub.name] = type_inspector(sub)
+            if sub.label == sub.LABEL_REPEATED:
+                subfield[f'[{sub.name}]'] = type_inspector(sub)
+            else:
+                subfield[sub.name] = type_inspector(sub)
         return subfield
     else:
         return TYPE_MAPPING[field.type]
@@ -77,7 +80,10 @@ def proto_schema(obj):
         if field.name == 'extension':
             # skip extension for now
             continue
-        schema[field.name] = type_inspector(field)
+        if field.label == field.LABEL_REPEATED:
+            schema[f'[{field.name}]'] = type_inspector(field)
+        else:
+            schema[field.name] = type_inspector(field)
     return schema
 
 def proto_to_dict(message):
@@ -86,17 +92,28 @@ def proto_to_dict(message):
 def to_fixture_schema(schema):
     properties = {}
     for key, value in schema.items():
+        repeat = False
+        if key.startswith('[') and key.endswith(']'):
+            key = key.strip('[]')
+            repeat = True
         if value in PROTO_TYPE_TO_DATATYPE.values():
             if value in ('integer',):
+                if repeat:
+                    value = f'[{value}]'
                 properties[key] = {'type': value, 'metadata': {'min': 0, 'max': 100}}
             else:
+                if repeat:
+                    value = f'[{value}]'
                 properties[key] = {'type': value, 'metadata': {}}
         elif value == 'json':
             # Since terminal json type needs to be configured customly, replacing it with text for now
             #properties[key] = {'type': 'json', 'metadata': {}, 'properties': {}}
             properties[key] = {'type': 'text', 'metadata': {}, 'properties': {}}
         else:
-            properties[key] = {'type': 'json', 'metadata': {}, 'properties': to_fixture_schema(value)}
+            if repeat:
+                properties[key] = {'type': '[json]', 'metadata': {}, 'properties': to_fixture_schema(value)}
+            else:
+                properties[key] = {'type': 'json', 'metadata': {}, 'properties': to_fixture_schema(value)}
     return properties
 
 def main(*objects, size=20):
