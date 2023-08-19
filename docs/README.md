@@ -163,7 +163,7 @@ generate JSON like nested data structure
     metadata: dict - default metadata configuration
 ```
 
-#### json_array
+#### [json]/json_array
 same as json type, but returns the data as an array of data; this may be deprecated in the future
 ```
     metadata: dict - default metadata configuration
