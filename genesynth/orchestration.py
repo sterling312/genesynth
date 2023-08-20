@@ -40,9 +40,7 @@ class Orchestration:
         self.executor = futures.ThreadPoolExecutor(thread)
 
     @classmethod
-    def read_yaml(cls, filename, name='root'):
-        data = load_config(filename)
-        size = data['metadata']['size']
+    def read_dict(cls, data, size=1, name='root'):
         G = nx.DiGraph()
         schema_to_graph(G, name, data, size=size, root=name)
         graph = Graph(G, name=name, metadata=data['metadata'])
@@ -50,6 +48,12 @@ class Orchestration:
         #    if isinstance(n, BaseForeign):
         #        n.resolve_fkey_edge()
         return cls(graph)
+
+    @classmethod
+    def read_yaml(cls, filename, name='root'):
+        data = load_config(filename)
+        size = data['metadata']['size']
+        return cls.read_dict(data, size=size)
 
     async def walk(self):
         # TODO check to make sure this is correct
