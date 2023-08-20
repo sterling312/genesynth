@@ -40,9 +40,10 @@ class Orchestration:
         self.executor = futures.ThreadPoolExecutor(thread)
 
     @classmethod
-    def read_dict(cls, data, size=1, name='root'):
+    def read_dict(cls, data, size=None, name='root'):
+        size = size or data['metadata']['size']
         G = nx.DiGraph()
-        schema_to_graph(G, name, data, size=size, root=name)
+        schema_to_graph(G, name, data, size=int(size), root=name)
         graph = Graph(G, name=name, metadata=data['metadata'])
         #for n in graph.nodes:
         #    if isinstance(n, BaseForeign):

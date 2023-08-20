@@ -16,8 +16,9 @@ async def home(request):
 
 @routes.post('/api')
 async def api(request):
+    size = request.query.get('size')
     schema = await request.json()
-    pipe = Orchestration.read_dict(schema)
+    pipe = Orchestration.read_dict(schema, size=size)
     pipe.run()
     await pipe.root.save() 
     try:
