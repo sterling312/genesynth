@@ -95,12 +95,16 @@ class BaseMask:
         else:
             arr = await self.generate()
         if self._path is not None:
-            filename = os.path.join(self._path, self.name)
+            if self._hashfile:
+                filename = os.path.join(self._path, hashlib.md5(self.name.encode('ascii')).hexdigest())
+            else:
+                filename = os.path.join(self._path, self.name)
         else:
-            filename = self.name
-        if self._hashfile:
-            filename = hashlib.md5(filename.encode('ascii')).hexdigest()
-        np.savetxt(filename, arr, fmt='"%s"', delimiter='\n')
+            if self._hashfile:
+                filename = hashlib.md5(self.name.encode('ascii')).hexdigest()
+            else:
+                filename = self.name
+        np.savetxt(filename, arr, fmt='%s', delimiter='\n')
         self._file = filename
 
     def __str__(self):
