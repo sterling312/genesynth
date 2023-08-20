@@ -151,3 +151,6 @@ class Graph:
 
     def hydrated_traversal(self):
         pass
+
+    def __del__(self, *args):
+        del self.G

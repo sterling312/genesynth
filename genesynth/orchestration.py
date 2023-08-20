@@ -119,3 +119,6 @@ class Orchestration:
 
     async def asyncio(self, node):
         return await node.generate()
+
+    def __del__(self, *args):
+        del self.graph
