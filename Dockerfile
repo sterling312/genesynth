@@ -10,6 +10,9 @@ ADD . /tmp/genesynth/
 RUN cd /tmp/genesynth && python setup.py install && rm -rf /tmp/genesynth
 
 EXPOSE 8080
+RUN adduser genesynth 
+
+USER genesynth
 
 ENTRYPOINT ["python", "-m"]
 CMD ["genesynth.server"]
