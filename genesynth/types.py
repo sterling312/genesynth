@@ -119,6 +119,17 @@ class BaseNumberFixture(BaseMask):
     null = np.nan
     pass
 
+@types.register(['enum'])
+@dataclass(unsafe_hash=True)
+class BaseTextFixture(BaseMask):
+    options: tuple = field(default_factory=tuple)
+
+    def __post_init__(self):
+        self.options = tuple(self.options)
+
+    async def generate(self):
+        return np.random.choice(self.options, self.size, replace=True)
+
 @types.register(['text'])
 @dataclass(unsafe_hash=True)
 class BaseTextFixture(BaseMask):
