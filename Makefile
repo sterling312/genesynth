@@ -16,3 +16,9 @@ cli: ${FILENAME} build
 .PHONY: test
 test:
 	pytest -vv tests
+
+.PHONY: twine
+twine:
+	rm -rf dist
+	python setup.py bdist_wheel sdist
+	python -m twine upload -r genesynth --verbose dist/*
