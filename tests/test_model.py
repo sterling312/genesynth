@@ -24,7 +24,7 @@ def test_serial(params):
 
 def test_boolean(params):
     n = BooleanFixture(**params)
-    arr = np.array([True, True, False, False, True, True, True, True, True, False])
+    arr = np.array(['true', 'true', 'false', 'false', 'true', 'true', 'true', 'true', 'true', 'false'])
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
 def test_float(params):

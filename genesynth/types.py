@@ -261,7 +261,8 @@ class SerialFixture(BaseNumberFixture):
 @dataclass(unsafe_hash=True)
 class BooleanFixture(BaseNumberFixture):
     async def generate(self):
-        return np.random.randint(0, 2, self.size).astype(bool)
+        arr = np.random.randint(0, 2, self.size).astype(bool)
+        return np.where(arr==True, 'true', np.where(arr==False, 'false', arr))
 
 @types.register(['float', 'double'])
 @dataclass(unsafe_hash=True)
