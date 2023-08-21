@@ -12,3 +12,7 @@ run: build
 .PHONY: cli
 cli: build
 	docker run -it --rm -v ${FILENAME}:/tmp/input.yaml genesynth genesynth.cli -f /tmp/input.yaml --stdout
+
+.PHONY: test
+test:
+	pytest -vv tests

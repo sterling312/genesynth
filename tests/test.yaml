@@ -49,13 +49,6 @@ properties:
                         name: table1.column1
                 constraints:
                     - unique
-            column5:
-                type: enum
-                metadata:
-                    options:
-                        - A
-                        - B
-                        - C
 constraints:
     notnull:
         - table1
