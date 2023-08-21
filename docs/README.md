@@ -130,6 +130,8 @@ generate fake bcrypt password hash
 generate random selection from enum array
 ```
     options: tuple - list of default values
+    replace: bool - determine if the sample allows duplication
+        default to True
 ```
 
 ### structure datatypes
