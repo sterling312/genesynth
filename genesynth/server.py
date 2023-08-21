@@ -21,14 +21,14 @@ async def api(request):
     pipe = Orchestration.read_dict(schema, size=size)
     pipe.run()
     await pipe.root.save() 
-    try:
-        with open(pipe.root._file) as fh:
-            data = [json.loads(line) for line in fh]
+    with open(pipe.root._file) as fh:
+        try:
+            data = [json.loads(line) for line in fh if line.strip()]
+        except:
+            fh.seek(0)
+            data = [line for line in fh if line.strip()]
+        del pipe
         return web.json_response(data)
-    except:
-        with open(pipe.root._file) as fh:
-            data = fh.read()
-        return web.Response(text=data)
 
 if __name__ == '__main__':
     app = web.Application()
