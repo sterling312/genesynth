@@ -10,7 +10,7 @@ run: build
 	docker run -it --rm --name genesynth -p ${PORT}:8080 genesynth
 
 .PHONY: cli
-cli: build
+cli: ${FILENAME} build
 	docker run -it --rm -v ${FILENAME}:/tmp/input.yaml genesynth genesynth.cli -f /tmp/input.yaml --stdout
 
 .PHONY: test
