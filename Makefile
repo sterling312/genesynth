@@ -7,7 +7,7 @@ build:
 
 .PHONY: run
 run: build
-	docker run -it --rm -p ${PORT}:8080 genesynth
+	docker run -it --rm --name genesynth -p ${PORT}:8080 genesynth
 
 .PHONY: cli
 cli: build
