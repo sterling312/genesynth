@@ -2,23 +2,34 @@
 import sys
 import os
 import json
+import logging
 import argparse
-import asyncio
-from aiohttp import web
+import uvicorn
+from fastapi import FastAPI
+from pydantic import BaseModel
 from genesynth.orchestration import *
 
 parser = argparse.ArgumentParser()
-routes = web.RouteTableDef()
+parser.add_argument('--host', default='localhost', help='server host')
+parser.add_argument('-p', '--port', default=8080, type=int, help='server port')
+parser.add_argument('-l', '--level', default='INFO', help='log level')
 
-@routes.get('/')
-async def home(request):
-    return web.json_response({'status': 'OK'})
+logger = logging.getLogger(__name__)
+app = FastAPI()
 
-@routes.post('/api')
-async def api(request):
-    size = request.query.get('size')
-    schema = await request.json()
-    pipe = Orchestration.read_dict(schema, size=size)
+class Schema(BaseModel):
+    type: str = 'json'
+    metadata: dict = {}
+    constraints: list = []
+    properties: dict = {}
+
+@app.get('/')
+async def home():
+    return {'status': 'OK'}
+
+@app.post('/api')
+async def api(schema: Schema, size=None):
+    pipe = Orchestration.read_dict(dict(schema), size=size)
     pipe.run()
     await pipe.root.save() 
     with open(pipe.root._file) as fh:
@@ -28,9 +39,13 @@ async def api(request):
             fh.seek(0)
             data = [line for line in fh if line.strip()]
         del pipe
-        return web.json_response(data)
+        return data
+
+def run_server(host='localhost', port=8080, level='INFO'):
+    debug = level == 'DEBUG'
+    logging.basicConfig(level=level)
+    uvicorn.run('__main__:app', host=host, port=port, log_level=level.lower(), reload=debug)
 
 if __name__ == '__main__':
-    app = web.Application()
-    app.add_routes(routes)
-    web.run_app(app)
+    args = parser.parse_args()
+    run_server(host=args.host, port=args.port, level=args.level)

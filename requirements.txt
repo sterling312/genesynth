@@ -16,4 +16,5 @@ uvloop>=0.17.0
 mimesis==6.1.1
 ray>=2.6.2
 pyvis>=0.3.1
-aiohttp>=3.8.5
+fastapi>=0.97.0
+uvicorn[standard]>=0.23.2

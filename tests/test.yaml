@@ -50,5 +50,4 @@ properties:
                 constraints:
                     - unique
 constraints:
-    notnull:
-        - table1
+    - notnull: table1
