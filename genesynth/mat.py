@@ -21,11 +21,22 @@ class StatsModel(enum.Enum):
     power_law = stats.powerlaw
     bootstrap = stats.bootstrap
 
-def mask(arr: np.array, value):
+def mask(arr: np.array, low, high=None):
     """return index of input value against the array
     length of the array depends on number matches
     """
-    return np.where(arr==value)[0]
+    if high is not None:
+        return np.where((arr>=low) & (arr<high))[0]
+    else:
+        return np.where(arr==low)[0]
+
+def mask_index(arr: np.array, low, high=None):
+    """return masking index for value that matches
+    """
+    if high is not None:
+        return np.where((arr>=low) & (arr<high), True, False)
+    else:
+        return np.where(arr==low, True, False)
 
 def null_percent(size: int, percent: float = 0.):
     """return masking array for null value.
