@@ -12,7 +12,7 @@ Edge Level:
     - foreign relationship to determine order of operations
 """
 import enum
-from genesynth.mat import mask, null_percent, ordered_index, incremental_index
+from genesynth.mat import mask, null_percent, ordered_index, revert_ordered_index
 
 class Builtin(enum.Enum):
     unique = 1 
