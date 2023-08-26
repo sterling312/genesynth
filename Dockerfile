@@ -15,4 +15,4 @@ RUN adduser genesynth
 USER genesynth
 
 ENTRYPOINT ["python", "-m"]
-CMD ["genesynth.server"]
+CMD ["genesynth.server", "--host=0.0.0.0"]
