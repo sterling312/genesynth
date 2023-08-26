@@ -7,6 +7,7 @@ import logging
 import yaml
 import gzip
 import json
+import functools
 import yaml
 import tempfile
 import networkx as nx
@@ -78,16 +79,20 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     metadata['size'] = metadata.get('size') or size
     metadata['sep'] = metadata.get('sep', '')
     foreign = metadata.pop('foreign', None)
-    constraints = params.get('constraints')
+    constraints = params.get('constraints', [])
+    if constraints:
+        constraints = list(zip(*constraints))[0]
+        #constraints = [item if isinstance(item, dict) else {item: None} for item in constraints]
     if foreign:
         depends_on = f'{root}.{foreign["name"]}'
-        node = datatypes['foreign'].from_params(name=fullname, graph=G, depends_on=depends_on, metadata=metadata, **metadata)
+        node = datatypes['foreign'].from_params(name=fullname, graph=G, depends_on=depends_on, 
+                                                    metadata=metadata, constraints=constraints, **metadata)
     elif container == 'array' and type == 'json':
-        node = datatypes['json_array'].from_params(name=fullname, metadata=metadata, **metadata)
+        node = datatypes['json_array'].from_params(name=fullname, metadata=metadata, constraints=constraints, **metadata)
     elif container == 'array':
-        node = datatypes['array'].from_params(name=fullname, metadata=metadata, **metadata)
+        node = datatypes['array'].from_params(name=fullname, metadata=metadata, constraints=constraints, **metadata)
     else:
-        node = datatypes[type].from_params(name=fullname, metadata=metadata, **metadata)
+        node = datatypes[type].from_params(name=fullname, metadata=metadata, constraints=constraints, **metadata)
     properties = params.get('properties')
     if properties is not None:
         children = {}

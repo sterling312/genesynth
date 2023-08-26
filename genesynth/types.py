@@ -54,6 +54,8 @@ class BaseMask:
     size: int
     workload = WorkloadType.IO
     null = None
+    _metadata = {}
+    _constraints = []
     _index = None
     _mask = None
     _file = None # cache filename
@@ -64,12 +66,15 @@ class BaseMask:
     # TODO handle notnull and unique constraits
 
     @classmethod
-    def from_params(cls, **kwargs):
+    def from_params(cls, metadata={}, constraints=[], **kwargs):
         # TODO add type conversion based on constraints
         fields = set(cls.__dataclass_fields__.keys())
         keys = set(kwargs.keys())
         params = {field: kwargs[field] for field in fields & keys}
-        return cls(**params)
+        obj = cls(**params)
+        obj._metadata = metadata
+        obj._constraints = constraints
+        return obj
 
     def mask(self):
         pass
