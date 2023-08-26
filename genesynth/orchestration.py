@@ -51,7 +51,7 @@ class Orchestration:
         return cls(graph)
 
     @classmethod
-    def read_yaml(cls, filename, name='root'):
+    def read_config(cls, filename, name='root'):
         data = load_config(filename)
         size = data['metadata']['size']
         return cls.read_dict(data, size=size)

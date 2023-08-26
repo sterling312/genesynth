@@ -11,14 +11,10 @@ pip install genesynth
 
 # example
 ```
->>> from genesynth.orchestration import *
->>> pipe = Orchestration.read_yaml('tests/graph.yaml') 
->>> pipe.run()
->>> asyncio.run(pipe.root.save('graph.csv'))
+$ python -m genesynth.server --host=0.0.0.0 -p 8080
 ```
 
 ```
-$ pip install genesynth
 $ python -m genesynth.cli -f tests/test.yaml --stdout
 ```
 

@@ -13,7 +13,7 @@ parser.add_argument('--stdout', action='store_true', help='print output to stdou
 def main(filename, output=None, stdout=False):
     if output is None:
         output, ext = os.path.splitext(os.path.basename(filename))
-    pipe = Orchestration.read_yaml(filename)
+    pipe = Orchestration.read_config(filename)
     pipe.run()
     if stdout:
         asyncio.run(pipe.root.save())

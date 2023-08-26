@@ -30,8 +30,12 @@ def read_dot(filename):
     return nx.DiGraph(nx.nx_pydot.read_dot(filename))
 
 def load_config(filename):
-    with open(filename) as fh:
-        data = yaml.safe_load(fh)
+    if filename.endswith('json'):
+        with open(filename) as fh:
+            data = json.load(fh)
+    else:
+        with open(filename) as fh:
+            data = yaml.safe_load(fh)
     return data
 
 def write_as_gzip(fh_obj, filename):

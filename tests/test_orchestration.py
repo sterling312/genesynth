@@ -44,6 +44,6 @@ async def test_asyncio(o, node):
     arr = await o.asyncio(node)
     np.testing.assert_array_equal(arr, np.arange(10))
 
-def test_orchestration_read_yaml():
-    o = Orchestration.read_yaml('tests/test.yaml')
+def test_orchestration_read_config():
+    o = Orchestration.read_config('tests/test.yaml')
     assert len(o.graph.nodes) == 7
