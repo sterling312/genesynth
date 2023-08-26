@@ -84,7 +84,7 @@ class BaseMask:
 
     @staticmethod
     def index_value(arr):
-        return arr[mat.incremental_index(arr)]
+        return arr[mat.ordered_index(arr)]
         
     async def generate(self):
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
@@ -116,7 +116,7 @@ class BaseMask:
         return f"{self.__class__.__name__}(name='{self.name}', size={self.size})"
 
     def __del__(self, *args, **kwargs):
-        if os.path.isfile(self._file):
+        if self._file and os.path.isfile(self._file):
             os.remove(self._file)
 
 @dataclass(unsafe_hash=True)
