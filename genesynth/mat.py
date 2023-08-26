@@ -63,8 +63,8 @@ def cosine_similarity(a: np.array, b: np.array):
     """
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-def stats_model_generate(size: int, *args, model: str = 'uniform', **kwargs):
-    """return array based on the statistical distribution
+def stats_model(*args, model: str = 'uniform', **kwargs):
+    """return stats model based on input parameters
        model supported are:
             alpha
             beta
@@ -79,7 +79,13 @@ def stats_model_generate(size: int, *args, model: str = 'uniform', **kwargs):
             uniform
        parameters to the model can be passed in as ordered or key-word wildcards 
     """
-    return StatsModel[model].value(*args, **kwargs).rvs(size)
+    return StatsModel[model].value(*args, **kwargs)
+
+def stats_model_generate(size: int, *args, model: str = 'uniform', **kwargs):
+    """return array based on the statistical distribution
+       parameters to the model can be passed in as ordered or key-word wildcards 
+    """
+    return stats_model(*args, model=model, **kwargs).rvs(size)
 
 def stats_model_fit(arr: np.array, model: str = 'uniform'):
     """return model best fit parameters based on input array

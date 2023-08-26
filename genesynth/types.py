@@ -77,10 +77,13 @@ class BaseMask:
         return obj
 
     def mask(self):
-        pass
+        percent = 0
+        return mat.null_percent(self.size, percent)
 
     def dist(self):
-        pass
+        model = 'uniform'
+        params = {'loc': 0, 'scale': 1}
+        return mat.stats_model_generate(self.size, model=model, **params)
 
     @staticmethod
     def index_value(arr):
