@@ -84,7 +84,7 @@ class BaseMask:
 
     @staticmethod
     def index_value(arr):
-        return arr[mat.ordered_index(arr)]
+        return mat.ordered_index(arr)
         
     async def generate(self):
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
