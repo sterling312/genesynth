@@ -26,6 +26,20 @@ def unique(arr: np.array):
     """
     return np.unique(arr)
 
+def sample(size: int, options, replace=True):
+    """return sampled value from options
+    if options is a dict, sampling probability distribution will be 
+        generated from normalizing the value from options, otherwise 
+        it will be a uniform distribution iterated over options
+    """
+    if isinstance(options, dict):
+        p = np.array(list(options.values()))
+        p = p / p.sum()
+        options = list(options)
+    else:
+        p = None
+    return np.random.choice(options, size, replace=replace, p=p)
+
 def mask(arr: np.array, low, high=None):
     """return index of input value against the array
     length of the array depends on number matches
