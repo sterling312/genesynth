@@ -21,6 +21,16 @@ class StatsModel(enum.Enum):
     power_law = stats.powerlaw
     bootstrap = stats.bootstrap
 
+def identity(arr: np.array, for_matmul=False):
+    """return index array that will produce identical array
+    when applied to the original array
+    if for_matmul is true, it will return boolean array
+        otherwise it will return index array
+    """
+    if for_matmul:
+        return np.ones(arr.size).astype(bool)
+    return np.arange(arr.size)
+
 def unique(arr: np.array):
     """return subarray of unique values
     """
