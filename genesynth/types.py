@@ -11,6 +11,7 @@ import hashlib
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 from datetime import datetime, date, time
+from functools import cache, cached_property
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -76,9 +77,17 @@ class BaseMask:
         obj._constraints = constraints
         return obj
 
-    def mask(self, percent_null=0):
-        return mat.null_percent(self.size, percent_null)
+    @cache
+    def mask(self):
+        mask = mat.identity(self.size, matmul=True)
+        for constraint, value in self._constraints:
+            if constraint == 'notnull':
+                mask &= mat.null_percent(self.size, precent=0)
+            elif constraint == 'nullable':
+                mask &= mat.null_percent(self.size, precent=value)
+        return mask
 
+    @cache
     def dist(self, model='uniform', **kwargs):
         params = {'loc': 0, 'scale': 1}
         params.update(kwargs)
@@ -89,14 +98,26 @@ class BaseMask:
         return mat.ordered_index(arr)
 
     @staticmethod
-    def unique(arr):
-        return np.unique(arr)
+    def subset_index(arr, subset):
+        index = mat.identity(arr.size)
+        mask = mat.identity(self.size, matmul=True) == False
+        for unique in np.unique(subset):
+            mask |= mat.mask_index(arr, unique)
+        return index[mask]
 
-    @property
-    def index(self):
-        arr = self.mask()
-        for constraint in self._constraints:
-            pass
+    @cache
+    def index(self, arr):
+        index = mat.identity(self.size)
+        for constraint, value in self._constraints:
+            if constraint == 'incremental':
+                index = mat.ordered_index(arr)
+            elif constraint == 'unique':
+                mask = mat.identity(self.size, matmul=True) == False
+                for unique in np.unique(arr):
+                    mask |= mat.mask_index(arr, unique)
+            elif constraint == 'distribution':
+                pass
+        return index
 
     async def generate(self):
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')

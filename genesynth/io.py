@@ -66,6 +66,15 @@ def write_as_yaml(fh_obj, filename, header=False):
         records = [json.loads(line.rstrip('\n')) for line in fh_obj]
         yaml.dump(records, fh)
 
+def unpack_constraints(constraints):
+    items = []
+    for constraint in constraints:
+        if isinstance(constraint, dict):
+            items.extend(list(zip(constraint.keys(), constraint.values())))
+        else:
+            items.append((constraint, None))
+    return items
+
 def schema_to_graph(G, fullname, params, size=0, root='root'):
     # TODO move this logic into io.py without disrupting package dependency
     # TODO incorporate Node and Relationship into node
@@ -85,8 +94,7 @@ def schema_to_graph(G, fullname, params, size=0, root='root'):
     foreign = metadata.pop('foreign', None)
     constraints = params.get('constraints', [])
     if constraints:
-        constraints = list(zip(*constraints))[0]
-        #constraints = [item if isinstance(item, dict) else {item: None} for item in constraints]
+        constraints = unpack_constraints(constraints)
     if foreign:
         depends_on = f'{root}.{foreign["name"]}'
         node = datatypes['foreign'].from_params(name=fullname, graph=G, depends_on=depends_on, 
