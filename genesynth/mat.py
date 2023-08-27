@@ -22,6 +22,8 @@ class StatsModel(enum.Enum):
     bootstrap = stats.bootstrap
 
 def unique(arr: np.array):
+    """return subarray of unique values
+    """
     return np.unique(arr)
 
 def mask(arr: np.array, low, high=None):
