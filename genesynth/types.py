@@ -76,19 +76,28 @@ class BaseMask:
         obj._constraints = constraints
         return obj
 
-    def mask(self):
-        percent = 0
-        return mat.null_percent(self.size, percent)
+    def mask(self, percent_null=0):
+        return mat.null_percent(self.size, percent_null)
 
-    def dist(self):
-        model = 'uniform'
+    def dist(self, model='uniform', **kwargs):
         params = {'loc': 0, 'scale': 1}
+        params.update(kwargs)
         return mat.stats_model_generate(self.size, model=model, **params)
 
     @staticmethod
     def index_value(arr):
         return mat.ordered_index(arr)
-        
+
+    @staticmethod
+    def unique(arr):
+        return np.unique(arr)
+
+    @property
+    def index(self):
+        arr = self.mask()
+        for constraint in self._constraints:
+            pass
+
     async def generate(self):
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
 
@@ -246,8 +255,8 @@ class BaseMapFixture(BaseMask):
 @types.register(['integer'])
 @dataclass(unsafe_hash=True)
 class IntegerFixture(BaseNumberFixture):
-    min: int
-    max: int
+    min: int = 0
+    max: int = 100
     null = None
 
     # TODO add type conversio to Serial when constraint is incremental
@@ -275,8 +284,8 @@ class BooleanFixture(BaseNumberFixture):
 @types.register(['float', 'double'])
 @dataclass(unsafe_hash=True)
 class FloatFixture(BaseNumberFixture):
-    min: int
-    max: int
+    min: int = -1
+    max: int = 1
 
     async def generate(self):
         return stats.uniform.rvs(self.min, self.max, self.size)
@@ -284,8 +293,8 @@ class FloatFixture(BaseNumberFixture):
 @types.register(['decimal', 'numeric'])
 @dataclass(unsafe_hash=True)
 class DecimalFixture(FloatFixture):
-    precision: int
-    scale: int
+    precision: int = 16
+    scale: int = 3
 
     async def generate(self):
         arr = await super().generate()

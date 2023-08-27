@@ -21,6 +21,9 @@ class StatsModel(enum.Enum):
     power_law = stats.powerlaw
     bootstrap = stats.bootstrap
 
+def unique(arr: np.array):
+    return np.unique(arr)
+
 def mask(arr: np.array, low, high=None):
     """return index of input value against the array
     length of the array depends on number matches
