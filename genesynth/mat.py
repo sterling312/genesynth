@@ -68,9 +68,16 @@ def mask_index(arr: np.array, low, high=None):
         return np.where(arr==low, True, False)
 
 def null_percent(size: int, percent: float = 0.):
-    """return masking array for null value.
+    """return masking array for null value drawn from a binomial distribution.
     """
     return np.random.binomial(1, percent/100., size) == 1
+
+def nullable(arr, percent, null=''):
+    """return masked array with null being the fill_value
+    make sure that null value matches the datatype of array, or it will error
+    use arr.filled() to return array with mask filled
+    """
+    return np.ma.MaskedArray(arr, mask=null_percent(arr.size, precent), fill_value=null)
 
 def ordered_index(arr: np.array):
     """return index to sort array in incremental order
