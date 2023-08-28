@@ -22,6 +22,7 @@ from mimesis.builtins import USASpecProvider
 from genesynth.worker import WorkloadType, Runner, WorkerRegistry
 from genesynth.constraints import *
 from genesynth.graph import nx, find_node, find_child_node
+from genesynth.utils import sorted_groupby
 from genesynth import mat
 
 def reseed(seed=None):
@@ -74,18 +75,23 @@ class BaseMask:
         params = {field: kwargs[field] for field in fields & keys}
         obj = cls(**params)
         obj._metadata = metadata
-        obj._constraints = constraints
+        obj._constraints = cls.unpack_constraints(constraints)
         return obj
+
+    @staticmethod
+    def unpack_constraints(constraints):
+        return {k: list(filter(None, (i[-1] for i in v))) 
+            for k, v in sorted_groupby(constraints, lambda x: x[0])}
 
     @cache
     def mask(self):
-        mask = mat.identity(self.size, matmul=True)
-        for constraint, value in self._constraints:
-            if constraint == 'notnull':
-                mask &= mat.null_percent(self.size, precent=0)
-            elif constraint == 'nullable':
-                mask &= mat.null_percent(self.size, precent=value)
-        return mask
+        if 'notnull' in self._constraints:
+            return mat.null_percent(self.size, percent=0)
+        elif 'nullable' in self._constraints:
+            mask = mat.identity(self.size, matmul=True)
+            for value in self._constraints['nullable']:
+                mask &= mat.null_percent(self.size, percent=value)
+            return mask
 
     @cache
     def dist(self, model='uniform', **kwargs):
@@ -105,19 +111,16 @@ class BaseMask:
             mask |= mat.mask_index(arr, unique)
         return index[mask]
 
-    @cache
     def index(self, arr):
         index = mat.identity(self.size)
-        for constraint, value in self._constraints:
-            if constraint == 'incremental':
-                index = mat.ordered_index(arr)
-            elif constraint == 'unique':
-                mask = mat.identity(self.size, matmul=True) == False
-                for unique in np.unique(arr):
-                    mask |= mat.mask_index(arr, unique)
-            elif constraint == 'distribution':
-                pass
+        if 'sorted' in self._constraints:
+            index = mat.ordered_index(arr)
         return index
+
+    def apply_index(self, arr, null=''):
+        mask = self.mask()
+        index = self.index(arr)
+        return mat.nullable(arr[index].astype(str), mask=mask, null=null).filled()
 
     async def generate(self):
         raise NotImplementedError(f'{self.__class__.__name__} does not have generate defined')
@@ -167,7 +170,8 @@ class BaseTextFixture(BaseMask):
         self.options = tuple(self.options)
 
     async def generate(self):
-        return mat.sample(self.size, self.options, replace=replace)
+        arr = mat.sample(self.size, self.options, replace=replace)
+        return self.apply_index(arr)
 
 @types.register(['text'])
 @dataclass(unsafe_hash=True)
@@ -178,7 +182,8 @@ class BaseTextFixture(BaseMask):
         self.random = Random(self.seed)
 
     async def generate(self):
-        return np.array([self.random.randstr()[:self.length] for _ in range(self.size)])
+        arr = np.array([self.random.randstr()[:self.length] for _ in range(self.size)])
+        return self.apply_index(arr)
 
 @types.register(['timestamp', 'datetime'])
 @dataclass(unsafe_hash=True)
@@ -187,13 +192,15 @@ class BaseTimestamp(BaseMask):
     max: datetime = datetime.now()
 
     async def generate(self):
-        return pd.date_range(self.min, self.max, periods=self.size).to_pydatetime()
+        arr = pd.date_range(self.min, self.max, periods=self.size).to_pydatetime()
+        return self.apply_index(arr)
 
 @types.register(['date'])
 @dataclass(unsafe_hash=True)
 class BaseDate(BaseTimestamp):
     async def generate(self):
-        return pd.date_range(self.min, self.max, periods=self.size).date
+        arr = pd.date_range(self.min, self.max, periods=self.size).date
+        return self.apply_index(arr)
 
 @types.register(['time'])
 @dataclass(unsafe_hash=True)
@@ -206,7 +213,8 @@ class BaseTime(BaseTimestamp):
             second=self.min.second, microsecond=self.min.microsecond)
         max = datetime.fromtimestamp(0).replace(hour=self.max.hour, minute=self.max.minute,
             second=self.max.second, microsecond=self.max.microsecond)
-        return pd.date_range(min, max, periods=self.size).time
+        arr = pd.date_range(min, max, periods=self.size).time
+        return self.apply_index(arr)
 
 @types.register(['foreign'])
 @dataclass(unsafe_hash=True)
@@ -230,7 +238,7 @@ class BaseForeign(BaseMask):
 
     async def generate(self):
         arr = await self.node.generate()
-        return arr
+        return self.apply_index(arr)
 
 @types.register(['array', 'list', 'tuple'])
 @dataclass(unsafe_hash=True)
@@ -283,7 +291,8 @@ class IntegerFixture(BaseNumberFixture):
     # TODO add type conversio to Serial when constraint is incremental
 
     async def generate(self):
-        return np.random.randint(self.min, self.max, self.size)
+        arr = np.random.randint(self.min, self.max, self.size)
+        return self.apply_index(arr)
 
 @types.register(['serial'])
 @dataclass(unsafe_hash=True)
@@ -293,14 +302,16 @@ class SerialFixture(BaseNumberFixture):
     null = 0
 
     async def generate(self):
-        return np.arange(self.min, self.min + self.size * self.step, self.step)
+        arr = np.arange(self.min, self.min + self.size * self.step, self.step)
+        return self.apply_index(arr)
 
 @types.register(['boolean'])
 @dataclass(unsafe_hash=True)
 class BooleanFixture(BaseNumberFixture):
     async def generate(self):
         arr = np.random.randint(0, 2, self.size).astype(bool)
-        return np.where(arr==True, 'true', np.where(arr==False, 'false', arr))
+        arr = np.where(arr==True, 'true', np.where(arr==False, 'false', arr))
+        return self.apply_index(arr)
 
 @types.register(['float', 'double'])
 @dataclass(unsafe_hash=True)
@@ -309,7 +320,8 @@ class FloatFixture(BaseNumberFixture):
     max: int = 1
 
     async def generate(self):
-        return stats.uniform.rvs(self.min, self.max, self.size)
+        arr = stats.uniform.rvs(self.min, self.max, self.size)
+        return self.apply_index(arr)
 
 @types.register(['decimal', 'numeric'])
 @dataclass(unsafe_hash=True)
@@ -319,7 +331,8 @@ class DecimalFixture(FloatFixture):
 
     async def generate(self):
         arr = await super().generate()
-        return np.round(arr, self.scale)
+        arr = np.round(arr, self.scale)
+        return self.apply_index(arr)
 
 @types.register(['string'])
 @dataclass(unsafe_hash=True)
@@ -339,7 +352,8 @@ class StringFixture(BaseTextFixture):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:
             func = getattr(func, self.field)
-        return np.array([str(func())[:self.length] for _ in range(self.size)])
+        arr = np.array([str(func())[:self.length] for _ in range(self.size)])
+        return self.apply_index(arr)
 
     @worker.register
     async def write(self):
@@ -352,4 +366,5 @@ class BcryptPassword(BaseTextFixture):
     prefix: str = '2b'
 
     async def generate(self):
-        return np.array([f'${self.prefix}${self.rounds}${self.random.randstr(length=53)}' for _ in range(self.size)])
+        arr = np.array([f'${self.prefix}${self.rounds}${self.random.randstr(length=53)}' for _ in range(self.size)])
+        return self.apply_index(arr)

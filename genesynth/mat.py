@@ -21,13 +21,13 @@ class StatsModel(enum.Enum):
     power_law = stats.powerlaw
     bootstrap = stats.bootstrap
 
-def identity(size: int, for_matmul=False):
+def identity(size: int, matmul=False):
     """return index array that will produce identical array
     when applied to the original array
-    if for_matmul is true, it will return boolean array
+    if matmul is true, it will return boolean array
         otherwise it will return index array
     """
-    if for_matmul:
+    if matmul:
         return np.ones(size).astype(bool)
     return np.arange(size)
 
@@ -72,12 +72,15 @@ def null_percent(size: int, percent: float = 0.):
     """
     return np.random.binomial(1, percent/100., size) == 1
 
-def nullable(arr, percent, null=''):
+def nullable(arr, percent=0, mask=None, null=''):
     """return masked array with null being the fill_value
     make sure that null value matches the datatype of array, or it will error
     use arr.filled() to return array with mask filled
     """
-    return np.ma.MaskedArray(arr, mask=null_percent(arr.size, precent), fill_value=null)
+    if mask is None:
+        return np.ma.MaskedArray(arr, mask=null_percent(arr.size, percent), fill_value=null)
+    else:
+        return np.ma.MaskedArray(arr, mask=mask, fill_value=null)
 
 def ordered_index(arr: np.array):
     """return index to sort array in incremental order
