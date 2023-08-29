@@ -167,7 +167,7 @@ class BaseTextFixture(BaseMask):
         self.options = tuple(self.options)
 
     async def generate(self):
-        return mat.sample(self.size, self.options, replace=replace)
+        return mat.sample(self.size, self.options, replace=self.replace)
 
 @types.register(['text'])
 @dataclass(unsafe_hash=True)
