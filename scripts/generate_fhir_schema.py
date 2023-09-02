@@ -55,7 +55,7 @@ def type_inspector(field):
     elif field.message_type is not None: # nested type
         subfield = {}
         for sub in field.message_type.fields:
-            if sub.name == 'extension':
+            if sub.name in ('extension', 'modifier_extension'):
                 # skip extension for now
                 continue
             if sub.message_type is not None and field.message_type.name == sub.message_type.name:
@@ -77,7 +77,7 @@ def proto_schema(obj):
     schema = {}
     nested = {m.name: m for m in message.nested_types}
     for field in message.fields:
-        if field.name == 'extension':
+        if field.name in ('extension', 'modifier_extension'):
             # skip extension for now
             continue
         if field.label == field.LABEL_REPEATED:
