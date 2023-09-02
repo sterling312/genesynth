@@ -1,0 +1,122 @@
+$ref: ''
+description: user
+metadata:
+  namespace: public
+  sep: ','
+  size: 20
+properties:
+  user:
+    metadata:
+      size: 20
+    properties:
+      active:
+        metadata: {}
+        properties:
+          id:
+            metadata: {}
+            properties:
+              value:
+                metadata:
+                  subtype: cryptographic
+                  field: uuid
+                type: string
+            type: json
+          value:
+            metadata: {}
+            type: boolean
+        type: json
+      address:
+        metadata: {}
+        properties:
+          city:
+            metadata: {}
+            properties:
+              value:
+                metadata:
+                  subtype: address
+                  field: city
+                type: string
+            type: json
+          country:
+            metadata: {}
+            properties:
+              value:
+                metadata:
+                  subtype: address
+                  field: country
+                type: string
+            type: json
+          district:
+            metadata: {}
+            properties:
+              value:
+                metadata:
+                  subtype: address
+                  field: state
+                type: string
+            type: json
+          id:
+            metadata: {}
+            properties:
+              value:
+                metadata:
+                  subtype: cryptographic
+                  field: uuid
+                type: string
+            type: json
+          line:
+            metadata: {}
+            properties:
+              value:
+                metadata:
+                  subtype: address
+                  field: address
+                type: string
+            type: '[json]'
+          period:
+            metadata: {}
+            properties:
+              end:
+                metadata: {}
+                properties:
+                  id:
+                    metadata: {}
+                    properties:
+                      value:
+                        metadata:
+                          subtype: cryptographic
+                          field: uuid
+                        type: string
+                    type: json
+                  precision:
+                    metadata:
+                      max: 6
+                      min: 6
+                    type: integer
+                  timezone:
+                    metadata:
+                      options:
+                        - UTC
+                    type: enum
+                  value_us:
+                    metadata:
+                      max: 1893474000
+                      min: 1693640754
+                      scale: 6
+                    type: decimal
+                type: json
+              id:
+                metadata: {}
+                properties:
+                  value:
+                    metadata:
+                      subtype: cryptographic
+                      field: uuid
+                    type: string
+                type: json
+            type: json
+        type: json
+    type: json
+type: json
+version: 2
+
