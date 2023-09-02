@@ -4,6 +4,7 @@ import os
 import argparse
 import asyncio
 from genesynth.orchestration import *
+from genesynth.utils import clean_text
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--filename', required=True, help='schema file')
@@ -17,7 +18,7 @@ def main(filename, output=None):
         asyncio.run(pipe.root.save())
         with open(pipe.root._file) as fh:
             for line in fh:
-                sys.stdout.write(line)
+                sys.stdout.write(clean_text(line))
     else:
         asyncio.run(pipe.root.save(output))
 

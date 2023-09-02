@@ -8,6 +8,7 @@ import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 from genesynth.orchestration import *
+from genesynth.utils import clean_text
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', default='localhost', help='server host')
@@ -34,10 +35,10 @@ async def api(schema: Schema, size=None):
     await pipe.root.save() 
     with open(pipe.root._file) as fh:
         try:
-            data = [json.loads(line) for line in fh if line.strip()]
+            data = [json.loads(clean_text(line)) for line in fh if line.strip()]
         except:
             fh.seek(0)
-            data = [line for line in fh if line.strip()]
+            data = [clean_text(line) for line in fh if line.strip()]
         del pipe
         return data
 
