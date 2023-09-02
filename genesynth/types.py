@@ -104,7 +104,6 @@ class BaseMask:
             mask |= mat.mask_index(arr, unique)
         return index[mask]
 
-    @lru_cache(maxsize=None)
     def index(self, arr):
         index = mat.identity(self.size)
         for constraint, value in self._constraints:
