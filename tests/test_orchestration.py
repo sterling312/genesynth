@@ -27,7 +27,7 @@ def o():
 @pytest.mark.asyncio
 async def test_process(o, node):
     arr = await o.process(node)
-    np.testing.assert_array_equal(arr, np.arange(10))
+    np.testing.assert_array_equal(arr, np.arange(10).astype(str))
 
 @pytest.mark.asyncio
 async def test_worker_process(o, string):
@@ -37,12 +37,12 @@ async def test_worker_process(o, string):
 @pytest.mark.asyncio
 async def test_thread(o, node):
     arr = await o.thread(node)
-    np.testing.assert_array_equal(arr, np.arange(10))
+    np.testing.assert_array_equal(arr, np.arange(10).astype(str))
 
 @pytest.mark.asyncio
 async def test_asyncio(o, node):
     arr = await o.asyncio(node)
-    np.testing.assert_array_equal(arr, np.arange(10))
+    np.testing.assert_array_equal(arr, np.arange(10).astype(str))
 
 def test_orchestration_read_config():
     o = Orchestration.read_config('tests/test.yaml')

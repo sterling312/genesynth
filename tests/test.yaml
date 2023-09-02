@@ -38,10 +38,12 @@ properties:
                 type: integer
                 metadata: 
                     min: 0
-                    max: 20
-                    weight: 10
-                constraints:
-                    - unique
+                    max: 200
+                    dist:
+                        normal:
+                            loc: 0
+                            scale: 100
+                constraints: {}
             column4:
                 type: integer
                 metadata:

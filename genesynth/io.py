@@ -12,7 +12,7 @@ import yaml
 import tempfile
 import networkx as nx
 import numpy as np
-from genesynth.types import Hashabledict
+from genesynth.utils import Hashabledict
 from genesynth.extensions import datatypes
 from genesynth.constraints import *
 
