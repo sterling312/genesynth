@@ -118,18 +118,26 @@ def stats_model(*args, model: str = 'uniform', **kwargs):
             uniform
        parameters to the model can be passed in as ordered or key-word wildcards 
     """
-    return StatsModel[model].value(*args, **kwargs)
+    if isinstance(model, str):
+        return StatsModel[model].value(*args, **kwargs)
+    else:
+        return StatsModel(model).value(*args, **kwargs)
 
-def stats_model_generate(size: int, *args, model: str = 'uniform', unique=False, **kwargs):
+def stats_model_generate(size: int, min: float, max: float, *args, model: str = 'uniform', unique=False, **kwargs):
     """return array based on the statistical distribution
        parameters to the model can be passed in as ordered or key-word wildcards 
     """
-    m = stats_model(*args, model=model, **kwargs)
-    if unique:
-        p = np.linspace(0, 1, size)
-        return m.ppf(p)
+    if model == 'uniform':
+        m = stats_model(min, max, *args, model=model)
     else:
-        return m.rvs(size)
+        m = stats_model(*args, model=model, **kwargs)
+    p99_low, p99_high = m.interval(0.99)
+    p_low, p_high = m.cdf(min), m.cdf(max)
+    if unique:
+        p = np.linspace(p_low, p_high, size)
+    else:
+        p = np.random.rand(size) * ((p_high - p_low) + p_low)
+    return m.ppf(p)
 
 def stats_model_fit(arr: np.array, model: str = 'uniform'):
     """return model best fit parameters based on input array

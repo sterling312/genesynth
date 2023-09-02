@@ -64,6 +64,7 @@ class BaseMask:
     _hashfile = True
     _path = None # cache directory
     _defer = None # parent node if deferred
+    _dist = None
 
     # TODO handle notnull and unique constraits
 
@@ -75,12 +76,28 @@ class BaseMask:
         params = {field: kwargs[field] for field in fields & keys}
         obj = cls(**params)
         obj._metadata = metadata
+        if 'dist' in metadata:
+            obj._dist = metadata.pop('dist')
         obj._constraints = cls.unpack_constraints(constraints)
         return obj
 
     @property
     def unique(self):
         return 'unique' in self._constraints
+
+    @property
+    def dist(self):
+        if self._dist:
+            return next(iter(self._dist.keys()))
+        else:
+            return 'uniform'
+
+    @property
+    def dist_params(self):
+        if self._dist:
+            return next(iter(self._dist.values()))
+        else:
+            return {}
 
     @staticmethod
     def unpack_constraints(constraints):
@@ -97,10 +114,14 @@ class BaseMask:
                 mask &= mat.null_percent(self.size, percent=value)
             return mask
 
-    def dist(self, model='uniform', **kwargs):
-        params = {'loc': 0, 'scale': 1}
-        params.update(kwargs)
-        return mat.stats_model_generate(self.size, model=model, unique=self.unique, **params)
+    def dist_generate(self, *args, **kwargs):
+        if not args and self.dist == 'uniform':
+            args = (0, 1)
+        return mat.stats_model_generate(self.size, *args, model=self.dist, unique=self.unique, **self.dist_params)
+
+    @staticmethod
+    def dist_fit(arr):
+        return mat.stats_model_fit(arr, model=self.dist, **self.dist_params)
 
     @staticmethod
     def index_value(arr):
@@ -302,7 +323,7 @@ class IntegerFixture(BaseNumberFixture):
     # TODO add type conversio to Serial when constraint is incremental
 
     async def generate(self):
-        arr = mat.stats_model_generate(self.size, self.min, self.max, unique=self.unique).astype(int)
+        arr = mat.stats_model_generate(self.size, self.min, self.max, model=self.dist, unique=self.unique, **self.dist_params).astype(int)
         return self.apply_index(arr)
 
 @types.register(['serial'])
@@ -331,7 +352,7 @@ class FloatFixture(BaseNumberFixture):
     max: int = 1
 
     async def generate(self):
-        arr = mat.stats_model_generate(self.size, self.min, self.max, unique=self.unique)
+        arr = mat.stats_model_generate(self.size, self.min, self.max, model=self.dist, unique=self.unique, **self.dist_params)
         return self.apply_index(arr)
 
 @types.register(['decimal', 'numeric'])
@@ -341,7 +362,7 @@ class DecimalFixture(FloatFixture):
     scale: int = 3
 
     async def generate(self):
-        arr = mat.stats_model_generate(self.size, self.min, self.max, unique=self.unique)
+        arr = mat.stats_model_generate(self.size, self.min, self.max, model=self.dist, unique=self.unique, **self.dist_params)
         arr = np.round(arr, self.scale)
         return self.apply_index(arr)
 

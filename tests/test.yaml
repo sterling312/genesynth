@@ -47,6 +47,10 @@ properties:
                 metadata:
                     foreign:
                         name: table1.column1
+                    dist:
+                        normal:
+                            loc: 0
+                            scale: 1
                 constraints:
                     - unique
 constraints:
