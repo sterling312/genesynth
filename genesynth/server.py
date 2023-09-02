@@ -29,16 +29,22 @@ async def home():
     return {'status': 'OK'}
 
 @app.post('/api')
-async def api(schema: Schema, size=None):
+async def api(schema: Schema, size=None, string=False):
     pipe = Orchestration.read_dict(dict(schema), size=size)
     pipe.run()
     await pipe.root.save() 
     with open(pipe.root._file) as fh:
         try:
-            data = [json.loads(clean_text(line)) for line in fh if line.strip()]
+            if string:
+                data = [json.loads(line) for line in fh if line.strip()]
+            else:
+                data = [json.loads(clean_text(line)) for line in fh if line.strip()]
         except:
             fh.seek(0)
-            data = [clean_text(line) for line in fh if line.strip()]
+            if string:
+                data = [line for line in fh if line.strip()]
+            else:
+                data = [clean_text(line) for line in fh if line.strip()]
         del pipe
         return data
 
