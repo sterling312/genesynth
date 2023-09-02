@@ -119,9 +119,10 @@ class BaseMask:
         index = mat.identity(self.size)
         if 'sorted' in self._constraints:
             index = mat.ordered_index(arr)
-        if 'unique' in self._constraints:
+        if self.unique:
             assert len(index) == np.unique(index).size, f'{self.name} should be unique, found dupe in index'
-            assert len(index) == np.unique(arr).size, f'{self.name} should be unique, found duplicated value'
+            unique = np.unique(arr)
+            assert len(index) == unique.size, f'{self.name} only has {unique.size}/{len(index)} unique value'
         return index
 
     def apply_index(self, arr, null=''):
@@ -301,7 +302,7 @@ class IntegerFixture(BaseNumberFixture):
     # TODO add type conversio to Serial when constraint is incremental
 
     async def generate(self):
-        arr = np.random.randint(self.min, self.max, self.size)
+        arr = mat.stats_model_generate(self.size, self.min, self.max, unique=self.unique).astype(int)
         return self.apply_index(arr)
 
 @types.register(['serial'])

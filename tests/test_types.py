@@ -14,7 +14,8 @@ def params():
 
 def test_integer(params):
     n = IntegerFixture(min=0, max=100, **params)
-    arr = np.array([37, 12, 72, 9, 75, 5, 79, 64, 16, 1]).astype(str)
+    #arr = np.array([37, 12, 72, 9, 75, 5, 79, 64, 16, 1]).astype(str)
+    arr = np.array([41, 72, 0, 30, 14, 9, 18, 34, 39, 53]).astype(str)
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
 def test_serial(params):
@@ -86,7 +87,8 @@ def test_foreign(params):
     G = nx.DiGraph()
     G.add_edge(parent, child)
     n = BaseForeign.from_params(graph=G, depends_on='parent.child', **params)
-    arr = np.array([37, 12, 72, 9, 75, 5, 79, 64, 16, 1]).astype(str)
+    #arr = np.array([37, 12, 72, 9, 75, 5, 79, 64, 16, 1]).astype(str)
+    arr = np.array([41, 72, 0, 30, 14, 9, 18, 34, 39, 53]).astype(str)
     np.testing.assert_array_equal(asyncio.run(n.generate()), arr)
 
 def test_map(params):
@@ -124,4 +126,4 @@ def test_nest(params):
     np.testing.assert_array_equal(records['id'], np.arange(10).astype(str))
     assert set(records['json']) == {'value'}
     #np.testing.assert_array_equal(records['json']['value'], np.array([5, 8, 9, 5, 0, 0, 1, 7, 6, 9]).astype(str))
-    np.testing.assert_array_equal(records['json']['value'], np.array([5, 2, 4, 2, 4, 7, 7, 9, 1, 7]).astype(str))
+    np.testing.assert_array_equal(records['json']['value'], np.array([4, 6, 2, 8, 0, 6, 4, 5, 1, 1]).astype(str))
