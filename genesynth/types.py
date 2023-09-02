@@ -97,7 +97,6 @@ class BaseMask:
                 mask &= mat.null_percent(self.size, percent=value)
             return mask
 
-    @lru_cache(maxsize=None)
     def dist(self, model='uniform', **kwargs):
         params = {'loc': 0, 'scale': 1}
         params.update(kwargs)
