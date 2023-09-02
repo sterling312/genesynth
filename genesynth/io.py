@@ -12,7 +12,7 @@ import yaml
 import tempfile
 import networkx as nx
 import numpy as np
-from genesynth.types import Hashabledict
+from genesynth.utils import Hashabledict
 from genesynth.extensions import datatypes
 from genesynth.constraints import *
 
@@ -37,6 +37,9 @@ def load_config(filename):
         with open(filename) as fh:
             data = yaml.safe_load(fh)
     return data
+
+def savefile(filename, arr, fmt='%s', delimiter='\n'):
+    np.savetxt(filename, arr, fmt=fmt, delimiter=delimiter)
 
 def write_as_gzip(fh_obj, filename):
     with gzip.open(filename, 'wt') as fh:

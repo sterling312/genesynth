@@ -22,7 +22,7 @@ from mimesis.builtins import USASpecProvider
 from genesynth.worker import WorkloadType, Runner, WorkerRegistry
 from genesynth.constraints import *
 from genesynth.graph import nx, find_node, find_child_node
-from genesynth.utils import sorted_groupby
+from genesynth.utils import Hashabledict, sorted_groupby
 from genesynth import mat
 
 def reseed(seed=None):
@@ -40,10 +40,6 @@ class Datatypes(dict):
                 self[name] = obj
             return obj
         return wraps
-
-class Hashabledict(dict):
-    def __hash__(self):
-        return hash(frozenset(self))
 
 types = Datatypes()
 datatypes = types

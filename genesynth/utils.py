@@ -10,6 +10,10 @@ class classproperty:
     def __get__(self, obj, cls):
         return self.fn(cls)
 
+class Hashabledict(dict):
+    def __hash__(self):
+        return hash(frozenset(self))
+
 def sorted_groupby(arr, func, reverse=False):
     return groupby(sorted(arr, key=func, reverse=reverse), key=func)
 
