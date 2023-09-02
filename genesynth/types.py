@@ -225,7 +225,7 @@ class BaseTimestamp(BaseMask):
         if not self.posix:
             arr = arr.to_pydatetime()
         else:
-            arr = (arr.values.astype(int) // 10**9) + (arr.microsecond / 10 ** 6)
+            arr = (arr.values.astype(int) // 10**9) + (arr.microsecond / 10**6)
         return self.apply_index(arr)
 
 @types.register(['date'])
