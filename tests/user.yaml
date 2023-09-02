@@ -100,10 +100,10 @@ properties:
                     type: enum
                   value_us:
                     metadata:
-                      max: 1893474000
-                      min: 1693640754
-                      scale: 6
-                    type: decimal
+                      max: 2030-01-01
+                      min: 2020-01-01
+                      posix: True
+                    type: timestamp
                 type: json
               id:
                 metadata: {}

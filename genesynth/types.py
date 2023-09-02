@@ -218,9 +218,14 @@ class BaseTextFixture(BaseMask):
 class BaseTimestamp(BaseMask):
     min: datetime = datetime.fromtimestamp(0)
     max: datetime = datetime.now()
+    posix: bool = False
 
     async def generate(self):
-        arr = pd.date_range(self.min, self.max, periods=self.size).to_pydatetime()
+        arr = pd.date_range(self.min, self.max, periods=self.size)
+        if not self.posix:
+            arr = arr.to_pydatetime()
+        else:
+            arr = (arr.values.astype(int) // 10**9) + (arr.microsecond / 10 ** 6)
         return self.apply_index(arr)
 
 @types.register(['date'])
