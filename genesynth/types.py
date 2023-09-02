@@ -128,6 +128,7 @@ class BaseMask:
     def apply_index(self, arr, null=''):
         mask = self.mask()
         index = self.index(arr)
+        # TODO remove the need to cast array as str
         return mat.nullable(arr[index].astype(str), mask=mask, null=null).filled()
 
     async def generate(self):
