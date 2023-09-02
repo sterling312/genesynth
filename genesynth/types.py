@@ -78,6 +78,10 @@ class BaseMask:
         obj._constraints = cls.unpack_constraints(constraints)
         return obj
 
+    @property
+    def unique(self):
+        return 'unique' in self._constraints
+
     @staticmethod
     def unpack_constraints(constraints):
         return {k: list(filter(None, (i[-1] for i in v))) 
@@ -97,7 +101,7 @@ class BaseMask:
     def dist(self, model='uniform', **kwargs):
         params = {'loc': 0, 'scale': 1}
         params.update(kwargs)
-        return mat.stats_model_generate(self.size, model=model, **params)
+        return mat.stats_model_generate(self.size, model=model, unique=self.unique, **params)
 
     @staticmethod
     def index_value(arr):
@@ -115,6 +119,9 @@ class BaseMask:
         index = mat.identity(self.size)
         if 'sorted' in self._constraints:
             index = mat.ordered_index(arr)
+        if 'unique' in self._constraints:
+            assert len(index) == np.unique(index).size, f'{self.name} should be unique, found dupe in index'
+            assert len(index) == np.unique(arr).size, f'{self.name} should be unique, found duplicated value'
         return index
 
     def apply_index(self, arr, null=''):
@@ -168,9 +175,11 @@ class BaseTextFixture(BaseMask):
 
     def __post_init__(self):
         self.options = tuple(self.options)
+        if self.unique:
+            self.replace = False
 
     async def generate(self):
-        arr = mat.sample(self.size, self.options, replace=replace)
+        arr = mat.sample(self.size, self.options, replace=self.replace)
         return self.apply_index(arr)
 
 @types.register(['text'])
@@ -182,6 +191,7 @@ class BaseTextFixture(BaseMask):
         self.random = Random(self.seed)
 
     async def generate(self):
+        # TODO add support to ensure unique constraint
         arr = np.array([self.random.randstr()[:self.length] for _ in range(self.size)])
         return self.apply_index(arr)
 
@@ -320,7 +330,7 @@ class FloatFixture(BaseNumberFixture):
     max: int = 1
 
     async def generate(self):
-        arr = stats.uniform.rvs(self.min, self.max, self.size)
+        arr = mat.stats_model_generate(self.size, self.min, self.max, unique=self.unique)
         return self.apply_index(arr)
 
 @types.register(['decimal', 'numeric'])
@@ -330,7 +340,7 @@ class DecimalFixture(FloatFixture):
     scale: int = 3
 
     async def generate(self):
-        arr = await super().generate()
+        arr = mat.stats_model_generate(self.size, self.min, self.max, unique=self.unique)
         arr = np.round(arr, self.scale)
         return self.apply_index(arr)
 
@@ -342,8 +352,6 @@ class StringFixture(BaseTextFixture):
     field: str = 'sentence'
     locale = Locale.EN
 
-    # TODO set field to uuid when constraint is uuid
-
     def __post_init__(self):
         self.generic = Generic(locale=self.locale, seed=self.seed)
 
@@ -352,6 +360,7 @@ class StringFixture(BaseTextFixture):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:
             func = getattr(func, self.field)
+        # TODO add support to ensure unique constraint
         arr = np.array([str(func())[:self.length] for _ in range(self.size)])
         return self.apply_index(arr)
 

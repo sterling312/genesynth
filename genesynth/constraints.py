@@ -17,8 +17,8 @@ from genesynth.mat import identity, unique, sample, mask, mask_index, null_perce
 class Builtin(enum.Enum):
     unique = 1 
     notnull = 2
-    incremental = 3
-    uuid = 4
+    nullable = 3
+    sorted = 4
 
 class Constraints(enum.Enum):
     ONEOF = 'oneOf'
