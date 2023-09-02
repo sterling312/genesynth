@@ -13,9 +13,15 @@ pip install genesynth
 ```
 $ python -m genesynth.server --host=0.0.0.0 -p 8080
 ```
+```
+$ make run
+```
 
 ```
 $ python -m genesynth.cli -f tests/test.yaml --stdout
+```
+```
+$ make cli FILENAME=$(pwd)/tests/test.yaml
 ```
 
 # project status
