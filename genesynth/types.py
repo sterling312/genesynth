@@ -7,6 +7,7 @@ All type must provide async generate method and optional write method.
 import os
 import enum
 import random
+import hashlib
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 from datetime import datetime, date, time
@@ -56,6 +57,7 @@ class BaseMask:
     _index = None
     _mask = None
     _file = None # cache filename
+    _hashfile = True
     _path = None # cache directory
     _defer = None # parent node if deferred
 
@@ -96,11 +98,17 @@ class BaseMask:
             filename = os.path.join(self._path, self.name)
         else:
             filename = self.name
+        if self._hashfile:
+            filename = hashlib.md5(filename.encode('ascii')).hexdigest()
         np.savetxt(filename, arr, fmt='"%s"', delimiter='\n')
         self._file = filename
 
     def __str__(self):
         return f"{self.__class__.__name__}(name='{self.name}', size={self.size})"
+
+    def __del__(self, *args, **kwargs):
+        if os.path.isfile(self._file):
+            os.remove(self._file)
 
 @dataclass(unsafe_hash=True)
 class BaseNumberFixture(BaseMask):
@@ -276,7 +284,7 @@ class StringFixture(BaseTextFixture):
         func = getattr(self.generic, self.subtype)
         if self.field is not None:
             func = getattr(func, self.field)
-        return np.array([func()[:self.length] for _ in range(self.size)])
+        return np.array([str(func())[:self.length] for _ in range(self.size)])
 
     @worker.register
     async def write(self):

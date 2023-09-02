@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 import os
 import argparse
 import asyncio
@@ -14,10 +15,13 @@ def main(filename, output=None, stdout=False):
         output, ext = os.path.splitext(os.path.basename(filename))
     pipe = Orchestration.read_yaml(filename)
     pipe.run()
-    asyncio.run(pipe.root.save(output))
     if stdout:
-        with open(output) as fh:
-            print(fh.read())
+        asyncio.run(pipe.root.save())
+        with open(pipe.root._file) as fh:
+            for line in fh:
+                sys.stdout.write(line)
+    else:
+        asyncio.run(pipe.root.save(output))
 
 if __name__ == '__main__':
     args = parser.parse_args()
