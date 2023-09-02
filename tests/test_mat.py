@@ -29,6 +29,6 @@ def test_ordered_index(arr):
     idx = ordered_index(arr)
     np.testing.assert_array_equal(idx, [4, 5, 6, 0, 3, 8, 7, 1, 2, 9])
 
-def test_incremental_index(arr):
-    idx = incremental_index(arr)
+def test_revert_ordered_index(arr):
+    idx = revert_ordered_index(arr)
     np.testing.assert_array_equal(idx, [3, 7, 8, 4, 0, 1, 2, 6, 5, 9])

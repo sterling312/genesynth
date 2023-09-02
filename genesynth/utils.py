@@ -1,3 +1,4 @@
+import re
 from itertools import groupby
 from functools import wraps
 from contextlib import contextmanager
@@ -9,6 +10,15 @@ class classproperty:
         self.fn = fn
     def __get__(self, obj, cls):
         return self.fn(cls)
+
+class Hashabledict(dict):
+    def __hash__(self):
+        return hash(frozenset(self))
+
+def clean_text(line):
+    line = re.sub(r'"(?P<num>[-0-9.]+)"', r'\g<num>', line)
+    line = re.sub(r'"(?P<bool>true|false)"', r'\g<bool>', line)
+    return line
 
 def sorted_groupby(arr, func, reverse=False):
     return groupby(sorted(arr, key=func, reverse=reverse), key=func)

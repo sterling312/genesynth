@@ -4,25 +4,28 @@ import os
 import argparse
 import asyncio
 from genesynth.orchestration import *
+from genesynth.utils import clean_text
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--filename', required=True, help='schema file')
 parser.add_argument('-o', '--output', help='output filename if given. defaults to input filename without extension')
-parser.add_argument('--stdout', action='store_true', help='print output to stdout')
+parser.add_argument('--string', action='store_true', help='keep all type as string')
+parser.add_argument('--stdout', action='store_true', help='DEPRECATED print output to stdout')
 
-def main(filename, output=None, stdout=False):
-    if output is None:
-        output, ext = os.path.splitext(os.path.basename(filename))
-    pipe = Orchestration.read_yaml(filename)
+def main(filename, output=None, string=False):
+    pipe = Orchestration.read_config(filename)
     pipe.run()
-    if stdout:
+    if output is None:
         asyncio.run(pipe.root.save())
         with open(pipe.root._file) as fh:
             for line in fh:
-                sys.stdout.write(line)
+                if string:
+                    sys.stdout.write(line)
+                else:
+                    sys.stdout.write(clean_text(line))
     else:
         asyncio.run(pipe.root.save(output))
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    main(args.filename, args.output, args.stdout)
+    main(args.filename, args.output, args.string)

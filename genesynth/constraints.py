@@ -12,13 +12,13 @@ Edge Level:
     - foreign relationship to determine order of operations
 """
 import enum
-from genesynth.mat import mask, null_percent, ordered_index, incremental_index
+from genesynth.mat import identity, unique, sample, mask, mask_index, null_percent, ordered_index, revert_ordered_index
 
 class Builtin(enum.Enum):
     unique = 1 
     notnull = 2
-    incremental = 3
-    uuid = 4
+    nullable = 3
+    sorted = 4
 
 class Constraints(enum.Enum):
     ONEOF = 'oneOf'

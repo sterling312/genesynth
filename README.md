@@ -1,24 +1,27 @@
 [![Python packages](https://github.com/sterling312/genesynth/actions/workflows/github-actions-unittests.yaml/badge.svg)](https://github.com/sterling312/genesynth/actions/workflows/github-actions-unittests.yaml)
 
 # genesynth
-Library to synthetically generate data for declarative data structures.
+This library is used to synthetically generate structured data based on configuration to be used for testing as well as structured data training purposes. The approach of the library is to leverage as much as C-level python packages such as numpy and scipy to generate data at field level, one type at a time, and use graph approach to piece together the complex dependency as well as de-normalization/sampling from each fields to construct data in a scalable manner fast.
+
 
 # install
 ```
-pip install -r requirements.txt
+pip install genesynth
 ```
 
 # example
 ```
->>> from genesynth.orchestration import *
->>> pipe = Orchestration.read_yaml('tests/graph.yaml') 
->>> pipe.run()
->>> asyncio.run(pipe.root.save('graph.csv'))
+$ python -m genesynth.server --host=0.0.0.0 -p 8080
+```
+```
+$ make run
 ```
 
 ```
-$ pip install genesynth
 $ python -m genesynth.cli -f tests/test.yaml --stdout
+```
+```
+$ make cli FILENAME=$(pwd)/tests/test.yaml
 ```
 
 # project status

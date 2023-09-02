@@ -126,6 +126,14 @@ generate fake bcrypt password hash
         default to 2b
 ```
 
+#### enum
+generate random selection from enum array
+```
+    options: tuple - list of default values
+    replace: bool - determine if the sample allows duplication
+        default to True
+```
+
 ### structure datatypes
 The following list are types that either holds core datatypes or references them and generate expected structures based on the datatype.
 
@@ -163,7 +171,7 @@ generate JSON like nested data structure
     metadata: dict - default metadata configuration
 ```
 
-#### [json]/json_array
+#### [json]
 same as json type, but returns the data as an array of data; this may be deprecated in the future
 ```
     metadata: dict - default metadata configuration
