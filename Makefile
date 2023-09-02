@@ -11,7 +11,7 @@ run: build
 
 .PHONY: cli
 cli: ${FILENAME} build
-	docker run -it --rm -v ${FILENAME}:/tmp/input.yaml genesynth genesynth.cli -f /tmp/input.yaml | sed -e 's/"\([-0-9.]*\)"/\1/g' -e 's/"\(true\)"/\1/g' -e 's/"\(false\)"/\1/g'
+	docker run -it --rm -v ${FILENAME}:/tmp/input.yaml genesynth genesynth.cli --string -f /tmp/input.yaml | sed -e 's/"\([-0-9.]*\)"/\1/g' -e 's/"\(true\)"/\1/g' -e 's/"\(false\)"/\1/g'
 
 .PHONY: test
 test:
