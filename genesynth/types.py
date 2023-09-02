@@ -11,7 +11,7 @@ import hashlib
 from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 from datetime import datetime, date, time
-from functools import cache, cached_property
+from functools import lru_cache
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -77,7 +77,7 @@ class BaseMask:
         obj._constraints = constraints
         return obj
 
-    @cache
+    @lru_cache(maxsize=None)
     def mask(self):
         mask = mat.identity(self.size, matmul=True)
         for constraint, value in self._constraints:
@@ -87,7 +87,6 @@ class BaseMask:
                 mask &= mat.null_percent(self.size, precent=value)
         return mask
 
-    @cache
     def dist(self, model='uniform', **kwargs):
         params = {'loc': 0, 'scale': 1}
         params.update(kwargs)
@@ -105,7 +104,7 @@ class BaseMask:
             mask |= mat.mask_index(arr, unique)
         return index[mask]
 
-    @cache
+    @lru_cache(maxsize=None)
     def index(self, arr):
         index = mat.identity(self.size)
         for constraint, value in self._constraints:
