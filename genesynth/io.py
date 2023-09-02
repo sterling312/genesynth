@@ -38,9 +38,6 @@ def load_config(filename):
             data = yaml.safe_load(fh)
     return data
 
-def savefile(filename, arr, fmt='%s', delimiter='\n'):
-    np.savetxt(filename, arr, fmt=fmt, delimiter=delimiter)
-
 def write_as_gzip(fh_obj, filename):
     with gzip.open(filename, 'wt') as fh:
         if isinstance(fh_obj, str):
