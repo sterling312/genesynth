@@ -126,8 +126,8 @@ def stats_model_generate(size: int, *args, model: str = 'uniform', unique=False,
     """
     m = stats_model(*args, model=model, **kwargs)
     if unique:
-        min, max = m.interval(0.99999)
-        return np.linspace(min, max, size)
+        p = np.linspace(0, 1, size)
+        return m.ppf(p)
     else:
         return m.rvs(size)
 
