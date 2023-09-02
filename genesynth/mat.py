@@ -136,7 +136,7 @@ def stats_model_generate(size: int, min: float, max: float, *args, model: str = 
     if unique:
         p = np.linspace(p_low, p_high, size)
     else:
-        p = np.random.rand(size) * ((p_high - p_low) + p_low)
+        p = np.random.rand(size) * (p_high - p_low) + p_low
     return m.ppf(p)
 
 def stats_model_fit(arr: np.array, model: str = 'uniform'):
