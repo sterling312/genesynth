@@ -403,30 +403,3 @@ class BcryptPassword(BaseTextFixture):
         arr = np.array([f'${self.prefix}${self.rounds}${self.random.randstr(length=53)}' for _ in range(self.size)])
         return self.apply_index(arr)
 
-@types.register(['llm'])
-@dataclass(unsafe_hash=True)
-class BaseLlmFixture(BaseMask):
-    prompt: str
-    model: str
-    api: str
-    temperature: float = 0.3
-
-    async def generate(self):
-        arr = []
-        for _ in range(self.size):
-            cli = httpx.AsyncClient()
-            data = dict(model=self.model, prompt=self.prompt, temperature=self.temperature, stream=True)
-            rsp = await cli.post(self.api, json=data, timeout=300)
-            text = ''.join(json.loads(output)['response'] for output in rsp.iter_lines() if not json.loads(output)['done'])
-            arr.append(text)
-        arr = np.array(arr)
-        return self.apply_index(arr)
-
-
-@types.register(['gemma'])
-@dataclass(unsafe_hash=True)
-class GemmaFixture(BaseLlmFixture):
-    prompt: str
-    model: str = 'gemma:2b'
-    api: str = 'http://localhost:11434/api/generate'
-    temperature: float = 0.3

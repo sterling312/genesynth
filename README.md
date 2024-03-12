@@ -39,6 +39,7 @@ $ make cli FILENAME=$(pwd)/tests/test.yaml
 * thread and process support
 * intermediary data temporary cache
 * graph visualization
+* GenAI based field-level data generation (ollama & openai)
 
 ## key features to add
 * add yaml validator
