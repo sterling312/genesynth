@@ -88,7 +88,9 @@ def test_write(params):
         'json': JsonDataModel(name='json', size=params['size'], children=fields),
         'word': StringFixture(name='text', field='word', size=params['size'])
     }
-    n = TableDataModel(children=children, metadata={'sep': ',', 'header': True}, **params)
+    n = TableDataModel(children=children, **params)
+    n.metadata = {'header': True}
+    n.sep = b','
     asyncio.run(n.write())
     asyncio.run(n.save('foo'))
     with open('foo') as fh:
@@ -109,6 +111,8 @@ def test_nested_write(params):
         'word': StringFixture(name='text', field='word', size=params['size'])
     }
     n = TableDataModel(children=children, metadata={'sep': ',', 'header': True}, **params)
+    n.metadata = {'header': True}
+    n.sep = b','
     asyncio.run(n.write())
     asyncio.run(n.save('foo.gz'))
     with gzip.open('foo.gz', 'rt') as fh:

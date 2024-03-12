@@ -39,8 +39,8 @@ class BaseDataModel(BaseMapFixture):
     name: str
     schema: str = None # namespace from metadata
     sep: bytes = b''
-    metadata: dict = field(default_factory=dict)
-    constraints: list = field(default_factory=list)
+    metadata: dict = field(default_factory=Hashabledict)
+    constraints: tuple = field(default_factory=tuple)
     label: dict = field(default_factory=dict)
     children: dict = field(default_factory=dict)
     workload = WorkloadType.DEFAULT
@@ -49,13 +49,9 @@ class BaseDataModel(BaseMapFixture):
         super().__post_init__()
         self._dir = tempfile.TemporaryDirectory()
         self.metadata = Hashabledict(self.metadata)
-        self.constraints = Hashabledict(self.constraints)
+        self.constraints = tuple(self.constraints)
         self.label = Hashabledict(self.label)
         self.children = Hashabledict(self.children)
-        # TODO allow support for string instead of just bytes
-        self.sep = self.metadata.get('sep', self.sep)
-        if isinstance(self.sep, str):
-            self.sep = self.sep.encode('utf-8')
 
     async def __aiter__(self):
         pass
@@ -78,16 +74,14 @@ class BaseDataModel(BaseMapFixture):
         """Combine children cache files into one
         """
         filenames = [node._file for node in nodes]
+        length = 0
         async with self._filename(path) as fh:
             for lines in iterate_lines(*filenames):
                 fh.write(self.sep.join(lines))
                 fh.write(b'\n')
                 await asyncio.sleep(0)
-            fh.seek(0)
-            length = len(list(fh))
-            if self.has_header:
-                length -= 1
-        assert length == self.size, f'expected {self.size} data row, got {length}'
+                length += 1
+        assert length == self.size or length - 1 == self.size, f'expected {self.size} data row, got {length}'
 
     async def write(self):
         if self._file is not None:
@@ -120,6 +114,13 @@ class BaseDataModel(BaseMapFixture):
 class TableDataModel(BaseDataModel):
     # TODO change this to have default keys
     metadata: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        super().__post_init__()
+        # TODO allow support for string instead of just bytes
+        self.sep = self.metadata.get('sep', self.sep)
+        if isinstance(self.sep, str):
+            self.sep = self.sep.encode('utf-8')
 
     @property
     def has_header(self):

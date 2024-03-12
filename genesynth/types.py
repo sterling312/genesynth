@@ -73,10 +73,10 @@ class BaseMask:
         keys = set(kwargs.keys())
         params = {field: kwargs[field] for field in fields & keys}
         obj = cls(**params)
-        obj._metadata = metadata
+        obj.metadata = Hashabledict(metadata)
         if 'dist' in metadata:
             obj._dist = metadata.pop('dist')
-        obj._constraints = cls.unpack_constraints(constraints)
+        obj.constraints = tuple(cls.unpack_constraints(constraints))
         return obj
 
     @property
