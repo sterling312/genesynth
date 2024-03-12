@@ -21,7 +21,7 @@ class BaseLlamaFixture(BaseMask):
             data = dict(role='user', content=self.prompt)
             stream = await cli.chat(model=self.model, messages=[data], stream=True)
             text = ''.join([chunk['message']['content'] or '' async for chunk in stream])
-            arr.append(text)
+            arr.append(text.replace('\n', ' '))
         arr = np.array(arr)
         return self.apply_index(arr)
 
@@ -48,7 +48,7 @@ class ChatGptFixture(BaseMask):
             data = dict(role='user', content=self.prompt)
             stream = await cli.chat.completions.create(model=self.model, messages=[data], temperature=self.temperature, stream=True)
             text = ''.join([chunk.choices[0].delta.content or '' async for chunk in stream])
-            arr.append(text)
+            arr.append(text.replace('\n', ' '))
         arr = np.array(arr)
         return self.apply_index(arr)
 
