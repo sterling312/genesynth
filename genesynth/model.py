@@ -172,7 +172,7 @@ class JsonDataModel(BaseDataModel):
                 record = {key if self.full_key else key.split('.')[-1] : \
                             json.loads(value) if isinstance(node, BaseMapFixture) else value 
                             for node, key, value in zip(nodes, filenames.keys(), lines)}
-                fh.write(json.dumps(record, default=lambda x: x.decode('ascii')).encode('utf-8'))
+                fh.write(json.dumps(record, default=lambda x: x.decode()).encode('utf-8'))
                 fh.write(b'\n')
                 await asyncio.sleep(0)
             fh.seek(0)
