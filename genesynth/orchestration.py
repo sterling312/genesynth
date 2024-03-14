@@ -122,3 +122,9 @@ class Orchestration:
 
     def __del__(self, *args):
         del self.graph
+
+def run(config: dict):
+    pipe = Orchestration.read_dict(config)
+    pipe.run()
+    asyncio.run(pipe.root.save())
+    return pipe.root
