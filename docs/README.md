@@ -77,6 +77,7 @@ generate integer data
 ```
     min: int - min value
     max: int - max value
+    dist (optional): dict(str: dict(str, str)) - parameter for underlying statistical distribution
 ```
 
 #### serial
@@ -98,6 +99,7 @@ generate python float
 ```
     min: int - minimum value
     max: int - maximum value
+    dist (optional): dict(str: dict(str, str)) - parameter for underlying statistical distribution
 ```
 
 #### decimal/numeric
@@ -105,6 +107,7 @@ generate decimal values
 ```
     precision: int - precision of the decimal
     scale: int - rounding scale of the decimal
+    dist (optional): dict(str: dict(str, str)) - parameter for underlying statistical distribution
 ```
 
 #### string
@@ -175,6 +178,22 @@ generate JSON like nested data structure
 same as json type, but returns the data as an array of data; this may be deprecated in the future
 ```
     metadata: dict - default metadata configuration
+```
+
+#### llama/gemma
+call local ollama server for prompt
+```
+    prompt: str - prompt used to generate text
+    model (optional): str - default to llama2:7b/gemma:2b
+```
+
+#### chatgpt
+call OpenAI's ChatGPT chat completion api with prompt
+```
+    prompt: str - prompt used to generate text
+    model (optional): str - default to gpt-3.5-turbo
+    env_var (optional): str - OpenAI api key environment variable name, default to OPENAI_API_KEY
+    temperature (optional): float - default to 0.8
 ```
 
 ### more on mimesis provider
