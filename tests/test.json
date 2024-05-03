@@ -1,0 +1,14 @@
+{
+  "type": "json",
+  "metadata": {"size": 10},
+  "properties": {
+    "table": {
+      "type":"json",
+      "metadata": {"sep": ","},
+      "properties": {
+        "column1": {"type": "serial"},
+        "column2": {"type": "string"}
+      }
+    }
+  }
+}

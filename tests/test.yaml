@@ -1,55 +1,47 @@
-version: 2
-$ref: ""
 type: object
-description: "describes the database contract within a namespace"
 metadata:
-    namespace: public
-    size: 20
-    sep: ','
+  size: 20
 properties:
-    table1:
-        type: object
+  table1:
+    type: object
+    metadata:
+      sep: ','
+    properties: 
+      column1:
+        type: serial
         metadata:
-            namespace: public
-            size: 20
-            sep: ','
-        properties: 
-            column1:
-                type: serial
-                description: ""
-                metadata:
-                    start: 0
-                    step: 1
-                constraints:
-                    - incremental
-            column2:
-                type: string
-                constraints:
-                    - uuid
+          start: 0
+          step: 1
         constraints:
-            - notnull
-    table2:
-        type: object
+          - incremental
+      column2:
+        type: string
+        constraints:
+          - uuid
+    constraints:
+      - notnull
+  table2:
+    type: object
+    metadata:
+      weight: 10
+      sep: ','
+    properties:
+      column3:
+        type: integer
+        metadata: 
+          min: 0
+          max: 200
+          dist:
+            normal:
+              loc: 0
+              scale: 100
+        constraints: {}
+      column4:
+        type: integer
         metadata:
-            weight: 10
-            sep: ','
-        properties:
-            column3:
-                type: integer
-                metadata: 
-                    min: 0
-                    max: 200
-                    dist:
-                        normal:
-                            loc: 0
-                            scale: 100
-                constraints: {}
-            column4:
-                type: integer
-                metadata:
-                    foreign:
-                        name: table1.column1
-                constraints:
-                    - unique
+          foreign:
+            name: table1.column1
+        constraints:
+          - unique
 constraints:
-    - notnull: table1
+  - notnull: table1
