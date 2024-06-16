@@ -1,9 +1,9 @@
-type: object
+type: json
 metadata:
   size: 20
 properties:
   table1:
-    type: object
+    type: json
     metadata:
       sep: ','
     properties: 
@@ -21,7 +21,7 @@ properties:
     constraints:
       - notnull
   table2:
-    type: object
+    type: json
     metadata:
       weight: 10
       sep: ','
