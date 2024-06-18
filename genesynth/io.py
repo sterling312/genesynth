@@ -12,6 +12,7 @@ import yaml
 import tempfile
 import networkx as nx
 import numpy as np
+from mergedeep import merge, Strategy
 from genesynth.utils import Hashabledict
 from genesynth.extensions import datatypes
 from genesynth.constraints import *
@@ -28,6 +29,12 @@ logger = logging.getLogger(__name__)
 
 def read_dot(filename):
     return nx.DiGraph(nx.nx_pydot.read_dot(filename))
+
+def load_configs(*args):
+    configs = []
+    for filename in args:
+        configs.append(load_config(filename))
+    return merge(*configs, strategy=Strategy.REPLACE)
 
 def load_config(filename):
     if filename.endswith('json'):

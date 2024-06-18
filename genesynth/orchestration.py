@@ -19,7 +19,7 @@ from genesynth.graph import Graph, find_node, find_child_node
 from genesynth.model import worker, types, BaseDataModel, WorkloadType
 from genesynth.extensions import datatypes
 from genesynth.worker import Runner
-from genesynth.io import load_config, schema_to_graph
+from genesynth.io import load_configs, schema_to_graph
 from genesynth.utils import spawn, wait
 from genesynth.constraints import *
 
@@ -51,8 +51,8 @@ class Orchestration:
         return cls(graph)
 
     @classmethod
-    def read_config(cls, filename, name='root'):
-        data = load_config(filename)
+    def read_config(cls, *filenames, name='root'):
+        data = load_configs(*filenames)
         size = data['metadata']['size']
         return cls.read_dict(data, size=size)
 

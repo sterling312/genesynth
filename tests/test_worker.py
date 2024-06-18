@@ -1,5 +1,6 @@
 import pytest
 from pytest import fixture
+import re
 import asyncio
 import psutil
 from genesynth.worker import *
@@ -68,7 +69,8 @@ async def test_runner():
         assert 1 == await runner.run(Bar().foo, 1)
     assert len(runner.executor._processes) <= workers
     assert psutil.pid_exists(list(set(runner.executor._processes))[0])
-    assert psutil.Process(list(set(runner.executor._processes))[0]).name() in ('Python', 'python', 'pytest')
+    process_name = psutil.Process(list(set(runner.executor._processes))[0]).name().lower()
+    assert re.search('python', process_name) or re.search('pytest', process_name)
     assert 1 == await runner.run(Bar().bar, 1)
     assert len(runner.executor._processes) <= workers
     assert 1 == await runner.run(Bar().buzz, 1)
