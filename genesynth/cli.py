@@ -13,7 +13,7 @@ parser.add_argument('--string', action='store_true', help='keep all type as stri
 parser.add_argument('--stdout', action='store_true', help='DEPRECATED print output to stdout')
 
 def main(filename, output=None, string=False):
-    pipe = Orchestration.read_config(*filename)
+    pipe = Orchestration.read_configs(*filename)
     pipe.run()
     if output is None:
         asyncio.run(pipe.root.save())
