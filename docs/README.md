@@ -4,31 +4,153 @@ This library is used to synthetically generate structured data based on configur
 For most of the text generation, genesynth currently leverage Mimesis to handle text generation. Eventually the library will include extensions that support text generation from LLM so that can be plugged into the model for more custom dataset.
 
 
-## configuration`
-Currently the main interface to the library is a YAML file that largely follow JSON Schema format, with a few minor differences. The intent is to eventually support to full JSON Schema spec, as well as other input format, which is configurable. 
+## Configuration
 
-The main structure supported today follows the schema below:
-```
+The main interface to the library is a YAML configuration file that follows a JSON Schema-like format. The configuration defines the structure and characteristics of the data to be generated.
+
+### Basic Structure
+
+```yaml
 version: 2
-type: "supoorted top level datatype for the data being generated"
-description: "brief description of the generated data"
+type: "json|table|object"  # Top-level output format
+description: "Description of the dataset"
 metadata:
-    size: "integer value of number of records to generate"
-    sep: "separator for tabular data output format"
+    size: 1000  # Number of records to generate
+    sep: ","    # Separator for tabular data (optional)
 properties:
-    table_name/object_name:
-        type: "table|object|json"
-        metadata: 
-            namespace: "optional namespace used to define database table namespace"
-            size: "optinal but overwrites the top level size"
-            {keys}: "other datatype specific metadata"
-        constraints: [constraints added at the table/object level]
+    table_name:  # Name of the table/object
+        type: "json|table|object"
+        metadata:
+            namespace: "schema_name"  # Database schema namespace (optional)
+            size: 500  # Override global size for this table
+            sep: "|"   # Override separator for this table
+            weight: 10 # Sampling weight for relationships
+        constraints:
+            - "notnull"  # Table-level constraints
+            - "unique: [column1, column2]"  # Composite constraints
         properties:
-            column_name/field_name:
-                type: "column/field level type"
-                metadata: {other datatype specific metadata}
-                constraints: [column/field level constraints]
-                properties: {repeat properties if there are JSON or nested types}
+            column1:
+                type: "integer|string|timestamp|etc"
+                metadata:
+                    min: 0        # Numeric range
+                    max: 100
+                    length: 50    # String length
+                    precision: 2  # Decimal precision
+                    scale: 1      # Decimal scale
+                    dist:         # Statistical distribution
+                        normal:
+                            loc: 0
+                            scale: 1
+                    foreign:      # Foreign key reference
+                        name: "other_table.id"
+                constraints:
+                    - "unique"    # Column constraints
+                    - "incremental"
+                    - "nullable: 0.1"  # 10% null values
+```
+
+### Supported Types
+
+#### Basic Types
+- `integer`: Whole numbers
+- `serial`: Auto-incrementing integers
+- `float/double`: Floating point numbers
+- `decimal/numeric`: Fixed-precision decimals
+- `boolean`: True/False values
+- `string`: Text data with optional Mimesis providers
+- `text`: Random string data
+- `timestamp/datetime`: Date and time values
+- `date`: Date only
+- `time`: Time only
+- `password`: Bcrypt password hashes
+- `enum`: Selection from predefined options
+
+#### Structural Types
+- `array/list/tuple`: Ordered collections
+- `map/struct`: Key-value structures
+- `foreign`: References to other fields
+
+#### Container Types
+- `object/table`: 2D tabular data
+- `json`: Nested data structures
+- `[json]`: Array of JSON objects
+
+#### LLM Types
+- `llama/gemma`: Local Ollama models
+- `chatgpt`: OpenAI GPT models
+- `google`: Google AI models
+
+### Constraints
+
+- `unique`: Ensures unique values
+- `notnull`: No null values allowed
+- `nullable: float`: Percentage of null values
+- `incremental`: Auto-incrementing values
+- `sorted`: Sort values
+- Composite constraints using arrays
+
+### Statistical Distributions
+
+Support for various statistical distributions via scipy.stats:
+```yaml
+metadata:
+    dist:
+        normal:
+            loc: 0
+            scale: 1
+        # Other supported distributions:
+        # uniform, beta, gamma, exponential, etc.
+```
+
+### Example Configuration
+
+```yaml
+type: json
+metadata:
+    size: 20
+properties:
+    users:
+        type: table
+        metadata:
+            sep: ","
+        properties:
+            id:
+                type: serial
+                metadata:
+                    start: 1
+                constraints:
+                    - unique
+            name:
+                type: string
+                metadata:
+                    subtype: person
+                    field: full_name
+            created_at:
+                type: timestamp
+                metadata:
+                    min: "2023-01-01"
+                    max: "2024-01-01"
+    orders:
+        type: json
+        metadata:
+            weight: 10
+        properties:
+            order_id:
+                type: serial
+            user_id:
+                type: integer
+                metadata:
+                    foreign:
+                        name: users.id
+            amount:
+                type: decimal
+                metadata:
+                    precision: 10
+                    scale: 2
+                    dist:
+                        normal:
+                            loc: 100
+                            scale: 25
 ```
 Use tests/test.yaml as an example.
 
