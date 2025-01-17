@@ -3,52 +3,69 @@ from typing import List, Dict, Tuple, Any
 from dataclasses import dataclass, field
 
 import numpy as np
-import ollama
 import openai
 from genesynth.types import BaseMask
 from genesynth.extensions import extensions
 
-@extensions.register(['llama'])
+@extensions.register(['openai'])
 @dataclass(unsafe_hash=True)
-class BaseLlamaFixture(BaseMask):
+class BaseGenaiFixture(BaseMask):
+    base_url = None
+    env_var = 'OPENAI_API_KEY'
+
     prompt: str
-    model: str = 'llama2:7b'
+    model: str = 'gpt-4o-mini'
 
-    async def generate(self):
-        arr = []
-        cli = ollama.AsyncClient()
-        for _ in range(self.size):
-            data = dict(role='user', content=self.prompt)
-            stream = await cli.chat(model=self.model, messages=[data], stream=True)
-            text = ''.join([chunk['message']['content'] or '' async for chunk in stream])
-            arr.append(text.replace('\n', ' '))
-        arr = np.array(arr)
-        return self.apply_index(arr)
-
-
-@extensions.register(['gemma'])
-@dataclass(unsafe_hash=True)
-class GemmaFixture(BaseLlamaFixture):
-    prompt: str
-    model: str = 'gemma:2b'
-
-
-@extensions.register(['chatgpt'])
-@dataclass(unsafe_hash=True)
-class ChatGptFixture(BaseMask):
-    prompt: str
-    model: str = 'gpt-3.5-turbo'
-    env_var: str = 'OPENAI_API_KEY'
-    temperature: float = 0.8
+    @property
+    def api_key(self):
+        return os.environ.get(self.env_var)
 
     async def generate(self):
         arr = []
         for _ in range(self.size):
-            cli = openai.AsyncOpenAI(api_key=os.environ.get(self.env_var))
+            cli = openai.AsyncOpenAI(base_url=self.base_url, api_key=self.api_key)
             data = dict(role='user', content=self.prompt)
-            stream = await cli.chat.completions.create(model=self.model, messages=[data], temperature=self.temperature, stream=True)
+            stream = await cli.chat.completions.create(model=self.model, messages=[data], stream=True)
             text = ''.join([chunk.choices[0].delta.content or '' async for chunk in stream])
             arr.append(text.replace('\n', ' '))
         arr = np.array(arr)
         return self.apply_index(arr)
+
+
+@extensions.register(['ollama'])
+@dataclass(unsafe_hash=True)
+class OllamaFixture(BaseGenaiFixture):
+    base_url = 'http://localhost:11434/v1'
+
+    prompt: str
+    model: str = 'llama3.1:8b'
+
+    @property
+    def api_key(self):
+        return 'fake_key'
+
+
+@extensions.register(['google'])
+@dataclass(unsafe_hash=True)
+class GoogleFixture(BaseGenaiFixture):
+    _base_url = 'https://{LOCATION}-aiplatform.googleapis.com/v1beta1/projects/{PROJECT}/locations/{LOCATION}/endpoints/openapi'
+
+    prompt: str
+    model: str = 'gemini-1.5-flash-001'
+
+    @property
+    def base_url(self):
+        import google.auth as google_auth
+        creds, project = google_auth.default()
+        location = os.environ.get('LOCATION', 'us-central1')
+        return self._base_url.format(PROJECT=project, LOCATION=location)
+
+    @property
+    def api_key(self):
+        import google.auth
+        import google.auth.transport.requests
+        creds, project = google.auth.default()
+        auth_req = google.auth.transport.requests.Request()
+        creds.refresh(auth_req)
+        return creds.token
 
