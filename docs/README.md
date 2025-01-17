@@ -212,6 +212,145 @@ properties:
                     prompt: "Generate a blog post title about AI"
                     model: "gemma:2b"
 ```
+
+#### Composite Keys Example
+```yaml
+type: json
+metadata:
+    size: 1000
+properties:
+    users:
+        type: table
+        constraints:
+            - "unique: [region, user_id]"  # Composite unique constraint
+        properties:
+            region:
+                type: string
+                metadata:
+                    subtype: address
+                    field: country
+            user_id:
+                type: serial
+```
+
+#### Data Masking Example
+```yaml
+type: json
+metadata:
+    size: 100
+properties:
+    customers:
+        type: table
+        properties:
+            email:
+                type: string
+                metadata:
+                    subtype: person
+                    field: email
+                constraints:
+                    - "mask: email"  # Masks email addresses
+            ssn:
+                type: string
+                metadata:
+                    subtype: person
+                    field: ssn
+                constraints:
+                    - "mask: ssn"    # Masks SSN numbers
+```
+
+#### Custom Distribution Example
+```yaml
+type: json
+metadata:
+    size: 1000
+properties:
+    measurements:
+        type: table
+        properties:
+            value:
+                type: float
+                metadata:
+                    dist:
+                        beta:  # Using beta distribution
+                            a: 2
+                            b: 5
+                            loc: 0
+                            scale: 100
+```
+
+#### Nested JSON Example
+```yaml
+type: json
+metadata:
+    size: 10
+properties:
+    orders:
+        type: json
+        properties:
+            order_id:
+                type: serial
+            customer:
+                type: json
+                properties:
+                    id:
+                        type: serial
+                    name:
+                        type: string
+                        metadata:
+                            subtype: person
+                            field: full_name
+            items:
+                type: json
+                metadata:
+                    size: 3  # Each order has 3 items
+                properties:
+                    product_id:
+                        type: serial
+                    quantity:
+                        type: integer
+                        metadata:
+                            min: 1
+                            max: 10
+```
+
+#### Multi-table Relationships Example
+```yaml
+type: json
+metadata:
+    size: 100  # 100 departments
+properties:
+    departments:
+        type: table
+        properties:
+            dept_id:
+                type: serial
+                constraints:
+                    - unique
+            name:
+                type: string
+                metadata:
+                    subtype: text
+                    field: word
+    employees:
+        type: table
+        metadata:
+            size: 1000  # 1000 employees
+        properties:
+            emp_id:
+                type: serial
+            dept_id:
+                type: integer
+                metadata:
+                    foreign:
+                        name: departments.dept_id
+            manager_id:
+                type: integer
+                metadata:
+                    foreign:
+                        name: employees.emp_id  # Self-referential relationship
+                constraints:
+                    - "nullable: 0.9"  # 90% have managers
+```
 Use tests/test.yaml as an example.
 
 ## datatype definitions
