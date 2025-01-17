@@ -102,55 +102,115 @@ metadata:
         # uniform, beta, gamma, exponential, etc.
 ```
 
-### Example Configuration
+### Example Configurations
 
+Here are some focused examples demonstrating specific use cases:
+
+#### Basic Types Example
 ```yaml
 type: json
 metadata:
-    size: 20
+    size: 5  # Generate 5 records
 properties:
-    users:
+    basic_types:
         type: table
-        metadata:
-            sep: ","
         properties:
             id:
                 type: serial
                 metadata:
                     start: 1
+            number:
+                type: integer
+                metadata:
+                    min: 0
+                    max: 100
+            text:
+                type: string
+                metadata:
+                    subtype: text
+                    field: word
+```
+
+#### Statistical Distribution Example
+```yaml
+type: json
+metadata:
+    size: 1000
+properties:
+    normal_distribution:
+        type: table
+        properties:
+            value:
+                type: float
+                metadata:
+                    dist:
+                        normal:
+                            loc: 50    # mean
+                            scale: 10  # standard deviation
+```
+
+#### Foreign Key Relationship Example
+```yaml
+type: json
+metadata:
+    size: 10
+properties:
+    parents:
+        type: table
+        properties:
+            parent_id:
+                type: serial
                 constraints:
                     - unique
+    children:
+        type: table
+        metadata:
+            size: 20  # More children than parents
+        properties:
+            child_id:
+                type: serial
+            parent_id:
+                type: integer
+                metadata:
+                    foreign:
+                        name: parents.parent_id
+```
+
+#### Text Generation Example
+```yaml
+type: json
+metadata:
+    size: 3
+properties:
+    people:
+        type: table
+        properties:
             name:
                 type: string
                 metadata:
                     subtype: person
                     field: full_name
-            created_at:
-                type: timestamp
+            email:
+                type: string
                 metadata:
-                    min: "2023-01-01"
-                    max: "2024-01-01"
-    orders:
-        type: json
-        metadata:
-            weight: 10
+                    subtype: person
+                    field: email
+```
+
+#### LLM Integration Example
+```yaml
+type: json
+metadata:
+    size: 2
+properties:
+    content:
+        type: table
         properties:
-            order_id:
-                type: serial
-            user_id:
-                type: integer
+            title:
+                type: ollama
                 metadata:
-                    foreign:
-                        name: users.id
-            amount:
-                type: decimal
-                metadata:
-                    precision: 10
-                    scale: 2
-                    dist:
-                        normal:
-                            loc: 100
-                            scale: 25
+                    prompt: "Generate a blog post title about AI"
+                    model: "gemma:2b"
 ```
 Use tests/test.yaml as an example.
 
