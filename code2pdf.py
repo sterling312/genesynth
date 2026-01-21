@@ -25,10 +25,10 @@ def fetch_pages(glober='*.pdf'):
         for page in reader.pages:
             yield page
 
-def code_finder(basedir: str, output: str = 'output.pdf'):
+def code_finder(basedir: str, output: str = 'output.pdf', ext: str = 'py'):
     logger.info(f'basedir {basedir}')
     writer = PdfWriter()
-    for filename in chain(glob.glob(f'{basedir}/*.py'), glob.glob(f'{basedir}/**/*.py')):
+    for filename in chain(glob.glob(f'{basedir}/*.{ext}'), glob.glob(f'{basedir}/**/*.{ext}')):
         logger.info(f'reading {filename}')
         code = open(filename, 'rb').read()
         filepath = filename.replace(f'{basedir}/', '')
