@@ -1,5 +1,6 @@
 import glob
 import logging
+from itertools import chain
 from PyPDF2 import PdfWriter, PdfReader
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Preformatted
 from reportlab.lib.pagesizes import LETTER
@@ -27,14 +28,7 @@ def fetch_pages(glober='*.pdf'):
 def code_finder(basedir: str, output: str = 'output.pdf'):
     logger.info(f'basedir {basedir}')
     writer = PdfWriter()
-    for filename in glob.glob(f'{basedir}/*.py'):
-        logger.info(f'reading {filename}')
-        code = open(filename, 'rb').read()
-        filepath = filename.replace(f'{basedir}/', '')
-        render_code_pdf(output, code, filepath)
-        for page in fetch_pages(output):
-            writer.add_page(page)
-    for filename in glob.glob(f'{basedir}/**/*.py'):
+    for filename in chain(glob.glob(f'{basedir}/*.py'), glob.glob(f'{basedir}/**/*.py')):
         logger.info(f'reading {filename}')
         code = open(filename, 'rb').read()
         filepath = filename.replace(f'{basedir}/', '')
